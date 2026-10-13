@@ -1,118 +1,118 @@
-# 创意分身 Skill — 选题质量评分标准
+# Creative Avatar Skill: Topic Quality Scoring Standard
 
-> 本文档由 F · 验收部产出，是「创意分身」Step 5 输出选题的量化质量标尺，也是测试用例与验收清单的判定依据。
-> 上游依据：C 部 `bad_topic_blacklist.md`（五类烂选题）、`engine_self_critique.md`（6 条审稿硬约束）、`output_template.md`（四要素）；PRD 第八节「成功标准」。
+> This document is produced by Team F (Acceptance). It is the quantitative quality ruler for Step 5 topic output in Creative Avatar, and the basis for test cases and the acceptance checklist.
+> Upstream inputs: Team C's `bad_topic_blacklist.md` (five bad-topic types), `engine_self_critique.md` (six hard review constraints), `output_template.md` (four elements); PRD section 8 "success criteria".
 
-## 1. 评分卡总览
+## 1. Scorecard overview
 
-每个候选选题在 5 个维度上各打 1–5 分（整数），满分 25 分。**黑名单命中为一票否决项，不参与计分**。
+Each candidate topic idea is scored 1-5 (integer) on 5 dimensions, for a maximum of 25. **A blacklist hit is a one-vote veto and is not scored.**
 
-| # | 评分维度 | 评估问题 | 对应引擎 C 审稿项 |
+| # | Dimension | Evaluation question | Maps to Engine C review item |
 |---|---------|---------|-------------------|
-| D1 | 具体性 | 是具体问题，还是宽泛主题？ | C1（有具体对象）、C2（有问题且可证伪） |
-| D2 | 创新性 | 有没有领域增量？是不是烂大街？ | C5（非饱和、有增量） |
-| D3 | 可行性 | 用户能力/资源范围内做得出来吗？ | C4（在资源/周期内） |
-| D4 | 匹配度 | 贴合用户画像的程度？ | 画像引用真实性（output_template ②要素） |
-| D5 | 分寸感 | 符合场景态度基调吗？ | C6（符合 tone_rules） |
+| D1 | Concreteness | Is it a concrete question, or a vague theme? | C1 (concrete object), C2 (question that is falsifiable) |
+| D2 | Novelty | Does it add something to the field? Is it overdone? | C5 (not saturated, adds increment) |
+| D3 | Feasibility | Can it be done within the user's ability / resources? | C4 (within resources / timeline) |
+| D4 | Fit | How well does it match the user profile? | Profile-citation accuracy (element 2 in output_template) |
+| D5 | Register | Does it match the scene tone? | C6 (matches tone_rules) |
 
-## 2. 各维度评分锚点
+## 2. Scoring anchors per dimension
 
-### D1 具体性（1–5 分）
+### D1 Concreteness (1-5)
 
-| 分值 | 锚点 |
+| Score | Anchor |
 |------|------|
-| 5 | 有可识别的具体对象（个案/人群/平台/时间）+ 至少一个限定词，且产出是**可证伪的问句**，不是主题 |
-| 3 | 有对象但限定不足（如只说「短视频」未落到群体/平台），或问题偏主题化、可证伪性含糊 |
-| 1 | 只有无边界大领域（「中西文化」「青年」「AI 的影响」），没有对象、没有问题 |
+| 5 | Identifiable concrete object (case / population / platform / time) + at least one qualifier, and the output is a **falsifiable question**, not a theme |
+| 3 | Has an object but not enough qualifiers (for example, says only "short video" without landing on a group / platform), or the question is theme-like and falsification is blurry |
+| 1 | Only an unbounded broad field ("Chinese vs Western culture", "youth", "impact of AI"); no object, no question |
 
-### D2 创新性（1–5 分）
+### D2 Novelty (1-5)
 
-| 分值 | 锚点 |
+| Score | Anchor |
 |------|------|
-| 5 | 新对象 / 新视角 / 新方法 / 新证据**至少占其一**，且不在引擎 A 饱和清单内 |
-| 3 | 有一定增量，但角度较常见，或增量需进一步说明（「较热」方向未叠加新东西） |
-| 1 | 完全重复已有结论；命中「过度饱和」；或多热词强拼无实质问题（命中「概念堆砌」） |
+| 5 | At least one of: new object / new angle / new method / new evidence, and not on Engine A's saturation list |
+| 3 | Some increment, but the angle is common, or the increment needs more explanation (a "hot" direction with nothing added) |
+| 1 | Repeats existing conclusions; hits "over-saturated"; or buzzwords forced together with no real question (hits "concept stacking") |
 
-### D3 可行性（1–5 分）
+### D3 Feasibility (1-5)
 
-| 分值 | 锚点 |
+| Score | Anchor |
 |------|------|
-| 5 | 数据/样本/渠道/方法都可得，与用户 `resources`、层级、篇幅、周期匹配 |
-| 3 | 关键环节需额外协调（如跨校取样），但有明确替代方案 |
-| 1 | 明显超出能力/资源/数据/技术（无数据集无技术却要做大型系统），命中「无法落地」 |
+| 5 | Data / sample / channel / method are all available; matches the user's `resources`, level, length, and timeline |
+| 3 | A key step needs extra coordination (for example, cross-campus sampling), but a clear fallback exists |
+| 1 | Clearly exceeds ability / resources / data / tech (no dataset, no tech, yet asked to build a large system); hits "infeasible" |
 
-### D4 匹配度（1–5 分）
+### D4 Fit (1-5)
 
-| 分值 | 锚点 |
+| Score | Anchor |
 |------|------|
-| 5 | 引用画像 **≥3 条具体条目**（背景/兴趣/资源/偏好），且每条说明「如何被用到」 |
-| 3 | 引用 1–2 条，或引用较泛化、与题目关联不强 |
-| 1 | 与画像无关，或为凑匹配**编造画像中不存在的条目** |
+| 5 | Cites **at least 3 specific profile entries** (background / interest / resources / preference), and each explains "how it is used" |
+| 3 | Cites 1-2 entries, or citations are vague and weakly tied to the topic |
+| 1 | Unrelated to the profile, or **invents entries that do not exist** just to force a match |
 
-### D5 分寸感（1–5 分）
+### D5 Register (1-5)
 
-| 分值 | 锚点 |
+| Score | Anchor |
 |------|------|
-| 5 | 语气、格式、约束完全贴合场景 `tone_rules`；幽默（如允许）只服务表达、不削弱证据 |
-| 3 | 基调基本正确，但个别表述轻微偏差（如严肃场景偶有口语） |
-| 1 | 基调错位：严肃场玩梗、轻松场端架子；或触碰平台/法律/伦理红线 |
+| 5 | Tone, format, and constraints fully match the scene `tone_rules`; humor (if allowed) serves expression and does not weaken evidence |
+| 3 | Tone is mostly right, but one or two phrases are slightly off (for example, casual wording in an academic scene) |
+| 1 | Wrong register: playful in a serious scene, stiff in a playful scene; or touches platform / legal / ethical lines |
 
-## 3. 硬性否决项（黑名单 5 类，一票否决）
+## 3. Hard veto items (five blacklist types, one-vote veto)
 
-黑名单命中**不参与打分，直接判不合格（记 0 分）**，且须在结果中标注 `fatal_flaw` 类型。本表与 C 部 `bad_topic_blacklist.md` 完全一致：
+A blacklist hit **is not scored and is marked fail directly (record 0)**, with the `fatal_flaw` type noted in the result. This table matches Team C's `bad_topic_blacklist.md`:
 
-| 类型 | 致命审稿项 | 一票否决判据 |
+| Type | Fatal review item | Veto criterion |
 |------|-----------|-------------|
-| 概念堆砌型 | C2 / C5 | 抽掉热词后问题不成立；热词可任意替换而标题仍「通顺」 |
-| 过度饱和型 | C5 | 同题/同框架过载，且无新对象/新视角/新方法/新证据 |
-| 无法落地型 | C4 | 所需数据/技术/设备/权限/周期明显超出用户资源 |
-| 范围过大型 | C1 / C2 | 边界模糊、无任何限定词，规定篇幅装不下 |
-| 假问题型 | C2 | 问题预设不成立、无法证伪、无研究价值 |
+| Concept stacking | C2 / C5 | Removing buzzwords breaks the question; buzzwords can be swapped arbitrarily while the title still "reads fine" |
+| Over-saturated | C5 | Same topic / same framework is overloaded, with no new object / angle / method / evidence |
+| Infeasible | C4 | Required data / tech / equipment / permissions / timeline clearly exceed the user's resources |
+| Too broad | C1 / C2 | Blurry boundaries, no qualifiers, cannot fit the assigned length |
+| False question | C2 | The presupposition is invalid, unfalsifiable, or has no research value |
 
-## 4. 通过线与分级
+## 4. Pass line and grades
 
-| 条件 | 结论 |
+| Condition | Result |
 |------|------|
-| 命中黑名单任一类型 | 直接不合格（0 分，标注 `fatal_flaw`） |
-| 任一维度 < 3 分 | 不合格 |
-| 总分 < 18 | 不合格 |
-| 总分 18–20，且无维度 < 3 | 合格（可发布，建议提示改进点） |
-| 总分 21–23 | 良好 |
-| 总分 24–25 | 优秀 |
+| Hits any blacklist type | Fail directly (0, with `fatal_flaw` noted) |
+| Any dimension < 3 | Fail |
+| Total < 18 | Fail |
+| Total 18-20, and no dimension < 3 | Pass (publish; suggest improvement points) |
+| Total 21-23 | Good |
+| Total 24-25 | Excellent |
 
-> 通过线 = **总分 ≥ 18 且每个维度 ≥ 3 且黑名单零命中**。与引擎 C 的 `pass_all` 闸门互为印证：闸门是「资格二分」，评分卡是「质量排序」。
+> Pass line = **total >= 18, every dimension >= 3, and zero blacklist hits**. This cross-checks Engine C's `pass_all` gate: the gate is a binary qualification, the scorecard is quality ranking.
 
-## 5. 烂选题检测清单（生成后逐条自查）
+## 5. Bad-topic detection checklist (run after generation)
 
-对每个候选连续追问 5 句，任一命中即标记并交引擎 C 裁决：
+For each candidate, ask these 5 questions in a row. Any hit means flag it and send it to Engine C for adjudication:
 
-1. **抽掉热词**，问题还成立吗？（→ 概念堆砌）
-2. **别人做过多少**？我带了哪个新东西？（→ 过度饱和）
-3. **数据和技术**我真的有吗？（→ 无法落地）
-4. **一篇 / 一条装得下**吗？边界在哪？（→ 范围过大）
-5. **什么证据能推翻它**？（→ 假问题）
+1. **Remove the buzzwords**. Does the question still hold? (concept stacking)
+2. **How much has already been done**? What new thing do I bring? (over-saturated)
+3. **Do I actually have the data and technology**? (infeasible)
+4. **Can one paper / one video hold it**? Where are the boundaries? (too broad)
+5. **What evidence would overturn it**? (false question)
 
-## 6. 评分流程与打分者
+## 6. Scoring flow and scorer
 
-1. **资格判定**：引擎 C 先按 6 条硬约束 `pass_all` 放行；未通过不进入评分。
-2. **评分**：对每个通过闸门的候选，按 5 维度打分；黑名单再次复核，命中即否决。
-3. **排序**：同分候选按场景配置 `output.sort_by`（relevance / novelty / feasibility）定序。
-4. **记录**：每轮评分写入留痕，供回溯（模板见第 7 节）。
+1. **Qualification**: Engine C first runs `pass_all` on the six hard constraints. Failures do not enter scoring.
+2. **Scoring**: score each candidate that passes the gate on the 5 dimensions; re-check the blacklist, and veto on any hit.
+3. **Ranking**: tie-breaking uses the scene profile `output.sort_by` (relevance / novelty / feasibility).
+4. **Record**: write each scoring round down for traceability (template in section 7).
 
-打分者：F 部验收 + 运行时可选脚本双轨；MVP 阶段由验收轮次人工/模型按本卡打分。
+Scorer: dual track between Team F acceptance and an optional runtime script. In the MVP stage, acceptance rounds are scored by human / model using this scorecard.
 
-## 7. 评分记录模板
+## 7. Scoring record template
 
 ```text
-candidate_id / 标题
-D1 具体性 __  D2 创新性 __  D3 可行性 __  D4 匹配度 __  D5 分寸感 __
-总分 __ / 25   黑名单命中：无 / [类型]   结论：合格 / 良好 / 优秀 / 不合格
-改进点：___
+candidate_id / title
+D1 Concreteness __  D2 Novelty __  D3 Feasibility __  D4 Fit __  D5 Register __
+Total __ / 25   Blacklist hit: none / [type]   Result: pass / good / excellent / fail
+Improvement points: ___
 ```
 
-## 8. 验收对照（F 部自身）
+## 8. Acceptance checklist (Team F itself)
 
-- [x] 评分标准量化、可操作（5 维度 × 1–5 分 + 通过线 + 分级）
-- [x] 附烂选题检测清单，与 C 部黑名单 5 类逐条对应
-- [x] 明确与引擎 C 6 条审稿硬约束的映射关系
-- [x] 给出评分流程与记录模板，可直接用于验收轮次
+- [x] Scoring standard is quantitative and operational (5 dimensions x 1-5 + pass line + grades)
+- [x] Bad-topic detection checklist attached, mapped one-to-one to the five blacklist types
+- [x] Mapping to Engine C's six hard review constraints is explicit
+- [x] Scoring flow and record template provided, ready for acceptance rounds

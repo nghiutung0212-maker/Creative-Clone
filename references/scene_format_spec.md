@@ -1,53 +1,53 @@
-# 场景配置文件格式规范
+# Scene Profile File Format Spec
 
-> 本文档定义「创意分身」Skill 中所有场景配置文件的统一格式。
-> B 部门（场景库部）按此规范编写每个场景的 JSON 配置文件。
-> 后续新增场景也只需按此格式添加一个 JSON 文件，无需改动核心逻辑。
+> This document defines the unified format for all scene profile files in the Creative Avatar Skill.
+> Team B (Scene Library) writes each scene's JSON profile according to this spec.
+> Later scenes are added by dropping in one JSON file in the same format; no core logic changes.
 
-## 文件位置
+## File location
 
-所有场景配置文件放在 `assets/scene_profiles/` 目录下，一个场景一个文件。
+All scene profile files live under `assets/scene_profiles/`, one file per scene.
 
-## 文件命名
+## File naming
 
-`{scene_identifier}.json`，使用蛇形命名法（snake_case）。
+`{scene_identifier}.json`, snake_case.
 
-示例：`academic_paper.json`、`short_video.json`、`event_planning.json`
+Examples: `academic_paper.json`, `short_video.json`, `event_planning.json`
 
-## JSON Schema
+## JSON schema
 
-每个场景配置文件必须包含以下顶层字段：
+Every scene profile file must contain the following top-level fields:
 
 ```json
 {
-  "scene_id": "字符串，蛇形命名，与文件名一致",
-  "scene_name": "字符串，场景中文名",
-  "scene_description": "字符串，一句话描述该场景",
+  "scene_id": "string, snake_case, matches the file name",
+  "scene_name": "string, scene display name",
+  "scene_description": "string, one-line description of the scene",
   "questionnaire_template": {
-    "rounds": "数组，分步追问的轮次",
-    "skip_logic": "对象，逻辑跳转规则"
+    "rounds": "array, rounds of step-by-step questions",
+    "skip_logic": "object, logic jump rules"
   },
   "tone_rules": {
-    "base_tone": "字符串，该场景的基础语气基调",
-    "allow_humor": "布尔值，是否允许幽默玩梗",
-    "allow_informal": "布尔值，是否允许非正式表达",
-    "tone_examples": "数组，语气示例"
+    "base_tone": "string, base tone for this scene",
+    "allow_humor": "boolean, whether playful humor is allowed",
+    "allow_informal": "boolean, whether informal wording is allowed",
+    "tone_examples": "array, tone examples"
   },
-  "constraint_list": "数组，该场景下选题必须满足的硬性条件",
-  "exclusion_rules": "数组，该场景下应主动规避的方向",
+  "constraint_list": "array, hard conditions topic ideas must satisfy in this scene",
+  "exclusion_rules": "array, directions this scene actively avoids",
   "output_format_adjustments": {
-    "title_format": "字符串，选题标题的格式模板",
-    "extra_fields": "数组，该场景额外需要的输出字段",
-    "suppress_fields": "数组，该场景可以省略的标准字段"
+    "title_format": "string, format template for the topic title",
+    "extra_fields": "array, extra output fields this scene needs",
+    "suppress_fields": "array, standard fields this scene may omit"
   }
 }
 ```
 
-## 字段详细说明
+## Field detail
 
-### 1. questionnaire_template（问卷模板）
+### 1. questionnaire_template (questionnaire template)
 
-分步追问逻辑，不是一次性甩给用户所有问题。
+Step-by-step follow-up logic; do not dump all questions at once.
 
 ```json
 {
@@ -58,15 +58,15 @@
         "questions": [
           {
             "field": "domain",
-            "question": "你的学科领域 / 主题方向是什么？",
+            "question": "What is your field / topic direction?",
             "type": "text",
             "required": true
           },
           {
             "field": "level",
-            "question": "你的学历层级是？",
+            "question": "What is your education level?",
             "type": "choice",
-            "options": ["本科", "硕士", "博士", "其他"],
+            "options": ["undergraduate", "master's", "PhD", "other"],
             "required": true
           }
         ]
@@ -76,12 +76,12 @@
         "questions": [
           {
             "field": "length",
-            "question": "预期的篇幅 / 时长是？",
+            "question": "Expected length / duration?",
             "type": "choice",
-            "options": ["3-5分钟汇报", "10-15分钟汇报", "课程论文", "毕业论文"],
+            "options": ["3-5 min presentation", "10-15 min presentation", "course paper", "graduation thesis"],
             "required": true,
             "condition": {
-              "if": {"field": "level", "in": ["本科", "硕士"]},
+              "if": {"field": "level", "in": ["undergraduate", "master's"]},
               "then": "show",
               "else": "skip"
             }
@@ -90,86 +90,87 @@
       }
     ],
     "skip_logic": {
-      "description": "根据前序回答跳过或追加问题",
+      "description": "Skip or add questions based on prior answers",
       "rules": [
-        "用户选「本科」→ 不问博士层级相关问题",
-        "用户选「短视频」→ 不问学术增量要求，但问平台和受众"
+        "If the user picks 'undergraduate', skip PhD-level questions",
+        "If the user picks 'short video', skip academic-increment questions, but ask about platform and audience"
       ]
     }
   }
 }
 ```
 
-### 2. tone_rules（语气规则）
+### 2. tone_rules (tone rules)
 
 ```json
 {
   "tone_rules": {
-    "base_tone": "严肃学术",
+    "base_tone": "academic",
     "allow_humor": false,
     "allow_informal": false,
     "tone_examples": [
-      "正确示例：该选题聚焦于用户行为层面，具有可验证的研究假设",
-      "错误示例：这个选题超有趣，绝对能火！"
+      "Good: this topic focuses on user behavior and has a testable research hypothesis",
+      "Bad: this topic is super fun and will definitely go viral!"
     ]
   }
 }
 ```
 
-三种基调参考：
-| 基调 | allow_humor | allow_informal | 适用场景 |
+Three reference tones:
+
+| Tone | allow_humor | allow_informal | When to use |
 |------|-------------|----------------|---------|
-| 严肃学术 | false | false | 论文、开题、学术汇报 |
-| 轻松玩梗 | true | true | 短视频、播客、自媒体 |
-| 商业正式 | false | true | 创业、产品方案、商业汇报 |
+| Academic | false | false | Papers, proposals, academic presentations |
+| Playful | true | true | Short videos, podcasts, self-media |
+| Formal | false | true | Startups, product plans, business reports |
 
-### 3. constraint_list（硬约束清单）
+### 3. constraint_list (hard constraints)
 
-该场景下选题**必须满足**的硬性条件，生成引擎会将其作为过滤条件。
+Hard conditions topic ideas **must satisfy** in this scene. The generation engine uses them as filters.
 
 ```json
 {
   "constraint_list": [
-    "必须有具体研究对象",
-    "必须有明确的问题（不是主题）",
-    "必须有可操作的研究方法",
-    "必须在用户能力 / 资源范围内",
-    "符合学术规范，可引用可证伪"
+    "Must have a concrete research object",
+    "Must have a clear question (not a theme)",
+    "Must have an actionable research method",
+    "Must be within the user's ability / resources",
+    "Must meet academic norms; citable and falsifiable"
   ]
 }
 ```
 
-### 4. exclusion_rules（排斥项）
+### 4. exclusion_rules (exclusions)
 
-该场景下应**主动规避**的方向，与全局黑名单（`bad_topic_blacklist.md`）叠加生效。
+Directions this scene should **actively avoid**, stacked with the global blacklist (`bad_topic_blacklist.md`).
 
 ```json
 {
   "exclusion_rules": [
-    "纯综述性选题（无增量贡献）",
-    "已被做烂的热门方向（饱和度 > 80%）",
-    "超出本科生能力范围的方向"
+    "Pure literature-review topics (no incremental contribution)",
+    "Overdone hot directions (saturation > 80%)",
+    "Directions beyond an undergraduate's ability"
   ]
 }
 ```
 
-### 5. output_format_adjustments（输出格式微调）
+### 5. output_format_adjustments (output format tweaks)
 
-不同场景的选题卡片可调整呈现方式，但四要素（具体问题 / 为什么适合你 / 三个切入角度 / 风险提醒）不可省略，只能追加额外字段。
+Topic cards per scene may adjust presentation, but the four elements (concrete question / why it fits you / three angles / risk notes) cannot be dropped. Only extra fields may be added.
 
 ```json
 {
   "output_format_adjustments": {
-    "title_format": "《{具体问题}——以{研究对象}为例》",
-    "extra_fields": ["建议篇幅", "参考文献类型要求"],
+    "title_format": "\"{concrete question} (case study of {research object})\"",
+    "extra_fields": ["suggested length", "reference-type requirements"],
     "suppress_fields": []
   }
 }
 ```
 
-## 新增场景流程
+## Adding a new scene
 
-1. 在 `assets/scene_profiles/` 下新建 `{scene_id}.json`
-2. 按本规范填写所有字段
-3. 在 `references/scene_configs.md` 的场景列表中追加一行
-4. 完成 — 无需改动 SKILL.md 或任何引擎逻辑
+1. Create `{scene_id}.json` under `assets/scene_profiles/`
+2. Fill in all fields per this spec
+3. Append one row to the scene list in `references/scene_configs.md`
+4. Done. No changes to SKILL.md or any engine logic.

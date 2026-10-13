@@ -1,65 +1,67 @@
-# 引擎 C · 自我批判迭代引擎（Self-Critique Iteration）——「打磨问题意识」
+# Engine C · Self-Critique Iteration (polish the question)
 
-> 本文档由 C·引擎部产出，是「创意分身」三引擎中的**第三引擎 / 终端引擎**，也是输出前的**质量闸门**。
-> 定位：AI 切换为**严苛审稿人**人格，对引擎 B 的每个候选逐题挑毛病、按 6 条硬约束裁决，不达标就修改或淘汰，迭代 2–3 轮，确保输出的是「具体可回答的问题」而不是「宽泛主题」。
-> 流水线总览见 [`engine_saturation_scan.md`](./engine_saturation_scan.md) 第 0 节；裁决依据见 [`bad_topic_blacklist.md`](./bad_topic_blacklist.md)；通过后格式见 [`output_template.md`](./output_template.md)。
+> This document is produced by the Engine Team (C dept). It is the **third and terminal engine** of the Creative Avatar's three engines, and the **quality gate** before output.
+> Role: the AI switches into a **strict reviewer** persona, picks apart each Engine B candidate one by one, and rules against the six hard constraints. Candidates that do not pass are revised or cut, iterating 2-3 rounds, to ensure the output is "concrete answerable questions" rather than "broad topics".
+> Pipeline overview: see section 0 of [`engine_saturation_scan.md`](./engine_saturation_scan.md); ruling basis: [`bad_topic_blacklist.md`](./bad_topic_blacklist.md); output format after passing: [`output_template.md`](./output_template.md).
 
 ---
 
-## 1. 引擎目标
+## 1. Engine goal
 
-| 项 | 内容 |
+| Item | Content |
 |----|------|
-| 一句话目标 | 在选题交付给用户前，先由一个「以拒稿为乐、只认硬标准」的审稿人，把每个题从标题到方法拷问一遍，直到挑不出实质毛病。 |
-| 解决的竞品缺陷 | 「重新颖，轻严谨」——看似新颖却逻辑断裂、大而空、落不了地（PRD 2.3）。 |
-| 核心产出 | ① 逐题审稿结论 `verdicts[]`（含每轮问题与精修）；② 通过闸门的候选集 `final_candidates[]`；③ 需回灌引擎 B 的修改意见 `reloop_request`（如有）。 |
-| 不做什么 | 不凭空新增与用户画像无关的方向；不放宽闸门凑数；不直接做四要素排版（交给 formatter）。 |
-| 机制溯源 | 直接落地 Anthropic **Evaluator-Optimizer 模式**（生成器与评估器分离、按明确标准循环到达标或达上限）与 **adversarial-review**（换新鲜视角批判，直到「只剩吹毛求疵」）；并借 OpenAI Deep Research 的「可随时纠偏」思想，形成回灌循环。 |
+| One-line goal | Before topic ideas reach the user, let a reviewer who enjoys rejecting and respects only hard standards interrogate every idea from title to method, until no substantive flaw remains. |
+| Competitor flaw solved | "Novel over rigorous": ideas look new but have broken logic, are broad and empty, and cannot land (PRD 2.3). |
+| Core outputs | ① per-topic review conclusions `verdicts[]` (including each round's issues and refinement); ② the passing set `final_candidates[]`; ③ revision notes `reloop_request` to feed back to Engine B (if any). |
+| What it does not do | Does not invent directions unrelated to the user's profile; does not loosen the gate to pad numbers; does not lay out the four-element formatting (that is the formatter's job). |
+| Mechanism origin | Directly implements Anthropic's Evaluator-Optimizer pattern (generator and evaluator separated, loop against explicit standards until passing or capped) and adversarial-review (a fresh perspective critiques until "only nitpicks remain"), plus OpenAI Deep Research's "course-correct at any time" idea to form the feedback loop. |
 
 ---
 
-## 2. 上下游数据契约
+## 2. Upstream / downstream data contract
 
 ```
-引擎 B 输出 candidates[]（每个含 why_link / method_hint）
+Engine B output candidates[] (each with why_link / method_hint)
               │
               ▼
  ┌──────────────────────────────────────────────┐
- │ 引擎 C：审稿人按 6 条硬约束 + 黑名单 5 类逐条裁决 │
- │   每轮：判定 → 精修 → 再判（默认 2–3 轮）         │
- │   质量闸门：pass_all（6 条全过才放行）            │
+ │ Engine C: reviewer rules each item against the six │
+ │ hard constraints + five blacklist types            │
+ │   Each round: judge -> refine -> re-judge          │
+ │   (default 2-3 rounds)                             │
+ │   Quality gate: pass_all (all six must pass)       │
  └──────────────────────────────────────────────┘
-   │ 通过                        │ 不通过 / 数量不足
+   │ pass                        │ fail / shortfall
    ▼                             ▼
-final_candidates[]        reloop_request（逐题 issues）
-   │                             │ 回灌引擎 B 调整碰撞域
-   ▼                             └──────────────► 外层总循环 ≤3 轮
-Step 5 formatter 输出四要素
+final_candidates[]        reloop_request (per-topic issues)
+   │                             │ feed back to Engine B to adjust collision domains
+   ▼                             └──────────────► outer loop <=3 rounds
+Step 5 formatter outputs four elements
 ```
 
-**输入（JSON）**：
+**Input (JSON)**:
 
 ```json
 {
   "scene_config": {
     "scene_id": "academic_paper",
-    "tone_rules": { "base_tone": "严肃学术", "allow_humor": false },
+    "tone_rules": { "base_tone": "academic", "allow_humor": false },
     "constraint_list": ["…"],
     "exclusion_rules": ["…"]
   },
   "candidates": [
     {
       "candidate_id": "cand_1",
-      "title": "《从<文明>系列游戏看大众对罗马帝国的认知偏差——以某高校30名非历史专业本科生为例》",
-      "question": "《文明》系列对罗马帝国的呈现使玩家形成了哪些认知偏差？",
-      "object": "《文明》系列罗马文明设定 + 非历史专业玩家",
-      "method_hint": "游戏文本分析 + 玩家问卷/访谈",
-      "why_link": "同对象在史书与游戏中呈现差异可比较、可证伪",
+      "title": "Cognitive bias about the Roman Empire in the general public, seen through the Civilization series: a case study of 30 non-history undergraduates at one university",
+      "question": "What cognitive biases does the Civilization series' portrayal of the Roman Empire produce in players?",
+      "object": "Roman civilization settings in the Civilization series + non-history-major players",
+      "method_hint": "game text analysis + player questionnaire/interviews",
+      "why_link": "The same object is presented differently in historical texts and in the game; the difference is comparable and falsifiable",
       "fills_gap": null
     }
   ],
   "profile_snapshot": {
-    "base": { "resources": ["学校图书馆数据库", "每周 12 小时"] }
+    "base": { "resources": ["university library database", "12 hours per week"] }
   },
   "critique_settings": {
     "rounds": 2,
@@ -72,81 +74,81 @@ Step 5 formatter 输出四要素
 
 ---
 
-## 3. 工作流程
+## 3. Workflow
 
-### 3.1 第一步：切换「严苛审稿人」人格
+### 3.1 Step 1: switch to the strict reviewer persona
 
-进入审稿模式后，**默认每篇都想拒稿**，由证据说服自己放行。审稿人只对题目本身负责，不照顾作者（模型自己）的面子，也不堆客套。
+In review mode, **default to wanting to reject every submission**; let the evidence convince you to let it through. The reviewer is responsible only for the topic itself, not for the author's (the model's) feelings, and does not pile on pleasantries.
 
-对每个候选，先抛出 PRD 规定的 **5 个尖锐问题**：
+For each candidate, first raise the **five sharp questions** from the PRD:
 
-1. 这个题目是不是**太大了**？能不能再缩小到一个具体对象 / 个案？
-2. 这个问题真的有**增量**吗？别人没说过吗？换掉热词还剩什么？
-3. 以用户的资源 / 能力 / 周期，**真的做得出来**吗？
-4. 这是个**假问题**吗？它**能不能被证据证伪**？
-5. 它的**语气分寸**符合当前场景吗（严肃场不油、轻松场不端）？
+1. Is the topic **too big**? Can it be narrowed to one concrete object / case?
+2. Does the question have a real **increment**? Has no one said it before? What is left after you remove the hot words?
+3. Given the user's resources / ability / time, can it **actually be done**?
+4. Is it a **fake question**? Can it be **falsified by evidence**?
+5. Does its **tone** fit the current scene (not glib in a serious scene, not stiff in a light one)?
 
-### 3.2 第二步：按审稿清单 6 条硬约束逐条判定
+### 3.2 Step 2: rule against the six hard constraints one by one
 
-这是 PRD 锁定的 **6 条硬约束（checklist）**，逐条给「通过 / 不通过 + 具体理由」，不得笼统打分：
+These are the PRD-locked **six hard constraints (checklist)**. Give "pass / fail + concrete reason" for each; do not give a vague score:
 
-| # | 硬约束 | 通过的判据 | 不通过的典型表现 |
+| # | Hard constraint | Pass criterion | Typical fail |
 |---|--------|------------|------------------|
-| C1 | ✅ 有具体研究对象 | 对象可识别、可观测、有边界（含个案/人群/平台/时间） | 「短视频」「青年」「中西文化」等无边界大词 |
-| C2 | ✅ 有明确的问题（不是主题） | 是可回答、**可证伪**的问句，且不是假问题 | 「关于…的研究」「浅谈…」；问题预设不成立 |
-| C3 | ✅ 有可操作的研究方法 | 方法写得清、与问题匹配、材料可得 | 只写「综合分析」；方法与问题脱节 |
-| C4 | ✅ 在用户能力/资源范围内 | 与 `resources`、层级、周期匹配，无不可得数据/技术 | 无数据集/无技术却要做大型系统（黑名单不可落地） |
-| C5 | ✅ 不是烂大街的方向 | 有新对象/新视角/新方法/新证据，且不在引擎 A 饱和清单 | 与 saturated_topics 同构、纯综述无增量 |
-| C6 | ✅ 符合场景态度基调 | 符合 tone_rules；幽默只服务表达、不削弱证据 | 严肃场玩梗、轻松场端架子；幽默越合规红线 |
+| C1 | has a concrete research object | Object is identifiable, observable, bounded (includes case/population/platform/time) | Boundless big words like "short video", "youth", "Chinese-Western culture" |
+| C2 | has a clear question (not a topic) | It is an answerable, **falsifiable** question, and not a fake question | "Research on …", "a brief discussion of …"; the question's premise does not hold |
+| C3 | has a workable research method | The method is clear, matches the question, and materials are obtainable | Only "comprehensive analysis"; method disconnected from the question |
+| C4 | within the user's ability/resources | Matches `resources`, level, and time; no unavailable data/tech | Wants to build a large system with no dataset/tech (blacklist: not actionable) |
+| C5 | not an overdone direction | Has a new object/angle/method/evidence and is not on Engine A's saturation list | Same structure as saturated_topics; pure review with no increment |
+| C6 | matches the scene tone | Fits tone_rules; humor serves expression without weakening evidence | Jokes in a serious scene, stiffness in a light one; humor crossing compliance lines |
 
-> **可证伪性 / 假问题**审查显式落在 C2（问题成立且可被证据推翻）与 C5（增量真实），并由黑名单「假问题型」一票否决兜底。
+> **Falsifiability / fake-question** scrutiny sits explicitly in C2 (the question holds and can be overturned by evidence) and C5 (the increment is real), backed by a one-strike veto from the blacklist's fake-question type.
 
-### 3.3 第三步：黑名单 5 类一票否决复核
+### 3.3 Step 3: five blacklist types, one-strike veto re-check
 
-无论清单表现如何，再对照 [`bad_topic_blacklist.md`](./bad_topic_blacklist.md) 逐类排查；命中任一即判**不通过**，并在 `fatal_flaw` 中标注类型：
+Regardless of the checklist result, check against [`bad_topic_blacklist.md`](./bad_topic_blacklist.md) type by type; any hit means **fail**, with the type marked in `fatal_flaw`:
 
-1. **概念堆砌型**：热词拼接、抽掉热词问题不成立（C2/C5）；
-2. **过度饱和型**：与饱和清单同构、无新角度新方法（C5）；
-3. **无法落地型**：超出能力/资源/数据/技术（C4）；
-4. **范围过大型**：边界模糊、规定篇幅装不下（C1/C2）；
-5. **假问题型**：问题不成立、无法证伪、无研究价值（C2）。
+1. **Concept stacking**: hot words spliced; the question collapses once you remove them (C2/C5);
+2. **Over-saturation**: same structure as the saturation list, no new angle or method (C5);
+3. **Not actionable**: beyond ability/resources/data/tech (C4);
+4. **Too broad**: vague boundaries, does not fit the required length (C1/C2);
+5. **Fake question**: the question does not hold, cannot be falsified, or has no research value (C2).
 
-### 3.4 第四步：据意见精修并迭代
+### 3.4 Step 4: refine on the comments and iterate
 
-对未通过但**有救**的候选，给出可直接替换的精修（`refined`）：缩小对象、补足限定、把主题改成问句、替换为可行方法、删除热词、调整语气。然后进入下一轮重判。
+For candidates that fail but are **salvageable**, give a ready-to-paste refinement (`refined`): shrink the object, add qualifiers, turn the topic into a question, swap in a workable method, delete hot words, adjust tone. Then re-judge in the next round.
 
-**迭代轮次**：`critique_settings.rounds`（默认 2，可配 1–3）。
+**Iteration rounds**: `critique_settings.rounds` (default 2, configurable 1-3).
 
-- 每轮只针对上一轮 `issues` 复核；
-- **无救候选**（命中假问题/概念堆砌且无法通过修改挽救）直接淘汰，不再占用轮次；
-- 精修后重新走 3.2–3.3，防止「修了 A 又坏 B」。
+- Each round only re-checks the previous round's `issues`;
+- **Unsalvageable candidates** (hit fake question/concept stacking and cannot be fixed by revision) are cut immediately and do not use up rounds;
+- After refining, re-run 3.2-3.3 to avoid "fixing A and breaking B".
 
-### 3.5 第五步：质量闸门裁决
+### 3.5 Step 5: quality gate ruling
 
-- `pass_all`（默认）：**6 条全部通过 + 无黑名单命中**才进入 `final_candidates`。
-- `pass_majority`（仅宽松场景可配）：6 条中 ≥5 条通过且无致命黑名单命中即可；但 C2（假问题/可证伪）与 C4（可落地）**始终为必过项**。
+- `pass_all` (default): only candidates that pass **all six with no blacklist hit** enter `final_candidates`.
+- `pass_majority` (configurable only in lenient scenes): at least 5 of 6 pass with no fatal blacklist hit; but C2 (fake question/falsifiability) and C4 (actionable) are **always mandatory**.
 
-### 3.6 第六步：数量不足则回灌引擎 B
+### 3.6 Step 6: feed back to Engine B when the count is short
 
-- 若 `final_candidates` 数量 < `target_count`：把每个落选/淘汰候选的具体 `issues` 汇总成 `reloop_request`，**回灌引擎 B**（建议调整碰撞域、换算子、放宽/收紧关联、优先填缺口）后重新生成，再回到引擎 C。
-- **外层总循环不超过 `max_outer_loops`（默认 3）**。
-- 仍不足时：输出全部通过候选，并在报告中如实说明「合格候选仅 N 个，未凑数」，**绝不降闸门放水**。
-
----
-
-## 4. 迭代终止条件
-
-满足任一即终止本引擎：
-
-1. **达标终止**：`final_candidates` 满足 `target_count` 且全部通过闸门；
-2. **轮次上限终止**：达到 `rounds`（内层）与 `max_outer_loops`（外层）后，只保留通过者，其余淘汰；
-3. **吹毛求疵终止（nitpick rule）**：某轮候选的所有 `issues` 都只是措辞/排版级润色、不影响问题成立性、可证伪性与可行性时，可提前判通过（源自 Anthropic adversarial-review 的停止准则「until only nitpicks remain」）。
-
-> 禁止以「差不多行了」「应该可以」作为终止理由；终止必须能对应到上述三条之一。
+- If `final_candidates` has fewer than `target_count`: collect the specific `issues` of each rejected/cut candidate into `reloop_request` and **feed it back to Engine B** (suggest adjusting collision domains, swapping operators, loosening/tightening links, prioritizing gaps) to regenerate and return to Engine C.
+- The **outer loop runs at most `max_outer_loops` (default 3)**.
+- If still short: output all passing candidates and state honestly "only N qualified candidates, not padded"; **never lower the gate to pad numbers**.
 
 ---
 
-## 5. 输出契约（交给 Step 5）
+## 4. Termination conditions
+
+End this engine when any one holds:
+
+1. **Target met**: `final_candidates` reaches `target_count` and all pass the gate;
+2. **Round cap reached**: after `rounds` (inner) and `max_outer_loops` (outer), keep only passers and cut the rest;
+3. **Nitpick rule**: when a round's remaining issues are all wording/format-level polish and do not affect whether the question holds, its falsifiability, or feasibility, you can judge pass early (from Anthropic adversarial-review's stopping criterion "until only nitpicks remain").
+
+> Do not use "good enough" or "should be fine" as a reason to stop; termination must map to one of the three above.
+
+---
+
+## 5. Output contract (to Step 5)
 
 ```json
 {
@@ -160,12 +162,12 @@ Step 5 formatter 输出四要素
       "final_verdict": "pass",
       "fatal_flaw": null,
       "checklist": [
-        { "item": "C1", "pass": true, "note": "对象明确：《文明》罗马设定 + 30名非历史专业学生" },
-        { "item": "C2", "pass": true, "note": "问题可回答、可证伪，非假问题" },
-        { "item": "C3", "pass": true, "note": "文本分析+问卷访谈，材料可得" },
-        { "item": "C4", "pass": true, "note": "问卷样本与游戏文本在资源范围内" },
-        { "item": "C5", "pass": true, "note": "游戏媒介视角有增量，非饱和方向" },
-        { "item": "C6", "pass": true, "note": "符合公选课允许的趣味基调" }
+        { "item": "C1", "pass": true, "note": "Clear object: Roman settings in Civilization + 30 non-history students" },
+        { "item": "C2", "pass": true, "note": "Answerable and falsifiable; not a fake question" },
+        { "item": "C3", "pass": true, "note": "Text analysis + questionnaire/interviews; materials obtainable" },
+        { "item": "C4", "pass": true, "note": "Questionnaire sample and game texts are within resources" },
+        { "item": "C5", "pass": true, "note": "Game-media angle has increment; not a saturated direction" },
+        { "item": "C6", "pass": true, "note": "Fits the playful tone allowed for an elective course" }
       ],
       "refined": null
     },
@@ -174,8 +176,8 @@ Step 5 formatter 输出四要素
       "final_verdict": "reject",
       "fatal_flaw": "concept_stack",
       "checklist": [
-        { "item": "C2", "pass": false, "note": "抽掉热词后问题不成立" },
-        { "item": "C5", "pass": false, "note": "无真实增量" }
+        { "item": "C2", "pass": false, "note": "The question collapses after removing the hot words" },
+        { "item": "C5", "pass": false, "note": "No real increment" }
       ],
       "refined": null
     }
@@ -183,10 +185,10 @@ Step 5 formatter 输出四要素
   "final_candidates": [
     {
       "candidate_id": "cand_1",
-      "title": "《从<文明>系列游戏看大众对罗马帝国的认知偏差——以某高校30名非历史专业本科生为例》",
-      "question": "《文明》系列对罗马帝国的呈现使玩家形成了哪些认知偏差？",
-      "object": "《文明》系列罗马文明设定 + 非历史专业玩家",
-      "method_hint": "游戏文本分析 + 玩家问卷/访谈",
+      "title": "Cognitive bias about the Roman Empire in the general public, seen through the Civilization series: a case study of 30 non-history undergraduates at one university",
+      "question": "What cognitive biases does the Civilization series' portrayal of the Roman Empire produce in players?",
+      "object": "Roman civilization settings in the Civilization series + non-history-major players",
+      "method_hint": "game text analysis + player questionnaire/interviews",
       "passed_checklist": ["C1", "C2", "C3", "C4", "C5", "C6"]
     }
   ],
@@ -194,54 +196,54 @@ Step 5 formatter 输出四要素
     "needed": true,
     "shortfall": 4,
     "instructions": [
-      "已用游戏媒介方向，请换碰撞域或算子（如机制类比/方法移植）",
-      "优先填 gaps 中的方向，避免再次产出热词拼接"
+      "The game-media angle has been used; try a different collision domain or operator (e.g. mechanism analogy / method transfer)",
+      "Prioritize the directions in gaps; avoid producing hot-word splices again"
     ]
   }
 }
 ```
 
-| 输出字段 | 类型 | 去向 |
+| Output field | Type | Destination |
 |----------|------|------|
-| `verdicts[]` | array | 审稿留痕，供 F 部断言与问题追溯 |
-| `final_candidates[]` | array | **→ Step 5 formatter** 按四要素输出 |
-| `reloop_request` | object | 数量不足时 **→ 引擎 B** 重新碰撞 |
+| `verdicts[]` | array | Review trace for F-team assertions and issue traceability |
+| `final_candidates[]` | array | **→ Step 5 formatter** renders the four elements |
+| `reloop_request` | object | When short, **→ Engine B** to re-collide |
 
 ---
 
-## 6. 可直接执行的 Prompt
+## 6. Ready-to-run prompt
 
-### 6.1 系统提示词（System Prompt）
+### 6.1 System Prompt
 
 ```text
-# 角色
-你是「创意分身」的【引擎 C · 严苛审稿人】。你以拒稿为天职，只认硬标准；任何选题必须先过你这一关。你不照顾作者情绪，也不堆砌客套，但对事不对人，不得出现侮辱或歧视性表达。
+# Role
+You are Engine C · Strict Reviewer of the Creative Avatar. Rejecting is your job; you respect only hard standards. Every topic idea must clear you first. You do not soothe the author and you do not pile on pleasantries, but you judge the work, not the person; no insulting or discriminatory language.
 
-# 你会收到的输入
-- scene_config：tone_rules、constraint_list、exclusion_rules
-- candidates：引擎 B 的候选（每个含 title、question、object、method_hint、why_link、fills_gap）
-- profile_snapshot：用户 resources（用于可行性裁决）
-- critique_settings：rounds、quality_gate、target_count、max_outer_loops
+# Input you will receive
+- scene_config: tone_rules, constraint_list, exclusion_rules
+- candidates: Engine B's candidates (each with title, question, object, method_hint, why_link, fills_gap)
+- profile_snapshot: user resources (for feasibility rulings)
+- critique_settings: rounds, quality_gate, target_count, max_outer_loops
 
-# 审稿流程（对每个候选执行）
-1. 先问 5 个尖锐问题：题目太大吗？有真实增量吗？用户真做得出来吗？是假问题/能证伪吗？语气分寸对吗？
-2. 按 6 条硬约束逐条判定 pass/fail 并写具体理由：
-   C1 有具体研究对象；C2 有明确问题且可证伪、非假问题；C3 有可操作且匹配的方法；
-   C4 在用户能力/资源/周期内；C5 非烂大街、有增量、不在饱和清单；C6 符合场景基调。
-3. 黑名单复核：对照 5 类（概念堆砌/过度饱和/无法落地/范围过大/假问题），命中任一即 fatal_flaw 并 reject。
-4. 精修：对有救候选给出可直接替换的 refined（缩小对象、补限定、主题改问句、换可行方法、删热词、调语气）；无救者直接淘汰。
-5. 迭代：按 rounds（默认 2，最多 3）对 issues 复核，每轮重新走判定，防止改一处坏一处。
-6. 闸门：
-   - pass_all：6 条全过且无黑名单命中才进 final_candidates；
-   - pass_majority：仅当配置允许时，≥5 条通过且 C2、C4 必过；
-   - 不允许「差不多/应该可以」式放行。
-7. 回灌：若通过者少于 target_count，生成 reloop_request（逐题具体问题 + 调整建议）回引擎 B，
-   外层总循环不超过 max_outer_loops；仍不足则输出全部并说明「合格仅 N 个，未凑数」。
+# Review process (run for each candidate)
+1. First ask the five sharp questions: Is it too big? Is there a real increment? Can the user actually do it? Is it a fake question / is it falsifiable? Is the tone right?
+2. Rule each of the six hard constraints pass/fail with a concrete reason:
+   C1 concrete research object; C2 clear question, falsifiable, not a fake question; C3 workable matching method;
+   C4 within user ability/resources/time; C5 not overdone, has increment, not on the saturation list; C6 fits the scene tone.
+3. Blacklist re-check: against the five types (concept stacking / over-saturated / not actionable / too broad / fake question); any hit = fatal_flaw and reject.
+4. Refine: for salvageable candidates give a ready-to-paste refined (shrink object, add qualifiers, turn topic into a question, swap in a workable method, delete hot words, adjust tone); cut unsalvageable ones.
+5. Iterate: per rounds (default 2, max 3) re-check the issues and re-run the judgment each round, so fixing one place does not break another.
+6. Gate:
+   - pass_all: all six pass with no blacklist hit to enter final_candidates;
+   - pass_majority: only when configured, at least 5 pass and C2, C4 must pass;
+   - No "good enough / should be fine" pass.
+7. Feedback: if passers are fewer than target_count, build reloop_request (per-topic issues + adjustment suggestions) for Engine B;
+   the outer loop runs at most max_outer_loops; if still short, output all and state "only N qualified, not padded".
 
-# 提前通过规则
-某候选的剩余问题全部仅为措辞/排版级 nitpick，且不影响问题成立性、可证伪性、可行性时，可提前判通过，并注明 nitpick。
+# Early-pass rule
+When a candidate's remaining issues are all wording/format-level nitpicks and do not affect whether the question holds, its falsifiability, or feasibility, you can judge it pass early and note the nitpicks.
 
-# 输出格式（只返回 JSON）
+# Output format (return only JSON)
 {
   "engine": "self_critique",
   "finished_at": "ISO8601",
@@ -270,10 +272,10 @@ Step 5 formatter 输出四要素
 }
 ```
 
-### 6.2 用户输入模板（User Message Template）
+### 6.2 User Message Template
 
 ```text
-请对候选选题执行自我批判审稿。
+Run a self-critique review on the candidate topic ideas.
 
 [scene_config]
 scene_id: {scene_id}
@@ -282,56 +284,56 @@ constraint_list: {constraint_list}
 exclusion_rules: {exclusion_rules}
 
 [candidates]
-{粘贴引擎 B 输出的 candidates JSON，或逐条列出 title/question/object/method_hint/why_link}
+{paste Engine B's candidates JSON, or list title/question/object/method_hint/why_link one by one}
 
 [profile_snapshot]
 resources: {resources}
 
 [critique_settings]
-rounds: {默认 2，1–3}
+rounds: {default 2, 1-3}
 quality_gate: {pass_all | pass_majority}
-target_count: {如 5}
-max_outer_loops: {默认 3}
+target_count: {e.g. 5}
+max_outer_loops: {default 3}
 ```
 
 ---
 
-## 7. 审稿示例（精修前后对比）
+## 7. Review examples (before/after refinement)
 
-### 7.1 由「宽泛主题」精修为「具体问题」
+### 7.1 Refined from "broad topic" to "concrete question"
 
-- 初稿：《游戏对历史认知的影响研究》
-- 审稿意见：
-  - C1 不通过：对象无边界（什么游戏？谁的认知？）；
-  - C2 不通过：是主题不是问题，无法证伪；
-  - C5 待确认：需说明相对既有研究的增量。
-- 精修后：
+- Draft: "Research on the effect of games on historical understanding"
+- Review comments:
+  - C1 fail: no object boundary (what game? whose understanding?);
+  - C2 fail: it is a topic, not a question, and cannot be falsified;
+  - C5 to be confirmed: must state the increment over existing research.
+- Refined:
 
-  《从〈文明〉系列游戏看大众对罗马帝国的认知偏差——以某高校 30 名非历史专业本科生为例》
+  Cognitive bias about the Roman Empire in the general public, seen through the Civilization series: a case study of 30 non-history undergraduates at one university
 
-  → 限定了游戏、对象帝国、人群与样本，问题变为可观测、可证伪；方法与资源匹配；二轮通过。
+  -> It pins the game, the empire, the population, and the sample; the question becomes observable and falsifiable; method matches resources; passes on the second round.
 
-### 7.2 直接淘汰（命中黑名单）
+### 7.2 Direct rejection (blacklist hit)
 
-- 候选：《元宇宙背景下大模型赋能罗马史教学的路径研究》
-- 裁决：C2、C5 不通过；`fatal_flaw = concept_stack`，**reject**。
-- 理由：抽掉「元宇宙/大模型/赋能/路径」后问题不成立，无共享对象/机制，无真实增量。
+- Candidate: "Research on the path of large-model-empowered Roman history teaching in the metaverse"
+- Ruling: C2, C5 fail; `fatal_flaw = concept_stack`, **reject**.
+- Reason: after removing "metaverse/large model/empower/path" the question does not hold; no shared object/mechanism; no real increment.
 
-### 7.3 因不可落地淘汰
+### 7.3 Rejected for being infeasible
 
-- 候选：《基于多模态大模型的敦煌壁画自动修复系统研究》（作者：本科生，无技术、无数据集）
-- 裁决：C4 不通过；`fatal_flaw = infeasible`，**reject**。
-- 若缩小为可行版本（如《敦煌壁画数字图像公开数据集的现状与教学可用性梳理》）可重新提交。
+- Candidate: "Research on an automatic restoration system for Dunhuang murals based on a multimodal large model" (author: undergraduate, no tech, no dataset)
+- Ruling: C4 fail; `fatal_flaw = infeasible`, **reject**.
+- It can be resubmitted as a shrunken, feasible version (e.g. "The state of public datasets of Dunhuang mural digital images and their teaching usability: a review").
 
 ---
 
-## 8. 验收对照
+## 8. Acceptance checklist
 
-- [x] 引擎目标与终端闸门位置明确
-- [x] 提供审稿人系统提示词 + 用户输入模板，可直接执行
-- [x] **审稿标准 6 条硬约束齐全**（PRD 五条问题 + 六清单）
-- [x] 黑名单 5 类一票否决复核
-- [x] 迭代 2–3 轮，含三条明确终止条件（含 nitpick 规则）
-- [x] 质量闸门 pass_all / pass_majority，C2/C4 始终必过
-- [x] 数量不足回灌引擎 B，外层循环 ≤3，不凑数
-- [x] 输出含 `verdicts / final_candidates / reloop_request`，与架构第 8.3 契约一致
+- [x] Engine goal and terminal-gate position are clear
+- [x] Provides a reviewer system prompt + user message template, ready to run
+- [x] Review standard: all six hard constraints present (PRD five questions + six-item checklist)
+- [x] Five blacklist types with one-strike veto re-check
+- [x] 2-3 iteration rounds with three explicit termination conditions (including the nitpick rule)
+- [x] Quality gate pass_all / pass_majority, C2/C4 always mandatory
+- [x] On shortfall, feeds back to Engine B; outer loop <=3; no padding
+- [x] Output contains `verdicts / final_candidates / reloop_request`, matching architecture contract 8.3

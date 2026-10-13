@@ -1,195 +1,195 @@
-# 选题输出模板（Output Template）
+# Topic Output Template
 
-> 本文档由 C·引擎部产出，是「创意分身」Step 5 输出的**统一格式标准**。
-> 凡通过引擎 C 闸门的候选，必须由 formatter 渲染成**四要素选题卡片**；四要素缺一不可，只允许按场景追加字段，不允许删减。
-> 质量闸门见 [`engine_self_critique.md`](./engine_self_critique.md)；规避标准见 [`bad_topic_blacklist.md`](./bad_topic_blacklist.md)；场景微调字段见各场景配置 `output_format_adjustments`。
+> This document is produced by Team C (Engines). It is the **unified format standard** for Step 5 output in Creative Avatar.
+> Every candidate that passes the Engine C gate must be rendered by the formatter as a **four-element topic card**. All four elements are required; a scene may only add fields, never remove them.
+> The quality gate is in [`engine_self_critique.md`](./engine_self_critique.md). The avoidance standard is in [`bad_topic_blacklist.md`](./bad_topic_blacklist.md). Scene-specific tweak fields live in each scene profile under `output_format_adjustments`.
 
 ---
 
-## 1. 标准四要素模板（填空骨架）
+## 1. Standard four-element template (fill-in skeleton)
 
 ```text
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-选题 {序号}
-【选题标题】
-《{具体的研究问题}——以{具体对象}为例 / 基于{具体视角}》
+Topic {number}
+[Topic title]
+"{concrete research question} (case study of {concrete object} / from {concrete angle})"
 
-【为什么适合你】
-这个选题匹配你画像中的：
-· {背景/专业条目} —— {如何被用到}
-· {兴趣条目} —— {如何被用到}
-· {偏好/基调条目} —— {如何被用到}
-（每条都必须引用画像中真实存在的条目；画像没有的不得编造）
+[Why it fits you]
+This topic matches the following entries in your profile:
+- {background / major entry} — how it is used
+- {interest entry} — how it is used
+- {preference / tone entry} — how it is used
+(Each line must cite an entry that actually exists in the profile. Do not invent entries that are not there.)
 
-【三个切入角度】
-1. 切入点 A：{可直接动手的具体路径}
-2. 切入点 B：{可直接动手的具体路径}
-3. 切入点 C：{可直接动手的具体路径}
+[Three angles to approach it]
+1. Angle A: {concrete, ready-to-use path}
+2. Angle B: {concrete, ready-to-use path}
+3. Angle C: {concrete, ready-to-use path}
 
-【风险提醒】
-· 可行性风险：{数据/渠道/资源是否拿得到，拿不到怎么办}
-· 难度提醒：{最卡壳的环节、需要的方法门槛、大致耗时}
-· 伦理/合规提醒：{如涉及人类受试者、隐私、版权、广告法、平台规则；无则写「暂无」}
+[Risk notes]
+- Feasibility risk: {whether data / channels / resources are available; fallback if not}
+- Difficulty note: {the hardest step, method barrier, rough time needed}
+- Ethics / compliance note: {if it involves human subjects, privacy, copyright, ad law, or platform rules; write "none" otherwise}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
-**四要素的硬性要求**：
+**Hard requirements for the four elements**:
 
-| 要素 | 必须做到 | 常见不合格 |
+| Element | Must do | Common failures |
 |------|----------|------------|
-| ① 选题标题 | 是**具体问题**（含对象 + 限定词），句式可回答、可证伪 | 宽泛主题、热词堆砌、只有领域名 |
-| ② 为什么适合你 | 引用画像**具体条目**，并说明如何被使用 | 只写「很适合你」却无依据；编造画像 |
-| ③ 三个切入角度 | 三条都是**可直接动手**的不同路径，不重复 | 三条同义反复；只写方向不写怎么做 |
-| ④ 风险提醒 | 覆盖可行性 / 难度 / 伦理合规，务实不敷衍 | 只写「难度不大，注意时间」；回避真问题 |
+| (1) Topic title | A **concrete question** (with object + qualifier); the sentence can be answered and falsified | Vague theme, buzzword stacking, only a field name |
+| (2) Why it fits you | Cite **specific profile entries** and explain how each is used | Only says "fits you well" with no basis; invents profile entries |
+| (3) Three angles | Three **different, ready-to-use** paths, no repetition | Three lines saying the same thing; only direction, no how-to |
+| (4) Risk notes | Covers feasibility / difficulty / ethics-compliance; concrete, not perfunctory | Only writes "not hard, watch the time"; dodges real issues |
 
 ---
 
-## 2. 各要素填写规范
+## 2. How to fill in each element
 
-### 2.1 选题标题
+### 2.1 Topic title
 
-- 结构：`《{具体问题}——{限定结构}》`，限定结构常用「以 X 为例 / 基于 X 视角 / 基于 X 方法」。
-- 必须出现：**具体对象**（作品/账号/人群/个案）+ 至少一个限定词（时间/地域/平台/人群）。
-- 轻松场景可把钩子前置，如短视频：`「{钩子文案}」{标题}`（见场景配置）。
+- Structure: `"{concrete question} — {qualifier structure}"`, usually "case study of X / from the X angle / using the X method".
+- Must include: a **concrete object** (work / account / population / case) plus at least one qualifier (time / region / platform / population).
+- Playful scenes may put the hook first. For short video: `"{hook copy}" "{title}"` (see the scene profile).
 
-### 2.2 为什么适合你
+### 2.2 Why it fits you
 
-- 用「**画像条目 → 如何被用到**」的成对写法，至少 2 条；
-- 优先引用 `base.backgrounds / interests / resources` 与 `preferences`；
-- 遵循「当前请求优先、显式优先」（与画像规则一致）；画像中没有的，**不得为了凑匹配而虚构**。
+- Use a paired "**profile entry → how it is used**" format; at least 2 lines.
+- Prefer citing `base.backgrounds / interests / resources` and `preferences`.
+- Follow "current request first, explicit first" (consistent with profile rules). Do **not** invent entries just to force a match.
 
-### 2.3 三个切入角度
+### 2.3 Three angles to approach it
 
-- 三条路径要**互不重叠**，建议分别从「材料/数据切入」「理论/视角切入」「方法/对照切入」展开；
-- 每条写清「先做什么、看什么」，让用户能直接起步；
-- 轻松场景可把其中一条写成「爆点/梗」角度，但仍须可执行。
+- The three paths must **not overlap**. Suggested split: "material / data angle", "theory / angle angle", "method / comparison angle".
+- Each line says what to do first and what to look at, so the user can start immediately.
+- Playful scenes may write one angle as a "viral / meme" angle, but it must still be executable.
 
-### 2.4 风险提醒
+### 2.4 Risk notes
 
-- **可行性**：明确关键数据/样本/渠道是否可得，给出替代方案；
-- **难度**：指出最难的一环与所需方法门槛，给出大致工作量；
-- **伦理/合规**：人类受试者与知情同意、隐私与版权、广告法与平台规则；不涉及时写「暂无」，不得省略该栏。
+- **Feasibility**: state clearly whether the key data / sample / channel is available; give a fallback.
+- **Difficulty**: point out the hardest step and the method barrier; give a rough workload.
+- **Ethics / compliance**: human subjects and informed consent, privacy and copyright, ad law and platform rules. If none apply, write "none". This row must not be omitted.
 
 ---
 
-## 3. 场景微调规则
+## 3. Scene tweak rules
 
-- 四要素对所有场景**不可省略**；场景配置只能通过 `output_format_adjustments` 追加字段（`extra_fields`）或调整标题格式（`title_format`）。
-- 追加字段统一放在四要素之后，以「【场景补充】」小节呈现。
+- The four elements **cannot be omitted** in any scene. A scene profile may only add fields via `output_format_adjustments` (`extra_fields`) or adjust the title format (`title_format`).
+- Added fields go after the four elements, under a "[Scene add-ons]" section.
 
-| 场景 | 标题格式示例 | 常见追加字段 |
+| Scene | Title format example | Common added fields |
 |------|--------------|--------------|
-| 学术论文 | `《{问题}——以{对象}为例》` | 建议篇幅、建议研究方法、关键词与检索数据库、伦理审查要求 |
-| 短视频 | `「{钩子文案}」{标题}` | 前 3 秒钩子、建议时长、拍摄形式、标签与封面建议 |
-| 创业方向 | `《{问题}——基于{场景}的验证》` | MVP 验证路径、关键假设、最小成本估算 |
-| PPT 汇报 | `《{问题}——{对象}》` | 建议时长、核心论点、建议页数 |
-| 公众号 | `《{问题}》` | 建议字数、封面/标题方向、目标读者 |
+| Academic paper | `"{question} (case study of {object})"` | Suggested length, suggested method, keywords and databases to search, ethics review requirements |
+| Short video | `"{hook copy}" "{title}"` | First-3-second hook, suggested duration, shooting format, tags and cover suggestions |
+| Startup direction | `"{question} — validation based on {scenario}"` | MVP validation path, key assumptions, minimum-cost estimate |
+| PPT presentation | `"{question} — {object}"` | Suggested duration, core argument, suggested slide count |
+| WeChat article | `"{question}"` | Suggested word count, cover / title direction, target reader |
 
-> 其他场景（活动策划、播客、课程设计、采访提纲等）同样遵循「四要素 + 场景补充」。
+> Other scenes (event planning, podcast, course design, interview outline, etc.) follow the same "four elements + scene add-ons" rule.
 
 ---
 
-## 4. 完整示例 A（严肃学术场景）
+## 4. Full example A (academic scene)
 
-> 场景：`academic_paper`；用户画像：历史学本科生，兴趣电子游戏，公选课作业，允许少量趣味，方法须严谨。
+> Scene: `academic_paper`. User profile: history undergrad, interested in video games, general-education assignment, allows a little playfulness, method must be rigorous.
 
 ```text
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-选题 1
-【选题标题】
-《从〈文明〉系列游戏看大众对罗马帝国的认知偏差——以某高校 30 名非历史专业本科生为例》
+Topic 1
+[Topic title]
+"Public cognitive bias about the Roman Empire as seen in the Civilization series: a case study of 30 non-history undergraduates at one university"
 
-【为什么适合你】
-· 历史学（本科）背景 —— 你能提供史书与学界关于罗马帝国的「基准叙事」，作为判断偏差的参照。
-· 兴趣：电子游戏（《文明》系列）—— 你熟悉游戏机制，能准确拆解其中罗马文明的设定。
-· 公选课 + 允许少量趣味的基调 —— 题目自带网感、课堂呈现讨喜，但论证仍可保持严谨。
-· 资源：学校图书馆数据库、每周约 12 小时 —— 足够支撑文本分析与小样本问卷。
+[Why it fits you]
+- History (undergraduate) background — you can provide the baseline narrative from historical records and scholarship on the Roman Empire, as a reference for judging bias.
+- Interest: video games (Civilization series) — you know the game mechanics and can break down how the Roman civilization is designed.
+- General-education course + tone that allows a little playfulness — the title has a casual, web-native feel and reads well in class, while the argument can stay rigorous.
+- Resources: university library databases, about 12 hours per week — enough for text analysis and a small-sample questionnaire.
 
-【三个切入角度】
-1. 材料/设定切入：逐一提取《文明 VI》中罗马文明的科技树、政体、领袖与奇观设定，
-   标记其对「罗马兴衰」的简化与戏剧化处理（如把复杂的制度变迁压缩成线性科技进度）。
-2. 认知/受众切入：对 30 名非历史专业玩家做问卷 + 5 人访谈，
-   测量他们在玩游戏前后对「罗马衰亡原因」「奴隶制与军团」等问题的认知，归纳偏差类型。
-3. 对照/视角切入：把游戏叙事与 2–3 部权威罗马史通史叙述对读，
-   提炼「天命扩张」「技术决定论」「伟人史观」等游戏植入的认知框架，并分析其来源。
+[Three angles to approach it]
+1. Material / design angle: extract the tech tree, government, leader, and wonder designs for Rome in Civilization VI one by one,
+   and mark where they simplify or dramatize "Rome's rise and fall" (for example, compressing complex institutional change into a linear tech progression).
+2. Cognition / audience angle: run a questionnaire plus 5 interviews with 30 non-history players,
+   measure how their views on "causes of Rome's fall", "slavery and the legions", etc. change before and after playing, and classify the bias types.
+3. Comparison / angle angle: read the game narrative alongside 2-3 authoritative Roman-history surveys,
+   extract cognitive frames the game implants (manifest destiny, technological determinism, great-man history), and analyze where they come from.
 
-【风险提醒】
-· 可行性风险：玩家样本需控制「此前是否系统学过罗马史」，否则难以归因；
-   可在同一高校公选课课堂发放问卷，样本不足时扩大到相邻两校。
-· 难度提醒：难点在把「认知偏差」操作化为可编码、可比较的题项，
-   需要先做一轮小规模预访谈并设计编码表；预计 4–6 周。
-· 伦理/合规提醒：问卷涉及人类受试者，需匿名、知情同意并可随时退出；
-   游戏截图与设定引用注意版权，仅作教学/学术评论性使用。
+[Risk notes]
+- Feasibility risk: the player sample must control for "whether they have formally studied Roman history before", otherwise attribution is hard;
+  you can run the questionnaire in a general-ed class at the same university and, if the sample is small, expand to two neighboring schools.
+- Difficulty note: the hard part is operationalizing "cognitive bias" into codeable, comparable items;
+  run a small pilot interview first and design a coding sheet. Estimated 4-6 weeks.
+- Ethics / compliance note: the questionnaire involves human subjects; anonymize, get informed consent, and allow withdrawal at any time.
+  Game screenshots and design references must respect copyright and be used only for teaching / academic commentary.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
 ---
 
-## 5. 完整示例 B（轻松玩梗场景）
+## 5. Full example B (playful scene)
 
-> 场景：`short_video`；用户画像：大学生知识区冷启动、一人一部手机、抖音 60 秒内、目标涨粉、偏好反常识钩子。
+> Scene: `short_video`. User profile: college student starting a knowledge channel cold, one person with one phone, under 60 seconds on Douyin, goal is follower growth, prefers counter-intuitive hooks.
 
 ```text
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-选题 1
-【选题标题】
-「你以为的『笨办法』，其实是学霸的隐藏外挂」
-为什么背书越努力反而记越慢？
+Topic 1
+[Topic title]
+"The 'dumb method' you think is actually the hidden cheat code of top students"
+Why does harder rote memorization lead to slower recall?
 
-【为什么适合你】
-· 大学生知识区定位 —— 学习方法是你的目标受众（大学生）最刚需、最易共鸣的话题。
-· 冷启动 + 一人一部手机 —— 真人口播即可完成，不需要道具、团队或外景。
-· 偏好反常识钩子 —— 「越努力越慢」直接制造认知冲突，契合你的钩子风格。
-· 60 秒、抖音竖屏 —— 全片只讲一个反常识观点，时长刚好装下。
+[Why it fits you]
+- College-student knowledge-channel positioning — study methods are the most needed, most relatable topic for your target audience (college students).
+- Cold start + one person with one phone — a talking-head shoot is enough; no props, team, or location needed.
+- Prefers counter-intuitive hooks — "the harder you try, the slower you get" creates immediate cognitive conflict and fits your hook style.
+- 60 seconds, Douyin vertical screen — the whole video makes one counter-intuitive point, and the length fits.
 
-【三个切入角度】
-1. 反常识开场：先抛「连续抄 10 遍，不如主动回忆 2 遍」，用「测试效应」一句话点破。
-2. 场景演示：对着镜头演两种背书方式（反复阅读 vs 合上书记），
-   让观众一眼看到差别，顺手给出今晚就能用的 3 步做法。
-3. 评论区互动：结尾抛问题「你是『默读党』还是『默写党』」，引导评论站队，
-   把高赞评论做成下一期选题。
+[Three angles to approach it]
+1. Counter-intuitive opening: lead with "copying 10 times by hand is worse than active recall twice", and name it in one line as the testing effect.
+2. Live demo: act out two memorization methods on camera (re-reading vs closing the book and recalling),
+   so viewers see the difference at once, and give a 3-step method they can use tonight.
+3. Comment interaction: end with a question, "are you the silent-reading type or the writing-it-out type?",
+   push viewers to take sides in the comments, and turn the top comment into next week's topic.
 
-【风险提醒】
-· 可行性风险：观点需有依据（可引用「测试效应/检索练习」的常识性结论），
-   避免把个别经验说成绝对真理；口播给出适用前提。
-· 难度提醒：60 秒内只讲一个点，最容易犯的错是想塞太多方法；
-   先用一句话写清「观众看完能记住什么」。
-· 伦理/合规提醒：不制造焦虑、不贬低任何学习方式、不承诺「必上名校」等效果，
-   避免虚假宣传与引战；不使用无授权素材。
+[Risk notes]
+- Feasibility risk: the point needs backing (cite the common finding on the testing effect / retrieval practice);
+  do not present personal experience as an absolute truth. State the preconditions in the talking head.
+- Difficulty note: in 60 seconds, only one point can be made; the most common mistake is trying to pack in too many methods.
+  Write down in one line "what viewers should remember after watching".
+- Ethics / compliance note: do not manufacture anxiety, do not put down any study method, do not promise "guaranteed admission to a top school";
+  avoid false advertising and fight-baiting. Do not use unlicensed material.
 
-【场景补充】
-· 前 3 秒钩子：「停！书还在一遍遍地念？你可能正在『假努力』。」
-· 建议时长：45–60 秒
-· 拍摄形式：真人口播 + 一处学习场景空镜
-· 标签与封面建议：#学习方法 #大学生 #背书；封面大字「越背越慢？」
+[Scene add-ons]
+- First-3-second hook: "Stop! Still reading the same page over and over? You might be 'fake-working'."
+- Suggested duration: 45-60 seconds
+- Shooting format: talking head + one cutaway of a study scene
+- Tags and cover suggestions: #study methods #college students #memorization; cover headline "slower the more you memorize?"
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
 ---
 
-## 6. 输出组织规范（一批 N 个选题时）
+## 6. Output organization (a batch of N topic ideas)
 
-1. **数量**：按场景配置 `output.count`（默认 5）输出；合格数量不足时输出全部并说明，不凑数。
-2. **排序**：按 `output.sort_by`（`relevance` 相关度 / `novelty` 新颖度 / `feasibility` 可行性）排序；默认按相关度。
-3. **编号**：整批选题统一编号（选题 1…N），卡片之间用分隔线区隔。
-4. **开头一句话**：给用户一句「这批选题围绕什么、和上一批有何不同」，不超过 2 句。
-5. **结尾给反馈入口**：提示用户可回复「这个有意思 / 换一批 / 方向偏了」，并可指定某个选题继续深化（对应 Step 6）。
-6. **AI 标注与免责声明**（整批末尾固定附）：
+1. **Count**: follow the scene profile `output.count` (default 5). If fewer pass, output all of them and say so; do not pad.
+2. **Order**: sort by `output.sort_by` (`relevance` / `novelty` / `feasibility`). Default is relevance.
+3. **Numbering**: number the whole batch (Topic 1...N) and separate cards with a divider.
+4. **Opening line**: one sentence on what this batch is about and how it differs from the last batch, at most 2 sentences.
+5. **Feedback entry at the end**: tell the user they can reply "interesting / give me a new batch / off track", and can pick one topic to go deeper (maps to Step 6).
+6. **AI label and disclaimer** (fixed at the end of every batch):
 
 ```text
 —
-以上选题由 AI 生成，仅供创意参考；涉及研究、伦理与合规的判断，请自行核实后再采用。
-你的反馈会被记录到本地画像，用于让下一批更懂你；所有数据仅存本机，不上传。
+The above topic ideas are AI-generated and for creative reference only. Verify research, ethics, and compliance judgments on your own before using them.
+Your feedback is saved to your local profile so the next batch fits you better. All data stays on your machine and is never uploaded.
 ```
 
 ---
 
-## 7. 验收对照
+## 7. Acceptance checklist
 
-- [x] 四要素模板完整：选题标题 / 为什么适合你 / 三个切入角度 / 风险提醒
-- [x] 含每要素填写规范与常见不合格表现
-- [x] 含场景微调规则（标题格式 + 追加字段）
-- [x] 附 **2 个完整示例**：一个严肃学术（历史×游戏）、一个轻松玩梗（短视频）
-- [x] 含整批输出的数量、排序、编号与反馈入口规范
-- [x] 含 AI 生成标注与免责声明
-- [x] 四要素只追加不删减，与场景格式规范一致
+- [x] Four-element template complete: topic title / why it fits you / three angles / risk notes
+- [x] Fill-in rules and common failures for each element
+- [x] Scene tweak rules (title format + added fields)
+- [x] Two full examples attached: one academic (history x games), one playful (short video)
+- [x] Batch-level rules for count, order, numbering, and feedback entry
+- [x] AI label and disclaimer included
+- [x] Four elements are only added to, never dropped; consistent with the scene format spec

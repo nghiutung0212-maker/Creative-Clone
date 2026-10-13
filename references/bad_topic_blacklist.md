@@ -1,186 +1,186 @@
-# 烂选题黑名单（Bad Topic Blacklist）
+# Bad-Topic Blacklist
 
-> 本文档由 C·引擎部产出，是「创意分身」对所有场景生效的**全局黑名单**。
-> 定义五种必须主动规避的烂选题类型，给出**定义、示例、识别信号与规避/改写方法**。
-> 使用方：引擎 A（检出饱和方向）、引擎 B（检出概念堆砌）、引擎 C（一票否决复核）；与各场景 `exclusion_rules` 叠加生效。
+> This document is produced by Team C (Engines). It is the **global blacklist** that Creative Avatar applies to all scenes.
+> It defines five bad-topic types that must be actively avoided, and gives a **definition, examples, detection signals, and fix / rewrite methods** for each.
+> Consumers: Engine A (detects over-saturated directions), Engine B (detects concept stacking), Engine C (one-vote veto review). It stacks with each scene's `exclusion_rules`.
 
 ---
 
-## 0. 黑名单如何被使用
+## 0. How the blacklist is used
 
-1. **检出阶段**：引擎 A 扫描时把「过度饱和型」方向写入 `saturated_topics`；引擎 B 碰撞时把「概念堆砌型」伪拼接写入 `filtered_out`。
-2. **裁决阶段**：引擎 C 在审稿时对 5 类做一票否决复核，命中任一即判 `reject`，并在 `fatal_flaw` 标注类型。
-3. **叠加顺序**（越靠后越严格）：全局黑名单 → 场景 `exclusion_rules` → 用户显式排除 `excludes/red_lines` → 场景 `constraint_list`（正向硬过滤）。
-4. **可挽救原则**：除「假问题型」外，多数烂选题可通过**缩小对象、替换方法、删除热词**挽救；挽救后须重新过引擎 C。
+1. **Detection stage**: Engine A writes "over-saturated" directions into `saturated_topics` during its scan; Engine B writes "concept stacking" pseudo-combinations into `filtered_out` during collision.
+2. **Adjudication stage**: Engine C runs a one-vote veto review on all five types. Any hit triggers `reject`, and the type is recorded in `fatal_flaw`.
+3. **Stacking order** (later layers are stricter): global blacklist → scene `exclusion_rules` → user-stated `excludes / red_lines` → scene `constraint_list` (positive hard filter).
+4. **Salvage principle**: except for the "false question" type, most bad topics can be salvaged by **narrowing the object, swapping the method, or deleting buzzwords**. Salvaged topics must go back through Engine C.
 
-**五类速览**：
+**Five types at a glance**:
 
-| 类型 | 一句话病灶 | 致命审稿项 |
+| Type | One-line flaw | Fatal review item |
 |------|------------|------------|
-| 1. 概念堆砌型 | 热词强拼，抽掉热词问题不成立 | C2 / C5 |
-| 2. 过度饱和型 | 研究数量爆炸，无新角度新方法 | C5 |
-| 3. 无法落地型 | 超出能力/资源/数据/技术 | C4 |
-| 4. 范围过大型 | 边界模糊，规定篇幅装不下 | C1 / C2 |
-| 5. 假问题型 | 问题不成立、无法证伪 | C2 |
+| 1. Concept stacking | Buzzwords forced together; remove the buzzwords and the question falls apart | C2 / C5 |
+| 2. Over-saturated | Research volume has exploded; no new angle or method left | C5 |
+| 3. Infeasible | Beyond the researcher's ability / resources / data / tech | C4 |
+| 4. Too broad | Blurry boundaries; cannot fit in the assigned length | C1 / C2 |
+| 5. False question | The question itself is invalid and cannot be falsified | C2 |
 
 ---
 
-## 1. 概念堆砌型（Concept Stacking）
+## 1. Concept Stacking
 
-**定义**：把多个时髦热词（往往是「大词」）用「背景下 / 赋能 / 路径 / 视域」强行串成一个标题，**词与词之间没有可论证的机制连接，标题背后没有一个真实的问题**。它制造「又前沿又宏大」的错觉，实则无法回答。
+**Definition**: multiple trendy buzzwords (often "big words") are forced into a title with connectors such as "in the context of / empower / path / horizon". **There is no arguable mechanism between the words, and no real question behind the title.** It creates the illusion of being both trendy and grand, but cannot actually be answered.
 
-**典型示例**：
+**Typical examples**:
 
-- 「元宇宙背景下大模型赋能乡村振兴的伦理治理路径研究」（PRD 原例）
-- 「数字孪生视域下 ChatGPT 赋能思政教育的生态构建研究」
-- 「区块链 + 元宇宙 + AIGC 驱动的非遗传播创新路径探析」
-- 「双循环新发展格局下数字化转型赋能共同富裕的机制研究」（无具体对象/行业）
+- "Ethical governance paths for large models empowering rural revitalization in the metaverse context" (original PRD example)
+- "Ecosystem construction for ChatGPT empowering ideological and political education from the digital twin horizon"
+- "Innovation paths for intangible cultural heritage communication driven by blockchain + metaverse + AIGC"
+- "Mechanisms by which digital transformation empowers common prosperity under the dual-circulation development pattern" (no concrete object / industry)
 
-**识别信号**：
+**Detection signals**:
 
-- 标题可无限替换热词而不影响「通顺」（把「元宇宙」换成「区块链」居然也成立）；
-- 出现 ≥2 个「大词」，却找不到一个具体研究对象或个案；
-- 动词全是「赋能 / 构建 / 路径 / 耦合 / 视域」，没有可检验的关系；
-- 抽掉热词后，问不出「具体是谁、在什么情境下、发生了什么」。
+- You can swap in a different buzzword and the title still "reads fine" (replace "metaverse" with "blockchain" and it still looks plausible).
+- Two or more "big words" appear, but there is no concrete research object or case.
+- The verbs are all "empower / construct / path / couple / horizon"; no testable relationship is present.
+- After removing the buzzwords, you cannot answer "who specifically, in what situation, what actually happened".
 
-**规避 / 改写**：保留一个真正关心的对象，删掉无连接的热词，落到可证伪的问题。
+**Fix / rewrite**: keep one object you actually care about, delete the unconnected buzzwords, and land on a falsifiable question.
 
-- 烂：「元宇宙背景下大模型赋能乡村振兴的伦理治理路径研究」
-- 改：「县域直播带货中，AI 脚本工具如何改变小农户的话术与成交？——以某县 20 家农户为例」
-
----
-
-## 2. 过度饱和型（Over-Saturated）
-
-**定义**：某方向研究/内容数量爆炸、框架高度雷同，**若不提出新对象、新视角、新方法或新证据，就注定只是在重复已有结论**。它不是不能碰，而是「不带增量就不能碰」。
-
-**典型示例**：
-
-- 「抖音平台美妆博主的营销策略研究」（PRD 原例）
-- 「短视频用户行为研究」（近三年约 1200+ 篇同题，问卷 + 描述统计）
-- 「直播带货的消费者购买意愿影响因素研究」
-- 「微信朋友圈自我呈现研究」「网红经济的现状与对策」
-
-**识别信号**：
-
-- 检索结果中同题/同框架结果极密集，标题换个平台或人群即可批量复制；
-- 常见结尾是「现状—问题—对策」的模板化三段；
-- 综述明确写「研究已较为充分 / 成果丰硕」；
-- 方法集中在问卷 + 描述统计，结论高度同质。
-
-**规避 / 改写**：叠加新变量——换冷门人群、新平台功能、新数据或新方法，或转去引擎 A 指出的 `gaps`。
-
-- 烂：「抖音平台美妆博主的营销策略研究」
-- 改：「美妆中老年博主如何用『去年轻化』叙事建立信任？——以抖音 10 个银发美妆账号的评论文本为例」
+- Bad: "Ethical governance paths for large models empowering rural revitalization in the metaverse context"
+- Fixed: "How do AI scripting tools change smallholder farmers' pitch language and deal closure in county-level livestream e-commerce? A case study of 20 farmers in one county"
 
 ---
 
-## 3. 无法落地型（Infeasible）
+## 2. Over-Saturated
 
-**定义**：选题所需的**技术、数据、设备、渠道、权限或周期**明显超出研究者当前能力与资源，构想再漂亮也无法在规定条件下完成，等于空中楼阁。
+**Definition**: research or content on a direction has exploded, and the frameworks are highly similar. **Without a new object, a new angle, a new method, or new evidence, the topic is destined to repeat existing conclusions.** It is not forbidden, but it cannot be touched **without adding an increment**.
 
-**典型示例**：
+**Typical examples**:
 
-- 「基于多模态大模型的敦煌壁画自动修复系统研究」——无技术、无数据集（PRD 原例）
-- 「基于全国百万级用户行为日志的推荐算法公平性研究」——拿不到日志、无算力
-- 「通过十年追踪实验研究早期屏幕暴露对儿童大脑发育的影响」（课程论文，无团队无周期）
-- 「基于自研芯片的低功耗边缘计算系统设计」（本科生，无流片条件）
+- "Marketing strategies of beauty influencers on Douyin" (original PRD example)
+- "User behavior research on short videos" (roughly 1200+ papers on the same topic in the last three years; questionnaire + descriptive statistics)
+- "Factors influencing consumer purchase intention in livestream e-commerce"
+- "Self-presentation on WeChat Moments"; "Current state and countermeasures of the influencer economy"
 
-**识别信号**：
+**Detection signals**:
 
-- 依赖非公开/需巨额采购的数据、设备或算力；
-- 需要跨机构、长周期、伦理高门槛，而作者无相应资源；
-- 方法中出现「构建一套系统 / 自研模型」但作者不具备工程能力；
-- 与画像 `resources`、层级、周期明显矛盾（对照引擎 C 的 C4）。
+- Search results on the same topic / same framework are dense; titles can be batch-copied by swapping the platform or the population.
+- The common ending is the templated three-part "current state → problems → countermeasures".
+- Reviews explicitly state "research is already fairly mature" or "results are abundant".
+- Methods cluster around questionnaire + descriptive statistics, and conclusions are highly homogeneous.
 
-**规避 / 改写**：缩小到可获得的材料，或把「造系统」降级为「对现有系统/公开数据的分析」。
+**Fix / rewrite**: stack a new variable. Pick a less-studied population, a new platform feature, new data, or a new method; or move to the `gaps` that Engine A points out.
 
-- 烂：「基于多模态大模型的敦煌壁画自动修复系统研究」
-- 改：「敦煌壁画数字图像公开资源的现状与教学可用性梳理——基于公开数据集与文献的二次分析」
-
----
-
-## 4. 范围过大型（Too Broad）
-
-**定义**：选题边界模糊、涵盖对象过多、时间/空间跨度过大，**在规定篇幅与周期内根本无法被完整处理**，最后只能写成空洞的概览或泛泛而谈。
-
-**典型示例**：
-
-- 「中西方文学比较研究」（PRD 原例）
-- 「人工智能对人类社会的影响」
-- 「中国传统文化的当代价值研究」
-- 「全球化背景下的城市发展研究」
-
-**识别信号**：
-
-- 标题中没有任何限定词（无具体作品、人物、地区、时段、群体）；
-- 任意一项都足以写一本书，却被塞进一篇论文 / 一条视频；
-- 只能用「浅谈 / 概述 / 管窥」来掩盖容量不匹配；
-- 研究问题可拆成十几个互不相同的子问题。
-
-**规避 / 改写**：用「具体对象 + 限定词 + 个案」连续收口，直到篇幅装得下。
-
-- 烂：「中西方文学比较研究」
-- 改：「隐逸意象如何跨语言传递？——以陶渊明《饮酒·其五》与梭罗《瓦尔登湖》三个译本的对读为例」
+- Bad: "Marketing strategies of beauty influencers on Douyin"
+- Fixed: "How do middle-aged and elderly beauty influencers build trust through 'de-youngifying' narratives? A comment-text study of 10 silver-haired beauty accounts on Douyin"
 
 ---
 
-## 5. 假问题型（False Question）
+## 3. Infeasible
 
-**定义**：问题的**预设本身不成立**，或它无法被任何证据回答 / 证伪，本质是一个价值表态、玄学命题或无法定义的概念之争，因而没有研究价值。这是五类中**最难靠修改挽救**的一类。
+**Definition**: the **technology, data, equipment, channels, permissions, or timeline** the topic needs clearly exceeds the researcher's current ability and resources. No matter how elegant the idea, it cannot be completed under the given conditions; it is a castle in the air.
 
-**典型示例**：
+**Typical examples**:
 
-- 「AI 会不会取代作家」（PRD 原例）
-- 「互联网到底让人更自由还是更不自由」（概念未定义、无法证伪）
-- 「短视频是不是毁掉了这一代人」（预设了「毁掉」，情绪化、不可测量）
-- 「这个世界是真实的吗」「人性本善还是本恶」（无统一定义、无实证出口）
+- "An automatic restoration system for Dunhuang murals based on multimodal large models" — no technology, no dataset (original PRD example)
+- "Fairness of recommendation algorithms based on nationwide million-scale user behavior logs" — logs are unavailable, no compute
+- "A ten-year longitudinal experiment on early screen exposure and children's brain development" (course paper; no team, no timeline)
+- "Design of a low-power edge computing system based on self-developed chips" (undergraduate; no fabrication access)
 
-**识别信号**：
+**Detection signals**:
 
-- 回答只能选边站队，无法给出可验证的判定标准；
-- 核心概念（「自由」「毁掉」「取代」「真实」）没有可操作定义；
-- 无论出现什么证据都能被两边各自解释，**无法被证伪**；
-- 更像观点/口号，而非可研究的问题。
+- Depends on non-public data, equipment, or compute that would cost a large purchase.
+- Requires cross-institutional, long-cycle, or high ethical-barrier work that the author has no resources for.
+- The method says "build a system" or "self-develop a model" but the author has no engineering ability.
+- Clearly contradicts the profile `resources`, level, or timeline (check against Engine C's C4).
 
-**规避 / 改写**：把不可证伪的大判断，改写成对「可观测机制」的研究；多数情况下直接淘汰。
+**Fix / rewrite**: narrow down to materials you can actually obtain, or downgrade "build a system" to "analyze an existing system / public data".
 
-- 烂：「AI 会不会取代作家」
-- 改：「AI 写作工具在哪些具体环节改变了网文作者的工作流程？——以 15 名签约作者的访谈为例」
-- 烂：「短视频是不是毁掉了这一代人」
-- 改：「睡前短视频使用时长与次日自评注意力的关系——基于某高校 60 名学生 2 周日记的分析」
+- Bad: "An automatic restoration system for Dunhuang murals based on multimodal large models"
+- Fixed: "The current state and teaching usability of public digital-image resources for Dunhuang murals: a secondary analysis of public datasets and literature"
 
 ---
 
-## 6. 统一识别口诀（生成后逐条自查）
+## 4. Too Broad
 
-> 对每个候选快速过一遍，命中任一条即标记并交引擎 C 裁决：
+**Definition**: the topic has blurry boundaries, covers too many objects, and spans too much time / space. **It cannot be fully handled in the assigned length and timeline**, and ends up as an empty overview or vague generalities.
 
-1. **抽掉热词**，问题还成立吗？（概念堆砌）
-2. **别人做过多少**？我带了哪个新东西？（过度饱和）
-3. **数据和技术**我真的有吗？（无法落地）
-4. **一篇 / 一条装得下**吗？边界在哪？（范围过大）
-5. **什么证据能推翻它**？（假问题）
+**Typical examples**:
+
+- "A comparative study of Chinese and Western literature" (original PRD example)
+- "The impact of AI on human society"
+- "The contemporary value of traditional Chinese culture"
+- "Urban development under globalization"
+
+**Detection signals**:
+
+- The title has no qualifiers at all (no specific work, person, region, period, or group).
+- Any one item would fill a book, yet it is crammed into one paper / one video.
+- The only way to hide the mismatch is with words like "brief discussion / overview / limited view".
+- The research question can be split into a dozen unrelated sub-questions.
+
+**Fix / rewrite**: keep narrowing with "concrete object + qualifier + case study" until the length can hold it.
+
+- Bad: "A comparative study of Chinese and Western literature"
+- Fixed: "How does the recluse imagery travel across languages? A close reading of Tao Yuanming's 'Drinking Wine No. 5' against three translations of Thoreau's Walden"
 
 ---
 
-## 7. 与三引擎的字段对应
+## 5. False Question
 
-| 黑名单类型 | `fatal_flaw` 取值 | 主要由谁先检出 | 对应审稿项 |
+**Definition**: the **presupposition of the question itself is invalid**, or it cannot be answered or falsified by any evidence. It is essentially a value statement, a metaphysical proposition, or an undefined conceptual dispute, and has no research value. This is the type that is **hardest to salvage by editing**.
+
+**Typical examples**:
+
+- "Will AI replace writers?" (original PRD example)
+- "Does the internet make people more free or less free?" (concept undefined, cannot be falsified)
+- "Has short video ruined this generation?" (presupposes "ruined"; emotional, unmeasurable)
+- "Is this world real?"; "Is human nature inherently good or evil?" (no shared definition, no empirical outlet)
+
+**Detection signals**:
+
+- The answer can only take sides; no verifiable criterion is possible.
+- Core concepts ("free", "ruined", "replace", "real") have no operational definition.
+- Whatever evidence appears can be explained by either side; **it cannot be falsified**.
+- It reads more like an opinion / slogan than a researchable question.
+
+**Fix / rewrite**: rewrite the unfalsifiable grand judgment into a study of an "observable mechanism". In most cases, reject the topic outright.
+
+- Bad: "Will AI replace writers?"
+- Fixed: "At which concrete stages do AI writing tools change web-novel authors' workflows? Interviews with 15 signed authors"
+- Bad: "Has short video ruined this generation?"
+- Fixed: "The relationship between pre-sleep short-video use and next-day self-rated attention: a two-week diary study of 60 students at one university"
+
+---
+
+## 6. Unified detection checklist (run after generation)
+
+> For each candidate, run through these quickly. Any hit means flag it and send it to Engine C for adjudication:
+
+1. **Remove the buzzwords**. Does the question still hold? (concept stacking)
+2. **How much has already been done**? What new thing do I bring? (over-saturation)
+3. **Do I actually have the data and technology**? (infeasible)
+4. **Can one paper / one video hold it**? Where are the boundaries? (too broad)
+5. **What evidence would overturn it**? (false question)
+
+---
+
+## 7. Field mapping to the three engines
+
+| Blacklist type | `fatal_flaw` value | First detected by | Review item |
 |------------|-------------------|----------------|------------|
-| 概念堆砌型 | `concept_stack` | 引擎 B（`filtered_out`） | C2 / C5 |
-| 过度饱和型 | `over_saturated` | 引擎 A（`saturated_topics`） | C5 |
-| 无法落地型 | `infeasible` | 引擎 C（C4） | C4 |
-| 范围过大型 | `too_broad` | 引擎 C（C1/C2） | C1 / C2 |
-| 假问题型 | `false_question` | 引擎 C（C2） | C2 |
+| Concept stacking | `concept_stack` | Engine B (`filtered_out`) | C2 / C5 |
+| Over-saturated | `over_saturated` | Engine A (`saturated_topics`) | C5 |
+| Infeasible | `infeasible` | Engine C (C4) | C4 |
+| Too broad | `too_broad` | Engine C (C1 / C2) | C1 / C2 |
+| False question | `false_question` | Engine C (C2) | C2 |
 
 ---
 
-## 8. 验收对照
+## 8. Acceptance checklist
 
-- [x] 五种类型齐全：概念堆砌、过度饱和、无法落地、范围过大、假问题
-- [x] 每种均含**定义 + 多个示例**（保留 PRD 全部原例）
-- [x] 每种补充识别信号与正向改写示例
-- [x] 明确与三引擎字段（`fatal_flaw` / 审稿项）的对应关系
-- [x] 明确叠加顺序与可挽救原则
-- [x] 提供统一自查口诀
+- [x] All five types present: concept stacking, over-saturation, infeasible, too broad, false question
+- [x] Each type includes **a definition and multiple examples** (all original PRD examples retained)
+- [x] Each type adds detection signals and a positive rewrite example
+- [x] Mapping to the three-engine fields (`fatal_flaw` / review items) is explicit
+- [x] Stacking order and salvage principle are explicit
+- [x] A unified self-check mnemonic is provided

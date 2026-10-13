@@ -1,57 +1,57 @@
-# 引擎 B · 跨界知识碰撞引擎（Cross-Domain Collision）——「找新角度」
+# Engine B · Cross-Domain Collision (find new angles)
 
-> 本文档由 C·引擎部产出，是「创意分身」三引擎中的**第二引擎**。
-> 定位：把用户的**核心领域 A**与画像里的**兴趣领域 B、C、D**（哪怕看似无关）做结构化交叉碰撞，产生用户自己想不到、但有真实逻辑关联的**反共识角度**，并提炼成具体问题。
-> 流水线总览见 [`engine_saturation_scan.md`](./engine_saturation_scan.md) 第 0 节；下游审稿见 [`engine_self_critique.md`](./engine_self_critique.md)；鉴别硬拼接见 [`bad_topic_blacklist.md`](./bad_topic_blacklist.md)。
+> This document is produced by the Engine Team (C dept). It is the **second engine** of the Creative Avatar's three engines.
+> Role: structurally collide the user's **core domain A** with the interest domains B, C, D from the profile (even if they look unrelated), to produce counter-consensus angles the user would not think of but that have a real logical link, and distill them into concrete questions.
+> Pipeline overview: see section 0 of [`engine_saturation_scan.md`](./engine_saturation_scan.md); downstream review: [`engine_self_critique.md`](./engine_self_critique.md); hard-paste detection: [`bad_topic_blacklist.md`](./bad_topic_blacklist.md).
 
 ---
 
-## 1. 引擎目标
+## 1. Engine goal
 
-| 项 | 内容 |
+| Item | Content |
 |----|------|
-| 一句话目标 | 让「历史学 + 爱玩游戏」这类**本来八竿子打不着的两块知识**，在用户脑子里撞出一个既新鲜、又能落地的具体问题。 |
-| 解决的竞品缺陷 | 「重共性，轻个性」——通用模板千人一面；以及「热门关键词拼接」式的伪创新（PRD 2.3 / 2.4）。 |
-| 核心产出 | ① 碰撞点清单 `collision_points[]`（每个含逻辑关联说明）；② 候选研究问题 `candidates[]`；③ 被剔除的伪拼接 `filtered_out[]`。 |
-| 不做什么 | 不做无逻辑的热词拼盘（一旦发现即剔除并记录）；不做最终质量裁决（交给引擎 C）；不重复扫描饱和方向。 |
-| 机制溯源 | 借鉴 Arthur Koestler「双重联想（bisociation）」与类比迁移理论；工程上借鉴 OpenAI **双层个性化**——场景配置定边界、个人画像供碰撞源；借鉴 Anthropic 多智能体「用新鲜视角强行跳出本领域框架」。 |
+| One-line goal | Make two knowledge areas that normally have nothing to do with each other, such as "history" and "being into games", collide in the user's mind into one concrete question that is fresh and actionable. |
+| Competitor flaw solved | "Common over individual": generic templates look the same for everyone; plus the fake novelty of "hot-keyword splicing" (PRD 2.3 / 2.4). |
+| Core outputs | ① collision point list `collision_points[]` (each with a logical-link explanation); ② candidate research questions `candidates[]`; ③ removed fake pastes `filtered_out[]`. |
+| What it does not do | Does not build illogical hot-word mashups (removed and logged when found); does not make the final quality ruling (that is Engine C's job); does not re-scan saturated directions. |
+| Mechanism origin | Borrows Arthur Koestler's "bisociation" and analogy-transfer theory; on the engineering side, OpenAI's two-layer personalization, where the scene profile sets boundaries and the personal profile supplies collision sources; and Anthropic's multi-agent idea of "force a fresh angle to break out of the home domain's frame". |
 
 ---
 
-## 2. 上下游数据契约
+## 2. Upstream / downstream data contract
 
 ```
-引擎 A 输出                          引擎 B 处理                        引擎 C 输入
-───────────                          ───────────                        ─────────
-saturated_topics[] ──► 禁止域 ──┐
-blacklist_hits[]   ──► 禁止域 ──┤
-gaps[]             ──► 优先靶区 ─┤   A×B / A×C / A×D
-scene_config       ──► 约束/基调 ─┤   结构碰撞 → 逻辑关联筛选
-profile_snapshot   ──► 兴趣域 B/C/D ┘   → 提炼具体问题
+Engine A output                   Engine B work                        Engine C input
+─────────────                     ───────────                        ─────────
+saturated_topics[] ──► forbidden ──┐
+blacklist_hits[]   ──► forbidden ──┤
+gaps[]             ──► priority ───┤   A×B / A×C / A×D
+scene_config       ──► constraints/tone ┤  structured collision -> logical-link filter
+profile_snapshot   ──► interest domains B/C/D ┘ -> distill concrete questions
                                                               ──► candidates[]
-                                                                  （每个带 why_link）
+                                                                  (each with why_link)
 ```
 
-**输入（JSON）**：
+**Input (JSON)**:
 
 ```json
 {
   "scene_config": {
     "scene_id": "academic_paper",
-    "tone_rules": { "base_tone": "严肃学术", "allow_humor": false },
+    "tone_rules": { "base_tone": "academic", "allow_humor": false },
     "constraint_list": ["…"],
     "exclusion_rules": ["…"]
   },
   "scan_output": {
-    "saturated_topics": ["短视频用户行为研究"],
-    "gaps": ["短视频对听障青年信息获取的影响"],
-    "blacklist_hits": [{ "matched_type": "over_saturated", "topic": "短视频用户行为研究" }]
+    "saturated_topics": ["research on short-video user behavior"],
+    "gaps": ["the effect of short video on information access for deaf young people"],
+    "blacklist_hits": [{ "matched_type": "over_saturated", "topic": "research on short-video user behavior" }]
   },
   "profile_snapshot": {
     "base": {
-      "backgrounds": ["历史学（本科）"],
-      "interests": ["电子游戏", "罗马帝国", "乐队文化"],
-      "resources": ["学校图书馆数据库", "每周 12 小时"]
+      "backgrounds": ["history (B.A.)"],
+      "interests": ["video games", "Roman Empire", "band culture"],
+      "resources": ["university library database", "12 hours per week"]
     }
   },
   "collide_settings": {
@@ -62,161 +62,161 @@ profile_snapshot   ──► 兴趣域 B/C/D ┘   → 提炼具体问题
 }
 ```
 
-| 输入字段 | 用途 |
+| Input field | Use |
 |----------|------|
-| `scan_output.saturated_topics / blacklist_hits` | **禁止域**：碰撞结果不得落在这些方向上，否则剔除。 |
-| `scan_output.gaps` | **优先靶区**：碰撞结果若能填某个缺口，优先保留。 |
-| `profile_snapshot.base.backgrounds` | 核心领域 A 的来源。 |
-| `profile_snapshot.base.interests` | 碰撞域 B/C/D 的来源；兴趣越多，碰撞组合越丰富。 |
-| `collide_settings.min_logic_link` | 关联强度门槛（`loose`/`medium`/`strong`，默认 `strong`）。 |
-| `collide_settings.max_candidates` | 碰撞池上限（默认 20），防止发散失控。 |
+| `scan_output.saturated_topics / blacklist_hits` | **Forbidden domains**: collision results must not land on these directions, or they are removed. |
+| `scan_output.gaps` | **Priority targets**: a collision result that fills a gap is kept first. |
+| `profile_snapshot.base.backgrounds` | Source for core domain A. |
+| `profile_snapshot.base.interests` | Source for collision domains B/C/D; the more interests, the richer the collision set. |
+| `collide_settings.min_logic_link` | Link-strength threshold (`loose`/`medium`/`strong`, default `strong`). |
+| `collide_settings.max_candidates` | Cap on the collision pool (default 20), to prevent runaway divergence. |
 
 ---
 
-## 3. 工作流程
+## 3. Workflow
 
-### 3.1 第一步：提取核心领域 A
+### 3.1 Step 1: extract core domain A
 
-- 从 `profile_snapshot.base.backgrounds` 与问卷学科字段确定**核心领域 A**（如「历史学 / 罗马帝国史」）。
-- 明确 A 的三要素：**研究对象**（罗马帝国）、**常用理论/视角**（史料考据、社会史）、**常用方法**（文献、史料分析）。
+- Determine **core domain A** from `profile_snapshot.base.backgrounds` and the questionnaire discipline field (e.g. "history / Roman imperial history").
+- State A's three elements: **research object** (Roman Empire), **common theories/angles** (source criticism, social history), **common methods** (archival work, source analysis).
 
-### 3.2 第二步：提取碰撞域 B、C、D
+### 3.2 Step 2: extract collision domains B, C, D
 
-- 从 `base.interests`、问卷兴趣字段提取**所有非本专业领域**（如「电子游戏（《文明》系列）」「乐队文化」）。
-- 每个碰撞域同样拆出：**载体/对象**、**内在机制**、**可借用的方法或视角**。
-- 兴趣域不足时（轻量模式画像稀疏），补充两类「近邻域」：
-  - **方法论近邻**：与 A 方法可互通的领域（如历史学 ↔ 考古学、人类学）；
-  - **对象近邻**：与 A 共享对象的当代载体（如历史 ↔ 影视/游戏/教科书等大众叙事媒介）。
+- Pull **all non-home-domain areas** from `base.interests` and the questionnaire interest field (e.g. "video games (Civilization series)", "band culture").
+- For each collision domain, split out the same three parts: **carrier/object**, **internal mechanism**, **transferable method or angle**.
+- When interest domains are thin (light-mode sparse profile), add two kinds of "near domains":
+  - **Methodological neighbors**: domains whose methods transfer to A (e.g. history ↔ archaeology, anthropology);
+  - **Object neighbors**: contemporary carriers that share A's object (e.g. history ↔ popular narrative media such as film, games, textbooks).
 
-### 3.3 第三步：结构化碰撞（A×B / A×C / A×D）
+### 3.3 Step 3: structured collision (A×B / A×C / A×D)
 
-不是把两个词并排写在一起，而是用**五种碰撞算子**让两域产生真实反应。对每一对 (A, X) 依次尝试：
+This is not writing two words side by side. Use **five collision operators** to make the two domains actually react. Try each pair (A, X) in turn:
 
-| 算子 | 做法 | 典型产物 |
+| Operator | How | Typical output |
 |------|------|----------|
-| ① 视角借用 | 用 X 的理论透镜重新审视 A 的对象 | 用游戏设计中的「叙事选择」机制看史书如何塑造历史宿命感 |
-| ② 方法移植 | 把 X 的分析方法搬到 A | 用游戏玩家行为日志方法分析历史人物决策的「路径依赖」 |
-| ③ 对象互证 | 同一对象同时出现在 A 与 X 中，比较二者呈现差异 | 罗马帝国（史书）vs 罗马帝国（《文明》游戏）→ 认知偏差 |
-| ④ 机制类比 | 论证 A 与 X 存在同构机制 | 军团补给线 与 游戏资源经济 的同构（需可证伪） |
-| ⑤ 媒介/受众反身 | 把 X 当作大众接触 A 的媒介来研究 | 《文明》作为大众学习罗马史的「隐性教材」 |
+| ① Angle borrowing | Re-examine A's object through X's theoretical lens | Use the "narrative choice" mechanic in game design to see how historical texts shape a sense of historical fate |
+| ② Method transfer | Move X's analysis method into A | Use game player behavior-log methods to analyze "path dependence" in historical figures' decisions |
+| ③ Object cross-check | The same object appears in both A and X; compare how the two present it | Roman Empire (historical texts) vs Roman Empire (Civilization game) -> cognitive bias |
+| ④ Mechanism analogy | Argue that A and X share an isomorphic mechanism | Legion supply lines vs game resource economy (must be falsifiable) |
+| ⑤ Medium/audience reflexivity | Study X as the medium through which the public encounters A | Civilization as an "implicit textbook" for the public learning Roman history |
 
-> 每种算子至少产出 1 个候选角度；全部组合数量受 `max_candidates` 约束。
+> Each operator produces at least 1 candidate angle; the total number is capped by `max_candidates`.
 
-### 3.4 第四步：逻辑关联筛选（核心防伪步骤）
+### 3.4 Step 4: logical-link filter (core anti-fake step)
 
-对每个碰撞点，**强制写出 `why_link`（为什么二者真的有关）**，并评定关联强度：
+For each collision point, **force a `why_link` (why the two are genuinely related)** and rate the link strength:
 
-| 强度 | 判据 | 处置 |
+| Strength | Criterion | Action |
 |------|------|------|
-| `strong` | 存在可论证的**因果/同构/可验证**关系，两域共享明确对象或机制，且用户资源可支撑 | 保留（默认门槛） |
-| `medium` | 有合理类比，但需要额外论证或桥接概念 | 仅当 `min_logic_link=medium/loose` 或能填补缺口时保留 |
-| `loose` | 仅表面/字眼相似，无机制连接 | **剔除并写入 `filtered_out`，原因标「概念堆砌」** |
+| `strong` | A defensible causal / isomorphic / verifiable relationship; the two domains share a clear object or mechanism; and the user's resources support it | Keep (default threshold) |
+| `medium` | A reasonable analogy but needs extra argument or a bridging concept | Keep only when `min_logic_link=medium/loose` or it fills a gap |
+| `loose` | Only surface / wording similarity, no mechanism connection | **Remove and write into `filtered_out`, reason "concept stacking"** |
 
-**一票否决（出现即剔除）**：
+**One-strike veto** (remove on sight):
 
-- 无法回答「为什么 A 和 X 放在一起是合理的」；
-- 只是把「元宇宙 / 大模型 / 赋能 / 路径」等热词贴在 A 前面（见黑名单概念堆砌型）；
-- 碰撞结果落在 `saturated_topics` / `blacklist_hits` 内且未带来新对象/新方法；
-- 超出用户资源、明显不可行（留给引擎 C 复核，但明显者提前剔除）。
+- Cannot answer "why are A and X put together reasonably?";
+- Merely sticking hot words like "metaverse / large model / empower / path" in front of A (see the blacklist concept-stacking type);
+- The collision lands inside `saturated_topics` / `blacklist_hits` without bringing a new object or method;
+- Beyond the user's resources and clearly infeasible (left for Engine C, but obvious cases are removed early).
 
-### 3.5 第五步：从碰撞点提炼具体研究问题
+### 3.5 Step 5: distill concrete research questions from collision points
 
-对通过筛选的碰撞点，把「角度」落成**可回答、可证伪的具体问题**：
+For collision points that pass, turn the "angle" into an **answerable, falsifiable concrete question**:
 
-1. **锚定具体对象**：不是「游戏与历史」，而是「《文明 VI》中罗马文明的科技树设定」。
-2. **加限定词**：人群/地域/平台/时间/个案，如「中山大学 20 名历史专业本科生」。
-3. **给出问题句式**：优先用「X 如何影响 Y」「A 与 B 在 Z 上有何差异」「什么因素导致 Z」等可检验句式，避免「浅谈/试论/关于…的研究」这类空壳。
-4. **配方法暗示**：该问题可用什么方法回答（文本比较、问卷、实验、个案），并与 `resources` 对照。
-5. **对齐缺口**：能填 `gaps` 中某条的，标注 `fills_gap`。
+1. **Anchor a concrete object**: not "games and history", but "the technology-tree design for Roman civilization in Civilization VI".
+2. **Add qualifiers**: population/region/platform/time/case, e.g. "20 history majors at Sun Yat-sen University".
+3. **Use a question form**: prefer testable forms such as "how does X affect Y", "how do A and B differ on Z", "what factors cause Z"; avoid empty shells like "a brief discussion of / a tentative study of / research on …".
+4. **Attach a method hint**: what method could answer the question (text comparison, questionnaire, experiment, case study), and check it against `resources`.
+5. **Align with gaps**: if it fills a gap in `gaps`, mark `fills_gap`.
 
-> 提炼结果必须是「问题」而不是「主题」；这一条由引擎 C 的审稿清单二次强制。
+> The result must be a "question", not a "topic". Engine C's review checklist enforces this a second time.
 
 ---
 
-## 4. 输出契约（传给引擎 C）
+## 4. Output contract (to Engine C)
 
 ```json
 {
   "engine": "cross_collision",
   "generated_at": "2026-10-13T08:20:00+00:00",
-  "base_domain": "历史学 / 罗马帝国史",
+  "base_domain": "history / Roman imperial history",
   "collision_points": [
     {
       "id": "cp_1",
-      "a": "历史学（罗马帝国史）",
-      "b": "电子游戏（《文明》系列）",
-      "operator": "对象互证 / 媒介反身",
+      "a": "history (Roman imperial history)",
+      "b": "video games (Civilization series)",
+      "operator": "object cross-check / medium reflexivity",
       "logic_link": "strong",
-      "why_link": "《文明》系列以可交互的方式重构了罗马帝国的兴衰，是大众接触罗马史的高频媒介；同一对象在史书与游戏中的呈现差异可直接比较、可证伪。",
-      "candidate_angle": "游戏作为大众历史认知的隐性教材",
-      "candidate_question": "《文明》系列对罗马帝国的呈现，使非历史专业玩家形成了哪些关于罗马帝国的认知偏差？",
+      "why_link": "The Civilization series reconstructs the rise and fall of the Roman Empire interactively and is a high-frequency medium through which the public encounters Roman history; the difference between how the same object is presented in historical texts and in the game can be directly compared and falsified.",
+      "candidate_angle": "games as an implicit textbook for public historical understanding",
+      "candidate_question": "What cognitive biases about the Roman Empire does the Civilization series produce in non-history-major players?",
       "fills_gap": null,
-      "resource_check": "可获取游戏文本与玩家问卷，资源可支撑"
+      "resource_check": "Game texts and a player questionnaire are obtainable; resources support it"
     }
   ],
   "candidates": [
     {
       "candidate_id": "cand_1",
-      "title": "《从<文明>系列游戏看大众对罗马帝国的认知偏差——以某高校30名非历史专业本科生为例》",
-      "question": "《文明》系列对罗马帝国的呈现使玩家形成了哪些认知偏差？",
-      "object": "《文明》系列罗马文明设定 + 非历史专业玩家",
-      "method_hint": "游戏文本分析 + 玩家问卷/访谈",
-      "why_link": "同对象在史书与游戏中呈现差异可比较、可证伪",
+      "title": "Cognitive bias about the Roman Empire in the general public, seen through the Civilization series: a case study of 30 non-history undergraduates at one university",
+      "question": "What cognitive biases does the Civilization series' portrayal of the Roman Empire produce in players?",
+      "object": "Roman civilization settings in the Civilization series + non-history-major players",
+      "method_hint": "game text analysis + player questionnaire/interviews",
+      "why_link": "The same object is presented differently in historical texts and in the game; the difference is comparable and falsifiable",
       "fills_gap": null
     }
   ],
   "filtered_out": [
     {
-      "raw": "元宇宙背景下大模型赋能罗马史教学",
-      "reason": "概念堆砌：热词拼接，无机制连接，why_link 不成立"
+      "raw": "Large-model-empowered Roman history teaching in the metaverse",
+      "reason": "Concept stacking: hot words spliced, no mechanism link; why_link does not hold"
     }
   ]
 }
 ```
 
-| 输出字段 | 类型 | 去向 |
+| Output field | Type | Destination |
 |----------|------|------|
-| `collision_points[]` | array | 碰撞过程留痕，供引擎 C 与 F 部核查 |
-| `candidates[]` | array | **→ 引擎 C 审稿**；每个必须含 `why_link` 与 `method_hint` |
-| `filtered_out[]` | array | 记录被剔除的伪拼接，供追溯与测试 |
+| `collision_points[]` | array | Collision trace for Engine C and the F team to audit |
+| `candidates[]` | array | **→ Engine C for review**; each must carry `why_link` and `method_hint` |
+| `filtered_out[]` | array | Logs removed fake pastes, for traceability and testing |
 
 ---
 
-## 5. 可直接执行的 Prompt
+## 5. Ready-to-run prompt
 
-### 5.1 系统提示词（System Prompt）
+### 5.1 System Prompt
 
 ```text
-# 角色
-你是「创意分身」的【引擎 B · 跨界知识碰撞师】，擅长把两个看似无关的知识领域焊接在一起，产生反共识但逻辑成立的新角度。你只做「有真实关联的碰撞」，极端厌恶热词拼盘。
+# Role
+You are Engine B · Cross-Domain Collisionist of the Creative Avatar. You weld two knowledge areas that look unrelated into counter-consensus angles that still hold up logically. You only build collisions with a real link; you strongly dislike hot-word mashups.
 
-# 你会收到的输入
-- scene_config：当前场景（tone_rules、constraint_list、exclusion_rules）
-- scan_output：引擎 A 的 saturated_topics、blacklist_hits（禁止域）与 gaps（优先靶区）
-- profile_snapshot：用户 backgrounds（核心域）、interests（碰撞域）、resources
-- collide_settings：min_logic_link、max_candidates、target_count
+# Input you will receive
+- scene_config: current scene (tone_rules, constraint_list, exclusion_rules)
+- scan_output: Engine A's saturated_topics, blacklist_hits (forbidden domains) and gaps (priority targets)
+- profile_snapshot: user backgrounds (core domain), interests (collision domains), resources
+- collide_settings: min_logic_link, max_candidates, target_count
 
-# 工作步骤（严格按顺序）
-1. 定核心域 A：从 backgrounds 与学科字段确定 A，拆出其对象、常用视角、常用方法。
-2. 定碰撞域：从 interests 提取所有非本专业领域 B/C/D；兴趣稀疏时补方法论近邻与对象近邻（如历史 ↔ 影视/游戏/教科书等大众媒介）。
-3. 结构化碰撞：对每对 (A, X) 依次尝试五种算子——
-   ①视角借用 ②方法移植 ③对象互证 ④机制类比 ⑤媒介/受众反身；每算子尽量产出 1 个角度，总数不超过 max_candidates。
-4. 逻辑关联筛选：为每个碰撞点强制写 why_link（为什么二者真有关），并评 logic_link：
-   - strong：有可论证的因果/同构/可验证关系，共享明确对象或机制；
-   - medium：合理类比但需桥接；
-   - loose：仅表面相似 → 剔除，写入 filtered_out，原因标「概念堆砌」。
-   按 min_logic_link 门槛过滤；命中禁止域（saturated_topics/blacklist_hits）且无新对象/新方法的，剔除。
-5. 提炼具体问题：把通过的角度落成可回答、可证伪的问题——
-   锚定具体对象 → 加限定词（人群/地域/平台/时间/个案）→ 用「X如何影响Y/A与B在Z上有何差异」等可检验句式 → 配方法暗示并与 resources 对照 → 能填 gaps 的标 fills_gap。
+# Steps (strictly in order)
+1. Fix core domain A: determine A from backgrounds and the discipline field; split out its object, common angles, and common methods.
+2. Fix collision domains: pull all non-home areas B/C/D from interests; when interests are thin, add methodological and object neighbors (e.g. history ↔ popular media such as film, games, textbooks).
+3. Structured collision: for each pair (A, X), try the five operators in turn -
+   ① angle borrowing ② method transfer ③ object cross-check ④ mechanism analogy ⑤ medium/audience reflexivity; each operator should yield about 1 angle, capped by max_candidates.
+4. Logical-link filter: force a why_link for every collision point (why the two are genuinely related) and rate logic_link:
+   - strong: a defensible causal / isomorphic / verifiable relationship, sharing a clear object or mechanism;
+   - medium: a reasonable analogy but needs a bridge;
+   - loose: surface similarity only -> remove, write into filtered_out, reason "concept stacking".
+   Filter by the min_logic_link threshold; remove any result that hits a forbidden domain (saturated_topics/blacklist_hits) without a new object or method.
+5. Distill concrete questions: turn passing angles into answerable, falsifiable questions -
+   anchor a concrete object -> add qualifiers (population/region/platform/time/case) -> use a testable form such as "how does X affect Y / how do A and B differ on Z" -> attach a method hint and check against resources -> mark fills_gap if it fills a gap.
 
-# 质量红线
-- 每个保留的碰撞点必须有 why_link；写不出 why_link 就是概念堆砌，一律剔除。
-- 禁止把「元宇宙/大模型/赋能/路径/生态」等热词直接贴在 A 前面充当创新。
-- 产出单位是「问题」不是「主题」；标题中必须出现具体对象与限定词。
-- 不得伪造用户资源、数据可得性或方法可行性；不确定的标「待验证」，交引擎 C。
-- 严格遵守场景基调（tone_rules）：严肃场景不玩梗，轻松场景不端架子；但任何场景都不得突破法律与平台合规。
+# Quality red lines
+- Every kept collision point must have a why_link; if you cannot write one, it is concept stacking and must be removed.
+- Do not stick hot words such as "metaverse / large model / empower / path / ecosystem" in front of A and call it innovation.
+- The unit of output is a "question", not a "topic"; the title must contain a concrete object and qualifiers.
+- Do not fake the user's resources, data availability, or method feasibility; mark the uncertain ones "to be verified" and leave them for Engine C.
+- Follow the scene tone strictly (tone_rules): no jokes in a serious scene, no stiffness in a light scene; but no scene may break the law or platform compliance.
 
-# 输出格式（只返回 JSON）
+# Output format (return only JSON)
 {
   "engine": "cross_collision",
   "generated_at": "ISO8601",
@@ -226,9 +226,9 @@ profile_snapshot   ──► 兴趣域 B/C/D ┘   → 提炼具体问题
       "id": "cp_1",
       "a": "",
       "b": "",
-      "operator": "视角借用|方法移植|对象互证|机制类比|媒介反身",
+      "operator": "angle_borrowing|method_transfer|object_cross_check|mechanism_analogy|medium_reflexivity",
       "logic_link": "strong|medium|loose",
-      "why_link": "二者真实关联的论证",
+      "why_link": "argument for the real link between the two",
       "candidate_angle": "",
       "candidate_question": "",
       "fills_gap": null,
@@ -238,22 +238,22 @@ profile_snapshot   ──► 兴趣域 B/C/D ┘   → 提炼具体问题
   "candidates": [
     {
       "candidate_id": "cand_1",
-      "title": "《具体问题——以XX为例/基于XX视角》",
-      "question": "可回答、可证伪的问题",
-      "object": "具体研究对象",
-      "method_hint": "可操作的方法",
-      "why_link": "逻辑关联说明",
+      "title": "Concrete question: case of X / through the lens of Y",
+      "question": "answerable, falsifiable question",
+      "object": "concrete research object",
+      "method_hint": "workable method",
+      "why_link": "logical-link explanation",
       "fills_gap": null
     }
   ],
-  "filtered_out": [{ "raw": "", "reason": "概念堆砌/命中禁止域/不可行" }]
+  "filtered_out": [{ "raw": "", "reason": "concept stacking / hits forbidden domain / infeasible" }]
 }
 ```
 
-### 5.2 用户输入模板（User Message Template）
+### 5.2 User Message Template
 
 ```text
-请执行跨界知识碰撞。
+Run a cross-domain collision.
 
 [scene_config]
 scene_id: {scene_id}
@@ -268,74 +268,74 @@ blacklist_hits: {blacklist_hits}
 gaps: {gaps}
 
 [profile_snapshot]
-backgrounds: {backgrounds}        # 核心域 A
-interests: {interests}            # 碰撞域 B/C/D
+backgrounds: {backgrounds}        # core domain A
+interests: {interests}            # collision domains B/C/D
 resources: {resources}
 
 [collide_settings]
 min_logic_link: {strong|medium|loose}
-max_candidates: {默认 20}
-target_count: {需要的候选数，如 5}
+max_candidates: {default 20}
+target_count: {number of candidates needed, e.g. 5}
 ```
 
 ---
 
-## 6. 碰撞示例（标杆）
+## 6. Collision examples (benchmark)
 
-### 6.1 历史学 × 电子游戏（PRD 经典案例）
+### 6.1 History × video games (PRD classic case)
 
-- **核心域 A**：历史学（罗马帝国史）
-- **碰撞域 B**：电子游戏（《文明》系列）
-- **算子**：③ 对象互证 + ⑤ 媒介反身
-- **why_link**：《文明》以可交互方式重构罗马兴衰，是大众接触罗马史的高频媒介；同一对象在史书与游戏中的呈现差异可直接比较、可证伪。
-- **碰撞结果**：
+- **Core domain A**: history (Roman imperial history)
+- **Collision domain B**: video games (Civilization series)
+- **Operators**: ③ object cross-check + ⑤ medium reflexivity
+- **why_link**: Civilization reconstructs the rise and fall of Rome interactively and is a high-frequency medium for the public to encounter Roman history; the difference between how the same object is presented in texts and in the game is directly comparable and falsifiable.
+- **Result**:
 
-  《从〈文明〉系列游戏看大众对罗马帝国的认知偏差——以某高校 30 名非历史专业本科生为例》
+  Cognitive bias about the Roman Empire in the general public, seen through the Civilization series: a case study of 30 non-history undergraduates at one university
 
-  - **问题**：《文明》系列对罗马帝国的呈现，使非历史专业玩家形成了哪些关于罗马帝国的认知偏差？
-  - **方法**：游戏文本/设定分析 + 玩家问卷与小样本访谈
-  - **为什么成立**：共享对象「罗马帝国」，差异可观测、可测量，且材料与样本易得 → 既新颖、又贴合兴趣、又能落地。
+  - **Question**: What cognitive biases about the Roman Empire does the Civilization series' portrayal produce in non-history-major players?
+  - **Method**: game text/settings analysis + player questionnaire and small-sample interviews
+  - **Why it holds**: shared object "Roman Empire"; the difference is observable and measurable; materials and sample are easy to obtain -> fresh, on-interest, and actionable.
 
-### 6.2 更多碰撞示范（展示通用性）
+### 6.2 More collision demos (showing the generalizability)
 
-| 核心域 A | 碰撞域 B | 算子 | 碰撞出的具体问题（示意） |
+| Core domain A | Collision domain B | Operator | Concrete question produced (illustrative) |
 |----------|----------|------|--------------------------|
-| 生物学（细胞凋亡） | 游戏设计 | 机制类比 | 塔防游戏的「攻防资源调度」在多大程度上可类比细胞凋亡的信号通路？类比在何处失效？（须论证边界） |
-| 市场营销 | 乐队文化 | 视角借用 | 独立乐队如何用「非商业」的亚文化资本完成粉丝变现？以某 livehouse 场景为例 |
-| 计算机（算法） | 烹饪 | 方法移植 | 菜谱的「分步优化」思路能否用于讲解动态规划的状态转移？以一门通识课为例 |
-| 传播学 | 养猫 | 媒介反身 | 「云吸猫」内容如何成为青年群体的情绪代偿机制？以小红书养猫话题评论区为例 |
+| biology (apoptosis) | game design | mechanism analogy | To what extent can the "attack-defense resource scheduling" of a tower-defense game be analogous to the signaling pathways of apoptosis? Where does the analogy break? (boundaries must be argued) |
+| marketing | band culture | angle borrowing | How do indie bands convert the subcultural capital of being "non-commercial" into fan monetization? A case study of one livehouse venue |
+| CS (algorithms) | cooking | method transfer | Can the "step-by-step optimization" logic of a recipe be used to explain the state transitions of dynamic programming? A case study of one general-education course |
+| communication studies | cat ownership | medium reflexivity | How does "cloud petting cats" content become an emotional compensation mechanism for young people? A case study of the comments under cat-ownership topics on Xiaohongshu |
 
-> 反例（**必须被剔除**）：「元宇宙背景下大模型赋能罗马史教学的路径研究」——热词拼接、无机制连接、`why_link` 不成立，进 `filtered_out`。
-
----
-
-## 7. 概念堆砌 vs 真碰撞：快速自检三问
-
-对每个候选，连续追问，任一答「否」即退回或剔除：
-
-1. **「抽掉热词后，问题还成立吗？」** —— 不成立 = 概念堆砌。
-2. **「A 和 B 共享的对象/机制是什么？能用一句话说清因果或同构吗？」** —— 说不清 = 伪拼接。
-3. **「这个问题的答案能被证据推翻吗？用户手上有得出答案的材料吗？」** —— 不能证伪 / 没材料 = 交给引擎 C 判假问题或不可行。
+> Counter-example (**must be removed**): "Research on the path of large-model-empowered Roman history teaching in the metaverse". Hot words spliced, no mechanism link, `why_link` does not hold; it goes into `filtered_out`.
 
 ---
 
-## 8. 异常与降级
+## 7. Concept stacking vs real collision: three quick self-check questions
 
-| 情况 | 处置 |
+For each candidate, ask in sequence; any "no" sends it back or removes it:
+
+1. **"If you take out the hot words, does the question still hold?"** - no = concept stacking.
+2. **"What object/mechanism do A and B share? Can you state the causal or isomorphic link in one sentence?"** - cannot = fake paste.
+3. **"Can the answer to this question be overturned by evidence? Does the user have the materials to produce that answer?"** - not falsifiable / no materials = send to Engine C to judge as a fake question or infeasible.
+
+---
+
+## 8. Exceptions and degradation
+
+| Situation | Handling |
 |------|------|
-| 画像无兴趣域（轻量模式） | 用方法论近邻 + 对象近邻补碰撞域，并注明「未使用个人兴趣，个性度较低」。 |
-| 所有碰撞均为 loose | 放宽到 `medium` 并要求补充桥接论证；仍无结果则回引擎 A 重新确认缺口。 |
-| 候选数不足 target_count | 如实输出全部，交由引擎 C 后触发回灌（见引擎 C 第 3.4）。 |
-| 疑似伪蓝海碰撞 | 保留但标注，提示引擎 C 重点审可行性。 |
+| Profile has no interest domain (light mode) | Use methodological + object neighbors to fill collision domains, and note "no personal interests used; lower personalization". |
+| All collisions are loose | Loosen to `medium` and require a bridging argument; if still nothing, send back to Engine A to re-confirm gaps. |
+| Fewer candidates than `target_count` | Output all honestly and let Engine C trigger feedback (see Engine C 3.4). |
+| Suspected pseudo blue ocean collision | Keep but label it, and tell Engine C to scrutinize feasibility. |
 
 ---
 
-## 9. 验收对照
+## 9. Acceptance checklist
 
-- [x] 引擎目标与上下游位置明确
-- [x] 提供可直接执行的系统提示词 + 用户输入模板
-- [x] 五种碰撞算子 + 逻辑关联三级筛选 + 强制 `why_link`
-- [x] 含历史学×游戏标杆案例及多个跨领域示范
-- [x] 输出含 `collision_points / candidates / filtered_out`，与架构第 8.2 契约一致
-- [x] 明确概念堆砌鉴别与数据传递（A→B、B→C）
-- [x] 数量受 `max_candidates` 约束，防止发散
+- [x] Engine goal and upstream/downstream position are clear
+- [x] Provides a ready-to-run system prompt + user message template
+- [x] Five collision operators + three-level logical-link filter + forced `why_link`
+- [x] Includes the history×game benchmark case and several cross-domain demos
+- [x] Output contains `collision_points / candidates / filtered_out`, matching architecture contract 8.2
+- [x] States concept-stacking detection and data passing (A->B, B->C)
+- [x] Count is capped by `max_candidates` to prevent divergence

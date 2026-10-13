@@ -1,68 +1,68 @@
-# 创意分身 Skill — 验收清单
+# Creative Avatar Skill: Acceptance Checklist
 
-> 本文档由 F · 验收部产出，对照 PRD 第八节「成功标准」五个维度逐条验收，并附 F 部自身的元层验收与实跑结论。
-> 状态标注：✅ 已满足（有物证）｜🟡 待外部验证（需真实用户/发布环境）｜❌ 未满足。
+> This document is produced by Team F (Acceptance). It accepts item by item against the five dimensions of "success criteria" in PRD section 8, and adds Team F's own meta-level acceptance and live-run conclusions.
+> Status legend: ✅ Passed (with evidence) | 🟡 Pending external verification (needs real users / release environment) | ❌ Not met.
 
-## 1. 维度一：高质量
+## 1. Dimension 1: High quality
 
-| # | 验收项 | 状态 | 依据 |
+| # | Acceptance item | Status | Evidence |
 |---|--------|------|------|
-| 1.1 | 生成选题不出现黑名单任一种（5 类） | ✅ | 引擎 C 一票否决 + `bad_topic_blacklist.md`；实跑中「概念堆砌」反例被正确 reject |
-| 1.2 | 每个选题通过自我批判审稿（6 条硬约束） | ✅ | `engine_self_critique.md` 6 清单 + `quality_gate=pass_all`；实跑候选 1 六项全过 |
-| 1.3 | 输出严格含四要素，缺一不可 | ✅ | `output_template.md`；实跑候选 1 四要素 + 场景补充齐全 |
-| 1.4 | 饱和扫描有证据或显式标注「未实时检索」，不编造 | ✅ | `engine_saturation_scan.md` 反编造红线；实跑走 `mark_unsure` 并标注 |
+| 1.1 | Generated topic ideas hit none of the five blacklist types | ✅ | Engine C one-vote veto + `bad_topic_blacklist.md`. In live runs, a "concept stacking" counter-example was correctly rejected. |
+| 1.2 | Every topic idea passes the self-critique review (six hard constraints) | ✅ | `engine_self_critique.md` 6-item list + `quality_gate=pass_all`. Live-run candidate 1 passed all six. |
+| 1.3 | Output strictly contains the four elements, no omissions | ✅ | `output_template.md`. Live-run candidate 1 had all four elements plus scene add-ons. |
+| 1.4 | Saturation scan has evidence or is explicitly marked "not searched live"; no fabrication | ✅ | `engine_saturation_scan.md` anti-fabrication line. Live runs used `mark_unsure` and labeled accordingly. |
 
-## 2. 维度二：合法
+## 2. Dimension 2: Legal
 
-| # | 验收项 | 状态 | 依据 |
+| # | Acceptance item | Status | Evidence |
 |---|--------|------|------|
-| 2.1 | 开源合规（MIT 协议） | 🟡 | LICENSE 由 G 部产出（当前未交付） |
-| 2.2 | 隐私合规，覆盖 PRD 第七节 5 设计点 | ✅ | `privacy_policy.md` 第 12 节逐项对照 |
-| 2.3 | 不收集用户数据（零上传、零遥测、无账号） | ✅ | E 部第 2 节；D 部脚本仅本地读写，可经 `grep` 审计 |
-| 2.4 | 本地读取需明示同意 + 最小权限 + 可随时关闭 | ✅ | `privacy_policy.md` 第 6 节 + D 部 `profile_schema.md` 第 11 节 |
-| 2.5 | AI 生成内容标注 | ✅ | `privacy_policy.md` 第 10 节、README 隐私草稿 |
-| 2.6 | 画像文件进 `.gitignore`，不进公开仓库 | 🟡 | 要求已在 E 部 4.1 / D 部声明，待 G 部 `.gitignore` 落地 |
+| 2.1 | Open-source compliance (MIT license) | 🟡 | LICENSE is delivered by Team G (not yet delivered). |
+| 2.2 | Privacy compliance, covering the 5 design points in PRD section 7 | ✅ | `privacy_policy.md` section 12, item-by-item. |
+| 2.3 | Does not collect user data (zero upload, zero telemetry, no account) | ✅ | Team E section 2. Team D scripts read / write locally only; auditable via `grep`. |
+| 2.4 | Local reading requires explicit consent + least privilege + can be turned off at any time | ✅ | `privacy_policy.md` section 6 + Team D `profile_schema.md` section 11. |
+| 2.5 | AI-generated content is labeled | ✅ | `privacy_policy.md` section 10, README privacy draft. |
+| 2.6 | Profile file is in `.gitignore`, not in the public repo | 🟡 | Requirement is stated in Team E 4.1 / Team D; pending Team G's `.gitignore` to land. |
 
-## 3. 维度三：可使用
+## 3. Dimension 3: Usable
 
-| # | 验收项 | 状态 | 依据 |
+| # | Acceptance item | Status | Evidence |
 |---|--------|------|------|
-| 3.1 | 安装即用（脚本可独立运行，仅标准库） | ✅ | `init_profile.py` / `update_profile.py` 实测通过（幂等、原子写、`--force` 备份） |
-| 3.2 | 6 步闭环流程顺畅 | ✅ | 实跑一轮完整走通（见 `test_scenarios.md` 附录） |
-| 3.3 | Bug 少（画像读写、JSON 校验） | ✅ | JSON 全部通过 `json.tool`；四类反馈更新逻辑实测正确 |
-| 3.4 | 文档清晰、可照着装能用 | 🟡 | A/B/C/D/E 文档齐全且相互引用一致；README 待 G 部整合 |
+| 3.1 | Install and use (scripts run standalone, stdlib only) | ✅ | `init_profile.py` / `update_profile.py` tested (idempotent, atomic write, `--force` backup). |
+| 3.2 | 6-step loop runs smoothly | ✅ | One full live run (see appendix in `test_scenarios.md`). |
+| 3.3 | Few bugs (profile read/write, JSON validation) | ✅ | All JSON passes `json.tool`; four feedback-update paths tested correct. |
+| 3.4 | Docs are clear enough to follow and install | 🟡 | A/B/C/D/E docs are complete and cross-reference consistently; README pending Team G integration. |
 
-## 4. 维度四：实用性高
+## 4. Dimension 4: High practical value
 
-| # | 验收项 | 状态 | 依据 |
+| # | Acceptance item | Status | Evidence |
 |---|--------|------|------|
-| 4.1 | 真实用户测试：10 个里至少 6 个觉得「这个选题我真的能用」 | 🟡 | 需 G 部发布后组织真实用户测试；测试用例与评分卡已就绪 |
-| 4.2 | 覆盖至少 3 个不同场景的测试用例 | ✅ | `test_scenarios.md` 覆盖论文 / 短视频 / 活动策划 |
+| 4.1 | Real-user test: at least 6 of 10 say "I could actually use this topic" | 🟡 | Needs real-user testing after Team G release; test cases and scorecard are ready. |
+| 4.2 | Test cases cover at least 3 different scenes | ✅ | `test_scenarios.md` covers paper / short video / event planning. |
 
-## 5. 维度五：用户依赖
+## 5. Dimension 5: User retention
 
-| # | 验收项 | 状态 | 依据 |
+| # | Acceptance item | Status | Evidence |
 |---|--------|------|------|
-| 5.1 | 用完一次还会回来用（画像沉淀形成正反馈） | 🟡 | 画像跨场景沉淀机制已实现，留存需真实使用验证 |
-| 5.2 | 愿意推荐（越用越懂你、有分寸） | 🟡 | 差异化能力已具备，需口碑验证 |
+| 5.1 | Users come back after one use (profile accumulation creates positive feedback) | 🟡 | Cross-scene profile accumulation is implemented; retention needs real-use verification. |
+| 5.2 | Users are willing to recommend (it gets better over time, and has good judgment) | 🟡 | Differentiating capability is in place; needs word-of-mouth verification. |
 
-## 6. F 部自身验收（元层）
+## 6. Team F self-acceptance (meta level)
 
-| # | 验收项 | 状态 |
+| # | Acceptance item | Status |
 |---|--------|------|
-| 6.1 | 质量评分标准量化、可操作 | ✅ `quality_standards.md` |
-| 6.2 | 测试用例覆盖至少 3 个不同场景 | ✅ `test_scenarios.md` |
-| 6.3 | 验收清单对照 PRD 成功标准逐条覆盖 | ✅ 本清单 1–5 维度 |
-| 6.4 | 用测试用例实跑一轮 6 步闭环并附结果 | ✅ `test_scenarios.md` 附录 |
+| 6.1 | Quality scoring standard is quantitative and operational | ✅ `quality_standards.md` |
+| 6.2 | Test cases cover at least 3 different scenes | ✅ `test_scenarios.md` |
+| 6.3 | Acceptance checklist maps one-to-one to PRD success criteria | ✅ Dimensions 1-5 in this checklist |
+| 6.4 | Live-ran one 6-step loop using test cases and attached results | ✅ `test_scenarios.md` appendix |
 
-## 7. 实跑结论汇总
+## 7. Live-run summary
 
-- 用例 1（论文选题）实跑通过：三引擎串联正常、数据传递正常、离线降级路径正确、反例被正确淘汰；
-- 最终候选评分 24/25（优秀），黑名单零命中；
-- Step 6 反馈沉淀经真实脚本验证（`select` → `history / signals / base.interests / preferences / stats` 全量正确更新）。
+- Test case 1 (paper topic) passed: the three engines chained correctly, data passed through correctly, the offline fallback path is correct, and the counter-example was correctly rejected.
+- Final candidate scored 24/25 (excellent), zero blacklist hits.
+- Step 6 feedback accumulation was verified with the real script (`select` -> `history / signals / base.interests / preferences / stats` all updated correctly).
 
-## 8. 待办与风险（交付上司整合）
+## 8. TODO and risks (handed to lead for integration)
 
-1. 维度二/三/四/五中的 🟡 项依赖 G 部（README、LICENSE、`.gitignore`、GitHub 发布）与真实用户测试，非 F 部可独立闭环。
-2. 用例 1 中「两周内」与「4–6 周」存在张力，已在风险/难度项如实提示；如需严格满足两周，建议在问卷阶段将 `cycle` 作为硬约束注入引擎 C。
-3. 引擎 A 在无网络环境仅能走知识库兜底（`real_time=false`），结论为提示性；正式发布后应在可联网环境补跑一轮实时检索。
+1. The 🟡 items in dimensions 2 / 3 / 4 / 5 depend on Team G (README, LICENSE, `.gitignore`, GitHub release) and real-user testing; Team F cannot close them alone.
+2. In test case 1, "within two weeks" and "4-6 weeks" are in tension; this is stated honestly in the risk / difficulty note. If two weeks must be strictly met, inject `cycle` as a hard constraint into Engine C at the questionnaire stage.
+3. Engine A in an offline environment can only fall back to its knowledge base (`real_time=false`); conclusions are suggestive. After release, re-run a live-search round in a networked environment.

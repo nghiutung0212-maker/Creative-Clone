@@ -1,214 +1,214 @@
-# 场景库说明文档（Scene Library）
+# Scene Library Guide
 
-> 本文档由 B·场景库部产出，是「创意分身」Skill 场景库的使用说明与扩展指南。
-> 场景配置的**字段格式圣经**是 [`scene_format_spec.md`](./scene_format_spec.md)；本文档说明当前场景库包含什么、运行时如何读取、以及如何新增场景。
-
----
-
-## 1. 场景库是什么
-
-场景库是「创意分身」实现**场景自适应**（核心设计原则 1）与**场景维度可扩展**（核心设计原则 5）的配置层：
-
-- 一个场景 = 一个独立的 JSON 配置文件；
-- 配置文件声明该场景的：分步问卷、语气基调、硬约束、排斥项、输出格式微调；
-- 三引擎与主流程**不感知具体场景**，所有场景差异都由配置注入。新增一个场景，只需新增一个 JSON 文件，不改任何核心逻辑。
+> This document is produced by Team B (Scene Library). It is the usage and extension guide for the Creative Avatar scene library.
+> The field format bible for scene profiles is [`scene_format_spec.md`](./scene_format_spec.md). This document explains what the current scene library contains, how it is loaded at runtime, and how to add a new scene.
 
 ---
 
-## 2. 当前支持的场景索引（9 个）
+## 1. What the scene library is
 
-配置文件统一位于 `assets/scene_profiles/`。
+The scene library is the configuration layer that lets Creative Avatar do **scene adaptation** (core design principle 1) and **extensible scene dimensions** (core design principle 5):
 
-| # | scene_id | 场景名称 | 基础语气基调 | 允许幽默 | 允许非正式 | 一句话说明 |
-|---|----------|----------|--------------|:--------:|:----------:|------------|
-| 1 | `academic_paper` | 学术论文选题 | 严肃学术 | 否 | 否 | 课程论文、毕设、开题、期刊投稿与基金申请的选题，标杆配置 |
-| 2 | `ppt_presentation` | PPT 汇报选题 | 商业正式 | 否 | 是 | 课程汇报、答辩、工作汇报、路演与会议分享的主题 |
-| 3 | `short_video` | 短视频选题 | 轻松玩梗 | 是 | 是 | 三分钟以内短视频的选题、钩子与拍摄形式 |
-| 4 | `wechat_article` | 公众号文章选题 | 商业正式 | 否 | 是 | 观点评论、干货、行业分析、情感故事与热点解读 |
-| 5 | `startup_idea` | 创业方向选题 | 商业正式 | 否 | 是 | 创业点子、产品方向与商业机会，含 MVP 验证路径 |
-| 6 | `event_planning` | 活动策划选题 | 轻松玩梗 | 是 | 是 | 校园社团、团建、商业活动、沙龙比赛与线上活动 |
-| 7 | `podcast` | 播客选题 | 轻松玩梗 | 是 | 是 | 播客单集话题、讨论点与节目规划 |
-| 8 | `course_design` | 课程设计选题 | 严肃学术 | 否 | 否 | 单节课、单元课与整门课的教学设计 |
-| 9 | `interview_outline` | 人物采访提纲 | 商业正式 | 否 | 是 | 人物特稿、行业/事件/宣传采访的问题清单 |
-
-> 三种语气基调全部覆盖：**严肃学术**（论文、课程设计）、**轻松玩梗**（短视频、活动、播客）、**商业正式**（PPT、公众号、创业、采访）。
+- One scene = one standalone JSON configuration file.
+- Each file declares the step-by-step questionnaire, tone, hard constraints, exclusions, and output format tweaks for that scene.
+- The three engines and the main flow are **not aware of any specific scene**. All scene differences are injected by configuration. Adding a scene means adding one JSON file; no core logic changes.
 
 ---
 
-## 3. 文件位置与命名
+## 2. Index of currently supported scenes (9)
 
-- 目录：`assets/scene_profiles/`
-- 文件名：`{scene_id}.json`，蛇形命名（snake_case），且文件内 `scene_id` 字段必须与文件名（去掉 `.json`）完全一致。
-- 示例：`academic_paper.json` ↔ `"scene_id": "academic_paper"`。
+Configuration files live in `assets/scene_profiles/`.
+
+| # | scene_id | Scene name | Base tone | Allow humor | Allow informal | One-line description |
+|---|----------|------------|--------------|:--------:|:----------:|------------|
+| 1 | `academic_paper` | Academic paper topic ideas | Academic | No | No | Topic ideas for course papers, thesis, proposal, journal submission, and grant applications. Reference configuration. |
+| 2 | `ppt_presentation` | PPT presentation topic ideas | Formal | No | Yes | Topics for course presentations, defense, work reports, pitches, and conference sharing. |
+| 3 | `short_video` | Short video topic ideas | Playful | Yes | Yes | Topic ideas, hooks, and shooting formats for videos under three minutes. |
+| 4 | `wechat_article` | WeChat article topic ideas | Formal | No | Yes | Opinion pieces, tutorials, industry analysis, stories, and hot-topic takes. |
+| 5 | `startup_idea` | Startup direction topic ideas | Formal | No | Yes | Startup ideas, product direction, and business opportunities, with an MVP validation path. |
+| 6 | `event_planning` | Event planning topic ideas | Playful | Yes | Yes | Campus clubs, team building, business events, salons, competitions, and online events. |
+| 7 | `podcast` | Podcast topic ideas | Playful | Yes | Yes | Episode topics, discussion points, and show planning. |
+| 8 | `course_design` | Course design topic ideas | Academic | No | No | Teaching design for a single lesson, a unit, or a whole course. |
+| 9 | `interview_outline` | Interview outline | Formal | No | Yes | Question lists for profiles, industry / event / promotion interviews. |
+
+> All three tones are covered: **academic** (papers, course design), **playful** (short videos, events, podcasts), and **formal** (PPT, WeChat articles, startups, interviews).
 
 ---
 
-## 4. 运行时如何读取场景配置
+## 3. File location and naming
 
-### 4.1 加载时机（对应 6 步闭环）
+- Directory: `assets/scene_profiles/`
+- File name: `{scene_id}.json`, snake_case. The `scene_id` field inside the file must match the file name without `.json`.
+- Example: `academic_paper.json` matches `"scene_id": "academic_paper"`.
+
+---
+
+## 4. How scene profiles are loaded at runtime
+
+### 4.1 Loading points (mapped to the 6-step loop)
 
 ```
-Step 1 场景选择
-  ├─ 用户在场景菜单中选择，或自由描述场景
-  ├─ 加载 assets/scene_profiles/{scene_id}.json
-  └─ 校验：JSON 语法合法 + 7 个顶层字段齐全 + scene_id 与文件名一致
-        └─ 校验通过才进入 Step 2
-Step 2 场景化问卷
-  ├─ 按 questionnaire_template.rounds 逐轮提问（每轮 2-3 题）
-  ├─ 渲染每题前先求值 condition，决定 show / skip
-  └─ 每轮结束后对照 skip_logic.rules 判断是否追加或省略问题
-Step 3 对话式补充
-  └─ 结合问卷回答与本地画像，追问 3-5 个画像缺口（详见 profile_schema.md）
-Step 4 选题生成（三引擎）
-  ├─ constraint_list → 作为生成结果的硬性过滤条件
-  ├─ exclusion_rules → 与全局黑名单叠加，作为规避方向
-  └─ tone_rules      → 作为生成与审稿的语气/分寸依据
-Step 5 输出选题
-  └─ 按 output_format_adjustments 调整标题格式、追加/省略字段
-Step 6 反馈迭代
-  └─ 问卷回答与最终选中选题沉淀进用户画像（跨场景复用）
+Step 1 Pick a scenario
+  ├─ User picks from the scene menu, or describes the scene in free text
+  ├─ Load assets/scene_profiles/{scene_id}.json
+  └─ Validate: valid JSON syntax + all 7 top-level fields present + scene_id matches file name
+        └─ Only after validation passes, enter Step 2
+Step 2 Scenario questionnaire
+  ├─ Ask questions round by round per questionnaire_template.rounds (2-3 per round)
+  ├─ Before rendering each question, evaluate condition to decide show / skip
+  └─ After each round, check skip_logic.rules to decide whether to add or drop questions
+Step 3 Follow-up dialogue
+  └─ Use the questionnaire answers and local profile to ask 3-5 follow-up questions for profile gaps (see profile_schema.md)
+Step 4 Topic generation (three engines)
+  ├─ constraint_list → used as hard filters on generated results
+  ├─ exclusion_rules → combined with the global blacklist to form avoid directions
+  └─ tone_rules      → used as the tone / register basis for generation and review
+Step 5 Output topic ideas
+  └─ Adjust title format and add / drop fields per output_format_adjustments
+Step 6 Feedback loop
+  └─ Questionnaire answers and the selected topic idea are saved into the user profile (reused across scenes)
 ```
 
-### 4.2 每个字段如何被消费
+### 4.2 How each top-level field is consumed
 
-| 顶层字段 | 类型 | 消费者 | 用途 |
+| Top-level field | Type | Consumer | Purpose |
 |----------|------|--------|------|
-| `scene_id` | string | 路由 / 主流程 | 场景唯一标识，须与文件名一致 |
-| `scene_name` | string | 场景菜单 | 菜单中展示给用户的中文名 |
-| `scene_description` | string | 场景菜单 / 路由 | 一句话说明，帮助用户判断与辅助匹配 |
-| `questionnaire_template` | object | Step 2 问卷 | `rounds` 定义分步问题；`skip_logic` 定义跳转规则 |
-| `tone_rules` | object | Step 4/5 | 基础基调、是否允许幽默/非正式、语气正例与反例 |
-| `constraint_list` | array | 三引擎 | 选题**必须满足**的硬条件，作为过滤条件 |
-| `exclusion_rules` | array | 三引擎 | 该场景**主动规避**的方向 |
-| `output_format_adjustments` | object | Step 5 输出 | 标题模板、额外字段、可省略字段 |
+| `scene_id` | string | Routing / main flow | Unique scene identifier; must match file name. |
+| `scene_name` | string | Scene menu | Name shown to users in the menu. |
+| `scene_description` | string | Scene menu / routing | One-line description; helps users judge and assists matching. |
+| `questionnaire_template` | object | Step 2 questionnaire | `rounds` defines step-by-step questions; `skip_logic` defines jump rules. |
+| `tone_rules` | object | Step 4 / 5 | Base tone, whether humor / informal is allowed, positive and negative tone examples. |
+| `constraint_list` | array | Three engines | Hard conditions topic ideas **must satisfy**; used as filters. |
+| `exclusion_rules` | array | Three engines | Directions this scene **actively avoids**. |
+| `output_format_adjustments` | object | Step 5 output | Title template, extra fields, droppable fields. |
 
 ---
 
-## 5. 三种语气基调
+## 5. The three tones
 
-| 基调 | allow_humor | allow_informal | 覆盖场景 |
+| Tone | allow_humor | allow_informal | Scenarios covered |
 |------|:-----------:|:--------------:|----------|
-| 严肃学术 | false | false | 学术论文、课程设计 |
-| 轻松玩梗 | true | true | 短视频、活动策划、播客 |
-| 商业正式 | false | true | PPT 汇报、公众号、创业方向、采访提纲 |
+| Academic | false | false | Academic papers, course design |
+| Playful | true | true | Short videos, event planning, podcasts |
+| Formal | false | true | PPT presentations, WeChat articles, startup directions, interview outlines |
 
-补充规则：
+Additional rules:
 
-- 基调是**默认值**，不是死规则。多数配置的 `tone_rules` 中含 `conditional_notes`，当用户在问卷中明确表达不同基调时（如课程汇报想玩梗、公众号想写深度长文），以**用户当前请求为准**，按条件说明切换。
-- 任何基调节点都不可突破法律与平台合规底线；幽默不得用于侮辱、歧视、引战或削弱证据。
+- Tone is a **default**, not a hard rule. Most `tone_rules` include `conditional_notes`. When the user's questionnaire answers express a different tone (for example, a course presentation that wants to be playful, or a WeChat article that wants deep long-form prose), the **user's current request wins** and the tone switches per the conditional notes.
+- No tone may break legal or platform compliance. Humor must not be used to insult, discriminate, start a fight, or weaken evidence.
 
 ---
 
-## 6. 分步问卷与跳转机制
+## 6. Step-by-step questionnaire and skip logic
 
-### 6.1 分步追问
+### 6.1 Step-by-step follow-up
 
-- 问卷按 `questionnaire_template.rounds` 中的 `round_id` 顺序逐轮进行；
-- 每轮 2-3 个问题，用户作答后再进入下一轮，不一次性甩出全部问题；
-- 每个问题声明 `field`（字段名）、`question`（提问文案）、`type`（`text` / `choice`）、`required`、`options`（选择题）等。
+- The questionnaire proceeds round by round, in the `round_id` order in `questionnaire_template.rounds`.
+- Each round has 2-3 questions. The user answers one round before the next starts; all questions are not dumped at once.
+- Each question declares `field` (field name), `question` (prompt text), `type` (`text` / `choice`), `required`, and `options` (for choice questions).
 
-### 6.2 条件渲染（condition）
+### 6.2 Conditional rendering (condition)
 
-题目级别的显隐通过 `condition` 声明，统一结构：
+Per-question show / hide is declared with `condition`, in a fixed shape:
 
 ```json
 "condition": {
-  "if": {"field": "level", "in": ["硕士论文", "博士论文"]},
+  "if": {"field": "level", "in": ["master's thesis", "PhD thesis"]},
   "then": "show",
   "else": "skip"
 }
 ```
 
-每次渲染该问题前，先根据已收集答案求值；未声明 `condition` 的问题始终展示。
+Before each render, the condition is evaluated against collected answers. Questions with no `condition` are always shown.
 
-### 6.3 跳转规则（skip_logic）
+### 6.3 Skip rules (skip_logic)
 
-`questionnaire_template.skip_logic.rules` 以自然语言声明跨轮次的追加、省略与生成约束，每个场景均含 **不少于 2 条**跳转规则。典型模式：
+`questionnaire_template.skip_logic.rules` declares cross-round additions, drops, and generation constraints in natural language. Each scene has **at least 2** skip rules. Typical patterns:
 
-- **层级跳转**：选「课程论文」→ 不问博士层级的理论贡献要求；
-- **目标跳转**：选「带货」→ 追加商品信息、风险提醒增加广告合规；
-- **资源跳转**：已有现成数据集 → 不再追问数据可得性，优先复用；
-- **时长跳转**：时长极短 → 只保留单一观点、单一话题。
-
----
-
-## 7. 约束与排斥的叠加关系
-
-生成时，规避条件按以下顺序叠加，越靠后越严格：
-
-1. **全局黑名单**：`bad_topic_blacklist.md` 中定义的五种烂选题（概念堆砌、过度饱和、无法落地、范围过大、假问题），对所有场景生效；
-2. **场景排斥项**：当前场景 `exclusion_rules` 中的方向，在全局黑名单之上叠加；
-3. **用户显式排除**：问卷中用户填写的排斥/禁忌（如 `excludes`、`red_lines`）；
-4. **场景硬约束**：`constraint_list` 是正向过滤条件，不满足的选题直接淘汰，不进入输出。
+- **Level jump**: user picks "course paper" → do not ask PhD-level theoretical-contribution requirements.
+- **Goal jump**: user picks "e-commerce" → add product information and ad-compliance risk notes.
+- **Resource jump**: user already has a dataset → do not ask about data availability; prefer reuse.
+- **Duration jump**: duration is very short → keep only a single point and a single topic.
 
 ---
 
-## 8. 输出格式微调
+## 7. How constraints and exclusions stack
 
-- 四要素（具体问题 / 为什么适合你 / 三个切入角度 / 风险提醒）**任何场景都不可省略**；
-- `output_format_adjustments.title_format` 定义标题模板，如论文场景 `《{具体问题}——以{研究对象}为例》`；
-- `extra_fields` 声明场景专属的追加字段（如短视频追加「前3秒钩子」，创业追加「MVP 验证路径」）；
-- `suppress_fields` 声明可省略的标准字段；当前 9 个场景均保持为空，即完整保留四要素。
+At generation time, exclusion conditions stack in the following order; later layers are stricter:
+
+1. **Global blacklist**: the five bad-topic types defined in `bad_topic_blacklist.md` (concept stacking, over-saturation, infeasible, too broad, false question), applied to all scenes.
+2. **Scene exclusions**: directions in the current scene's `exclusion_rules`, stacked on top of the global blacklist.
+3. **User-stated exclusions**: exclusions / taboos the user writes in the questionnaire (such as `excludes`, `red_lines`).
+4. **Scene hard constraints**: `constraint_list` is a positive filter. Topic ideas that fail are rejected outright and do not enter the output.
 
 ---
 
-## 9. 如何新增一个场景
+## 8. Output format tweaks
 
-> 目标：新增场景 = 新增一个 JSON 文件 + 在本文件索引表追加一行，无需改动 SKILL.md 与任何引擎逻辑。
+- The four elements (concrete question / why it fits you / three angles to approach it / risk notes) **cannot be dropped in any scene**.
+- `output_format_adjustments.title_format` defines the title template. For example, the paper scene uses `"{concrete question} (case study of {research object})"`.
+- `extra_fields` declares scene-specific added fields (for example, short video adds "first-3-second hook"; startup adds "MVP validation path").
+- `suppress_fields` declares standard fields that may be omitted. All 9 current scenes keep this empty, so the four elements are fully retained.
 
-### 9.1 操作步骤
+---
 
-1. **新建文件**：在 `assets/scene_profiles/` 下新建 `{scene_id}.json`，`scene_id` 使用蛇形命名（如 `exhibition_curation.json`）。
-2. **填写配置**：严格按 [`scene_format_spec.md`](./scene_format_spec.md) 填齐 7 个顶层字段：
-   - `scene_id`、`scene_name`、`scene_description`；
-   - `questionnaire_template`：分轮设计，每轮 2-3 题；
-   - `tone_rules`：选择与场景匹配的基础基调；
-   - `constraint_list`、`exclusion_rules`；
-   - `output_format_adjustments`。
-3. **设计跳转**：问卷至少包含 2 条 `skip_logic` 跳转规则；需要题目级显隐时使用 `condition`。
-4. **校验语法**：运行 JSON 校验（见 9.3）。
-5. **登记索引**：在本文档第 2 节的索引表中追加一行。
-6. **完成**：无需改动 SKILL.md、引擎与画像代码；如确需当前配置无法表达的新能力，先提交架构评审，不得直接改核心逻辑。
+## 9. How to add a new scene
 
-### 9.2 新增场景 Checklist
+> Goal: adding a scene = adding one JSON file + appending one row to the index in this file. No changes to SKILL.md or any engine logic.
 
-- [ ] 文件名蛇形命名，且与 `scene_id` 完全一致
-- [ ] 7 个顶层字段齐全，问卷题目字段（field/question/type/required）完整
-- [ ] 问卷分步进行，每轮 2-3 题，不一次性提问
-- [ ] `skip_logic.rules` 不少于 2 条，condition 结构正确
-- [ ] 基础基调与场景匹配，`tone_examples` 含正例与反例
-- [ ] `constraint_list` 可执行、可过滤；`exclusion_rules` 与全局黑名单无冲突
-- [ ] 输出保留四要素，`extra_fields` 仅追加不删减
-- [ ] 通过 JSON 语法校验
-- [ ] 已在 `scene_configs.md` 索引表登记
+### 9.1 Steps
 
-### 9.3 校验命令
+1. **Create the file**: add `{scene_id}.json` under `assets/scene_profiles/`. Use snake_case for `scene_id` (for example, `exhibition_curation.json`).
+2. **Fill in the configuration**: follow [`scene_format_spec.md`](./scene_format_spec.md) strictly and fill all 7 top-level fields:
+   - `scene_id`, `scene_name`, `scene_description`;
+   - `questionnaire_template`: design by rounds, 2-3 questions per round;
+   - `tone_rules`: pick a base tone that fits the scene;
+   - `constraint_list`, `exclusion_rules`;
+   - `output_format_adjustments`.
+3. **Design skip logic**: the questionnaire must include at least 2 `skip_logic` rules. Use `condition` when per-question show / hide is needed.
+4. **Validate syntax**: run JSON validation (see 9.3).
+5. **Register in the index**: append one row to the index table in section 2 of this file.
+6. **Done**: no changes to SKILL.md, engines, or profile code. If a new capability cannot be expressed by the current configuration, submit it for architecture review first; do not change core logic directly.
+
+### 9.2 New-scene checklist
+
+- [ ] File name is snake_case and exactly matches `scene_id`
+- [ ] All 7 top-level fields present; question fields (field / question / type / required) complete
+- [ ] Questionnaire proceeds by rounds, 2-3 questions per round, not all at once
+- [ ] `skip_logic.rules` has at least 2 entries; condition structure is correct
+- [ ] Base tone fits the scene; `tone_examples` includes both positive and negative examples
+- [ ] `constraint_list` is executable and filterable; `exclusion_rules` does not conflict with the global blacklist
+- [ ] Output keeps the four elements; `extra_fields` only adds, never drops
+- [ ] Passes JSON syntax validation
+- [ ] Registered in the `scene_configs.md` index table
+
+### 9.3 Validation commands
 
 ```bash
-# 校验全部场景配置
+# Validate a single scene profile
 python3 -m json.tool assets/scene_profiles/{scene_id}.json > /dev/null && echo OK
 
-# 一次性校验整个场景库
+# Validate the whole scene library in one pass
 for f in assets/scene_profiles/*.json; do python3 -m json.tool "$f" > /dev/null || echo "BAD: $f"; done
 ```
 
 ---
 
-## 10. 与其他文件的关系
+## 10. Relationship with other files
 
-| 文件 | 关系 |
+| File | Relationship |
 |------|------|
-| `references/scene_format_spec.md` | 场景配置的字段格式规范（A 部门产出），本文件是其配套使用说明 |
-| `references/bad_topic_blacklist.md` | 全局烂选题黑名单，与各场景 `exclusion_rules` 叠加 |
-| `references/engine_*.md` | 三引擎，消费配置中的问卷答案、约束、排斥与语气规则 |
-| `references/output_template.md` | 四要素输出模板，受 `output_format_adjustments` 微调 |
-| `references/profile_schema.md` | 用户画像，问卷回答与选中选题跨场景沉淀其中 |
-| `SKILL.md` | 入口文档，Step 1/2 引用本场景库 |
+| `references/scene_format_spec.md` | Field format spec for scene profiles (produced by Team A). This file is its companion usage guide. |
+| `references/bad_topic_blacklist.md` | Global bad-topic blacklist; stacked with each scene's `exclusion_rules`. |
+| `references/engine_*.md` | The three engines; consume the questionnaire answers, constraints, exclusions, and tone rules from the configuration. |
+| `references/output_template.md` | Four-element output template; adjusted by `output_format_adjustments`. |
+| `references/profile_schema.md` | User profile; questionnaire answers and selected topic ideas are saved here across scenes. |
+| `SKILL.md` | Entry document; Steps 1 / 2 reference this scene library. |
 
 ---
 
-## 11. 交付说明（B·场景库部）
+## 11. Delivery notes (Team B, Scene Library)
 
-- **产出文件**：`assets/scene_profiles/` 下 9 个场景配置 JSON + 本文档 `references/scene_configs.md`。
-- **规格符合情况**：全部配置严格遵循 `scene_format_spec.md` 的 7 个顶层字段；论文标杆配置覆盖 PRD 模块 1 全部 8 个问卷维度；每场景跳转规则均 ≥ 2 条；三种语气基调全覆盖。
-- **遗留 TODO**：无。场景菜单的最终展示文案由整合阶段在 SKILL.md 中衔接，不影响配置本身。
+- **Deliverables**: 9 scene profile JSON files under `assets/scene_profiles/` plus this document `references/scene_configs.md`.
+- **Spec compliance**: all configurations strictly follow the 7 top-level fields in `scene_format_spec.md`. The paper reference configuration covers all 8 questionnaire dimensions in PRD module 1. Each scene has at least 2 skip rules. All three tones are covered.
+- **Outstanding TODO**: none. The final menu copy is wired into SKILL.md during integration; it does not affect the configuration itself.

@@ -1,48 +1,48 @@
-# README 隐私草稿（E · 合规部 → G · 发布部）
+# README Privacy Draft (Team E · Compliance -> Team G · Release)
 
-> **交付部门**：E · 合规部
-> **文档版本**：v1.0（与 `privacy_policy.md` v1.0、`consent_version = "1.0"` 一致）
-> **用途**：本文件是供 G 部整合进 `README.md` 的 Markdown 片段。
-> **放置位置（硬性要求，源自 PRD 7.3）**：README 首屏——**项目标题 / 一句话简介之后、「安装方式」之前**，是用户进入 README 后看到的第一个正式章节。
-> **写作要求**：通俗语言，面向非技术用户；技术细节以链接形式指向完整政策，不在此展开。
-
----
-
-## 以下为待整合片段（复制线以下内容到 README.md）
+> **Handover team**: Team E (Compliance)
+> **Document version**: v1.0 (matches `privacy_policy.md` v1.0 and `consent_version = "1.0"`)
+> **Purpose**: this file is a Markdown snippet for Team G to integrate into `README.md`.
+> **Placement (hard requirement, from PRD 7.3)**: first screen of the README, **after the project title / one-line intro and before the installation section**. It is the first formal section a reader sees after opening the README.
+> **Writing requirement**: plain language for non-technical users; technical details are linked out to the full policy rather than expanded here.
 
 ---
 
-## 🔒 隐私安全：先说最重要的事
-
-**创意分身不收集你的任何数据。**
-
-- **没有账号、没有服务器、没有埋点**：所有数据处理逻辑开源，你可以逐行审查。
-- **读你文件这件事，默认关闭**：只有你主动勾选授权、并亲自选择文件夹后才会开启；不授权，全部功能照样能用。
-- **只读你指定的文件夹，不扫全盘**：只提取「写作风格、知识背景、关注领域、思考深度」四类摘要特征，不复制原文、不改动你的文件；结果只存在你本机 `~/.creative-clone/profile.json`。
-- **随时可以反悔**：设置里一键关闭即退回「问卷 + 对话」模式；画像可随时查看、编辑、删除。
-
-> 小提示：通过云端模型（GPT / Gemini / DeepSeek 等）生成选题时，你的对话内容（含本地提取的摘要特征）会按该模型服务的隐私政策处理；**文件原文不会进入对话**。想完全离线，可挂载本地模型后端。
-
-| 数据 | 存哪 | 是否上传 |
-|------|------|----------|
-| 问卷回答、对话、反馈、选中的选题 | 你的本机画像文件 | 否 |
-| 授权后提取的摘要特征（风格 / 背景 / 兴趣 / 思考深度） | 你的本机画像文件 | 否 |
-| 文档原文 | 不提取、不保存 | 否 |
-
-**常用操作**：
-
-- 查看画像：打开 `~/.creative-clone/profile.json`
-- 关闭本地读取：设置 → 隐私与授权 → 关闭「本地文件读取」
-- 清空一切：删除画像文件即可，无云端副本
-
-👉 完整说明见 [隐私政策](references/privacy_policy.md)。
+## Snippet to integrate below (copy everything below this line into README.md)
 
 ---
 
-## 整合注意事项（给 G 部，勿复制进 README）
+## Privacy and security
 
-1. **位置不可后移**：PRD 7.3 明确要求「在 GitHub README 最显眼的位置放隐私政策」，本片段须在安装说明之前。
-2. **链接路径**：片段中 `references/privacy_policy.md` 为仓库实际路径，整合后请确认可点击。
-3. **措辞保持通俗**：如因排版需要微调，仅可调整格式，不得弱化「默认关闭 / 主动勾选 / 不扫全盘 / 随时关闭」四项承诺，也不得删除模型通道的「小提示」（避免对用户产生误导）。
-4. **README 末尾呼应**：README 末尾「开源协议」章节前，建议再加一行：`隐私政策见 [references/privacy_policy.md](references/privacy_policy.md)，AI 生成内容仅供参考。`
-5. **政策版本联动**：未来隐私政策升版（如 `consent_version` 变化），本摘要须同步更新并在 README / CHANGELOG 公示。
+**Creative Avatar does not collect any of your data.**
+
+- **No account, no server, no tracking**: all data-processing logic is open source; you can review it line by line.
+- **File reading is off by default**: it only turns on when you explicitly grant access and pick a folder yourself. Without access, every feature still works.
+- **It reads only the folder you specify, not the whole disk**: it extracts four kinds of summary features (writing style, knowledge background, interests, depth of thinking), and does not copy or modify your files. The results are stored only in `~/.creative-clone/profile.json` on your machine.
+- **You can change your mind at any time**: turn it off in one click in Settings and it falls back to questionnaire + dialogue mode. The profile can be viewed, edited, or deleted at any time.
+
+> Note: when topic ideas are generated through a cloud model (GPT / Gemini / DeepSeek, etc.), your conversation, including the summary features extracted locally, is handled under that model service's privacy policy. The original file content never enters the conversation. To work fully offline, you can point the Skill at a local model backend.
+
+| Data | Where it is stored | Uploaded? |
+|------|--------------------|-----------|
+| Questionnaire answers, dialogue, feedback, selected topic ideas | Your local profile file | No |
+| Summary features extracted after authorization (style / background / interests / depth of thinking) | Your local profile file | No |
+| Original document content | Not extracted, not stored | No |
+
+**Common operations**:
+
+- View the profile: open `~/.creative-clone/profile.json`
+- Disable local file reading: Settings -> Privacy & Authorization -> turn off "Local file reading"
+- Remove everything: delete the profile file; there is no cloud copy
+
+Full details in the [privacy policy](references/privacy_policy.md).
+
+---
+
+## Integration notes (for Team G, do not copy into README)
+
+1. **Position must not be moved down**: PRD 7.3 requires the privacy policy to sit in the most visible spot of the GitHub README. This snippet must appear before the installation instructions.
+2. **Link path**: `references/privacy_policy.md` is the actual path in the repo. Confirm the link is clickable after integration.
+3. **Keep the wording plain**: if layout requires small tweaks, only adjust formatting. Do not weaken the four promises ("off by default / opt-in / reads only the chosen folder / can be turned off at any time"), and do not remove the cloud-model note (to avoid misleading users).
+4. **Echo at the end of the README**: before the "License" section at the end of the README, add one line: `Privacy policy: [references/privacy_policy.md](references/privacy_policy.md). AI-generated content is for reference only.`
+5. **Version sync**: when the privacy policy is upgraded (for example, `consent_version` changes), this summary must be updated in lockstep and announced in the README / CHANGELOG.
