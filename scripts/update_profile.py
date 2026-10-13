@@ -1,17 +1,20 @@
-"""「创意分身」用户画像更新脚本。
+#!/usr/bin/env python3
+"""Update the Creative Avatar user profile.
 
-在用户对候选选题给出反馈后运行，把本次反馈沉淀进本地画像：
-- like     「这个有意思」：记录喜欢，沉淀兴趣信号
-- dislike  「换一批」：记录当前这批不满意
-- redirect 「方向偏了」：记录方向偏差，供下一轮纠偏
-- select   「最终选中」：选中选题沉淀为跨场景兴趣偏好
+Run this after the user gives feedback on candidate topic ideas, so the
+feedback is stored in the local profile:
+- like     mark as interesting: record the like and accumulate interest signals
+- dislike  ask for a new batch: record that this batch did not land
+- redirect off track: record the direction drift, so the next round can correct it
+- select   selected: the chosen topic becomes a cross-scenario interest preference
 
-用法：
-    python3 update_profile.py --feedback like --topic "《从<文明>系列游戏看大众对罗马帝国的认知偏差》"
-    python3 update_profile.py --feedback select --topic "……" --scenario academic_paper
-    python3 update_profile.py --feedback redirect --topic "……" --query "想换一个更落地的方向"
+Usage:
+    python3 update_profile.py --feedback like --topic "Public perceptions of the Roman Empire through the Civilization game series"
+    python3 update_profile.py --feedback select --topic "your topic title" --scenario academic_paper
+    python3 update_profile.py --feedback redirect --topic "your topic title" --query "a more actionable direction"
 
-画像默认位于 ~/.creative-clone/profile.json，数据仅存本地，可随时手动编辑。
+The profile defaults to ~/.creative-clone/profile.json. Data is stored only
+locally and can be edited by hand at any time.
 """
 
 from __future__ import annotations
@@ -24,8 +27,8 @@ from pathlib import Path
 from typing import Dict, List
 
 DEFAULT_PROFILE_PATH = Path.home() / ".creative-clone" / "profile.json"
-MAX_HISTORY = 500        
-MAX_SIGNAL_TOPICS = 50   
+MAX_HISTORY = 500        # History cap, so the list cannot grow without bound
+MAX_SIGNAL_TOPICS = 50   # Cap per signal type (only the most recent signals are kept)
 FEEDBACK_CHOICES = ("like", "dislike", "redirect", "select")
 
 
@@ -34,7 +37,7 @@ def utc_now_iso() -> str:
 
 
 def minimal_profile() -> Dict:
-    """极简画像骨架，仅在画像与模板文件都缺失时兜底。"""
+    """Minimal profile skeleton, used only when both the profile and the template file are missing."""
     return {
         "schema_version": 1,
         "profile_meta": {
@@ -121,7 +124,7 @@ def write_profile(path: Path, data: Dict) -> None:
 
 
 def load_or_init_profile(profile_path: Path) -> Dict:
-    """画像不存在时自动初始化，避免脚本因缺文件而失败。"""
+    """Initialize the profile automatically when it does not exist, so the script does not fail on a missing file."""
     if profile_path.exists():
         with profile_path.open("r", encoding="utf-8") as fh:
             return json.load(fh)
@@ -138,7 +141,7 @@ def load_or_init_profile(profile_path: Path) -> Dict:
     profile["profile_meta"]["updated_at"] = now
     profile_path.parent.mkdir(parents=True, exist_ok=True)
     write_profile(profile_path, profile)
-    print("未找到画像，已自动初始化：{}".format(profile_path))
+    print("No profile found, initialized one automatically: {}".format(profile_path))
     return profile
 
 
@@ -171,7 +174,7 @@ def apply_feedback(
         append_unique(signals.setdefault("selected_topics", []), topic)
         entry["chosen_topics"] = [topic]
         stats["select_count"] = stats.get("select_count", 0) + 1
-
+        # A selected topic becomes a cross-scenario interest: written into base.interests and preferences
         interests = profile.setdefault("base", {}).setdefault("interests", [])
         append_unique(interests, topic)
         upsert_preference(
@@ -187,26 +190,26 @@ def apply_feedback(
 
 
 def build_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="更新「创意分身」用户画像。")
+    parser = argparse.ArgumentParser(description="Update the Creative Avatar user profile.")
     parser.add_argument(
         "--feedback",
         required=True,
         choices=FEEDBACK_CHOICES,
-        help="反馈类型：like（有意思）/ dislike（换一批）/ redirect（方向偏了）/ select（最终选中）",
+        help="Feedback type: like (mark as interesting) / dislike (ask for a new batch) / redirect (off track) / select (selected)",
     )
-    parser.add_argument("--topic", required=True, type=str, help="本次选题内容")
+    parser.add_argument("--topic", required=True, type=str, help="The topic idea from this round")
     parser.add_argument(
         "--scenario",
         type=str,
         default="unknown",
-        help="场景标识（如 academic_paper，默认 unknown）",
+        help="Scenario ID (e.g. academic_paper; default: unknown)",
     )
-    parser.add_argument("--query", type=str, default="", help="用户原始诉求摘要（可选）")
+    parser.add_argument("--query", type=str, default="", help="Summary of the user's original request (optional)")
     parser.add_argument(
         "--path",
         type=str,
         default=None,
-        help="画像文件路径（默认 ~/.creative-clone/profile.json）",
+        help="Path to the profile file (default: ~/.creative-clone/profile.json)",
     )
     return parser.parse_args()
 
@@ -221,9 +224,9 @@ def main() -> int:
     apply_feedback(profile, args.feedback, topic, args.scenario, query)
     write_profile(profile_path, profile)
 
-    print("画像已更新：{}".format(profile_path))
-    print("反馈类型：{} | 选题：{}".format(args.feedback, topic))
-    print("画像数据仅保存在本地，可随时手动编辑或删除。")
+    print("Profile updated: {}".format(profile_path))
+    print("Feedback type: {} | Topic: {}".format(args.feedback, topic))
+    print("All profile data is stored locally and can be edited or deleted by hand at any time.")
     return 0
 
 

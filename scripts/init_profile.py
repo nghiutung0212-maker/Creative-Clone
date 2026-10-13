@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
-"""「创意分身」用户画像初始化脚本。
+"""Initialize the Creative Avatar user profile.
 
-首次使用时运行，在用户本地创建画像 JSON 文件：
-- 默认路径：~/.creative-clone/profile.json
-- 画像已存在时默认跳过（可用 --force 重新初始化，旧文件先备份为 .bak）
-- 画像内容来自 assets/profile_template.json；若模板缺失则使用内置最小模板兜底
-- 所有数据仅保存在本地，不上传任何服务器
+Run this on first use to create the profile JSON file on the user's machine:
+- Default path: ~/.creative-clone/profile.json
+- Skips by default if the profile already exists (use --force to reinitialize;
+  the old file is backed up as .bak first)
+- Profile content comes from assets/profile_template.json; if the template is
+  missing, a built-in minimal template is used as a fallback
+- All data is stored locally and is never uploaded to any server
 
-用法：
+Usage:
     python3 init_profile.py
     python3 init_profile.py --path ~/my-profiles/profile.json
     python3 init_profile.py --force
@@ -24,8 +26,9 @@ from typing import Dict, List
 
 DEFAULT_PROFILE_PATH = Path.home() / ".creative-clone" / "profile.json"
 
-# 内置最小模板兜底：仅当 assets/profile_template.json 缺失时使用，
-# 与 assets/profile_template.json 保持同构，便于脚本脱离仓库目录也能运行。
+# Built-in minimal template fallback: used only when assets/profile_template.json
+# is missing. It mirrors the structure of assets/profile_template.json so the
+# script can run even outside the repository directory.
 FALLBACK_TEMPLATE: Dict = {
     "schema_version": 1,
     "profile_meta": {
@@ -83,7 +86,7 @@ def utc_now_iso() -> str:
 
 
 def default_template_path() -> Path:
-    """脚本位于 scripts/ 下，模板位于 ../assets/profile_template.json。"""
+    """The script lives under scripts/, so the template is at ../assets/profile_template.json."""
     return Path(__file__).resolve().parent.parent / "assets" / "profile_template.json"
 
 
@@ -94,10 +97,10 @@ def load_template(template_path: Path) -> Dict:
         missing = [k for k in REQUIRED_TOP_LEVEL_KEYS if k not in data]
         if missing:
             raise SystemExit(
-                "模板文件缺少必要字段：{}（{}）".format(", ".join(missing), template_path)
+                "The template file is missing required fields: {} ({})".format(", ".join(missing), template_path)
             )
         return data
-    # 深拷贝兜底模板，避免后续修改污染模块级常量
+    # Deep-copy the fallback template so later edits do not mutate the module-level constant
     return json.loads(json.dumps(FALLBACK_TEMPLATE))
 
 
@@ -107,27 +110,27 @@ def write_profile(path: Path, data: Dict) -> None:
     with tmp_path.open("w", encoding="utf-8") as fh:
         json.dump(data, fh, ensure_ascii=False, indent=2)
         fh.write("\n")
-    tmp_path.replace(path)  # 原子替换，避免写一半损坏
+    tmp_path.replace(path)  # Atomic replace, so a partial write cannot corrupt the file
 
 
 def build_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="初始化「创意分身」用户画像文件。")
+    parser = argparse.ArgumentParser(description="Initialize the Creative Avatar user profile file.")
     parser.add_argument(
         "--path",
         type=str,
         default=None,
-        help="画像文件路径（默认 ~/.creative-clone/profile.json）",
+        help="Path to the profile file (default: ~/.creative-clone/profile.json)",
     )
     parser.add_argument(
         "--template",
         type=str,
         default=None,
-        help="模板文件路径（默认 assets/profile_template.json）",
+        help="Path to the template file (default: assets/profile_template.json)",
     )
     parser.add_argument(
         "--force",
         action="store_true",
-        help="画像已存在时覆盖重建（会先备份为 .bak）",
+        help="Overwrite and rebuild when the profile already exists (backed up as .bak first)",
     )
     return parser.parse_args()
 
@@ -141,12 +144,12 @@ def main() -> int:
 
     if profile_path.exists():
         if not args.force:
-            print("画像已存在，跳过初始化：{}".format(profile_path))
-            print("如需重新初始化，请加 --force（会先备份为 .bak）。")
+            print("Profile already exists, skipping initialization: {}".format(profile_path))
+            print("Use --force to reinitialize (the old file is backed up as .bak first).")
             return 0
         backup_path = profile_path.with_suffix(profile_path.suffix + ".bak")
         profile_path.replace(backup_path)
-        print("已备份旧画像：{}".format(backup_path))
+        print("Backed up the existing profile: {}".format(backup_path))
 
     data = load_template(template_path)
     now = utc_now_iso()
@@ -154,8 +157,8 @@ def main() -> int:
     data["profile_meta"]["updated_at"] = now
     write_profile(profile_path, data)
 
-    print("画像已初始化：{}".format(profile_path))
-    print("画像数据仅保存在本地，不上传任何服务器。可随时查看、编辑或删除。")
+    print("Profile initialized: {}".format(profile_path))
+    print("All profile data is stored locally and is never uploaded to any server. You can view, edit, or delete it at any time.")
     return 0
 
 
