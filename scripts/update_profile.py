@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """「创意分身」用户画像更新脚本。
 
 在用户对候选选题给出反馈后运行，把本次反馈沉淀进本地画像：
@@ -25,8 +24,8 @@ from pathlib import Path
 from typing import Dict, List
 
 DEFAULT_PROFILE_PATH = Path.home() / ".creative-clone" / "profile.json"
-MAX_HISTORY = 500        # 历史记录上限，防止无限膨胀
-MAX_SIGNAL_TOPICS = 50   # 每类信号主题上限（只保留最近信号）
+MAX_HISTORY = 500        
+MAX_SIGNAL_TOPICS = 50   
 FEEDBACK_CHOICES = ("like", "dislike", "redirect", "select")
 
 
@@ -172,7 +171,7 @@ def apply_feedback(
         append_unique(signals.setdefault("selected_topics", []), topic)
         entry["chosen_topics"] = [topic]
         stats["select_count"] = stats.get("select_count", 0) + 1
-        # 选中选题沉淀为跨场景兴趣：写入 base.interests 与 preferences
+
         interests = profile.setdefault("base", {}).setdefault("interests", [])
         append_unique(interests, topic)
         upsert_preference(
