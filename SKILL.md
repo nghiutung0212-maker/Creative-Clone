@@ -16,6 +16,27 @@ agent_created: true
 
 # Creative Avatar: General-Purpose Topic Ideation Skill
 
+## CRITICAL EXECUTION RULES (READ FIRST — overrides everything below)
+
+These rules are mandatory. Violating any rule makes the output INVALID. Do not skip, summarize, or collapse any step into a single response.
+
+**Rule 1 — Ask before you generate.**
+You MUST complete Steps 1–3 (scenario selection, questionnaire, follow-up + profile loading) BEFORE running any engine or generating any topic idea. If you skip the questionnaire and jump straight to topic generation, the output is invalid. The questionnaire is the primary differentiator between this Skill and a plain AI response — without it, there is no point.
+
+**Rule 2 — Show your work.**
+Each engine (A, B, C) MUST produce a visible, structured intermediate output that the user can read. Engine A's saturation report, Engine B's collision candidates (with `why_link`), and Engine C's verdicts (pass/reject with reason) must each appear as a separate visible section — not be hidden inside or collapsed into the final topic output. If the user cannot see what each engine found and decided, the engines did not run.
+
+**Rule 3 — One engine at a time, in order.**
+Run Engine A first and show its output. Then run Engine B and show its output. Then run Engine C and show its output. Do NOT run all three engines inside a single generation. The engines exist to filter and transform sequentially — A feeds B, B feeds C. If they all run at once, they do nothing.
+
+**Rule 4 — Run the scripts.**
+Run `scripts/init_profile.py` at Step 3 (load or create the user's local profile). Run `scripts/update_profile.py` at Step 6 (record the user's feedback with weight deltas). These are real Python scripts that manage the profile file at `~/.creative-clone/profile.json`. The "gets smarter over time" feature does not work if the scripts are not executed.
+
+**Rule 5 — Self-check before final output.**
+Before presenting final topic ideas (Step 5), verify the compliance checklist at the end of Step 4. If any item is unchecked, go back and complete that step. Do not present final output with missing intermediate steps.
+
+---
+
 ## What this is
 
 Creative Avatar keeps a local profile of the user's feedback and uses it on every run, instead of answering from a generic prompt.
@@ -26,7 +47,15 @@ Creative Avatar keeps a local profile of the user's feedback and uses it on ever
 
 ---
 
-## Core workflow (6-step loop)
+## Core workflow (6-step interactive loop)
+
+This is a multi-turn interactive flow. You pause and wait for user input at each STOP marker. Do not generate topics until Steps 1–3 are complete and the compliance checklist at the top of Step 4 is verified.
+
+```
+Step 1: Pick scenario ──STOP──► Step 2: Questionnaire ──STOP──► Step 3: Profile + follow-up ──STOP──►
+Step 4: Engine A ──visible output──► Engine B ──visible output──► Engine C ──visible output──►
+compliance checklist ──► Step 5: Final output ──► Step 6: Feedback + script
+```
 
 ### Step 1: Pick a scenario
 
@@ -51,7 +80,9 @@ The user picks or describes their scenario when they start. The Skill loads the 
 1. Show the menu above; the user picks an option or describes their scenario in free text
 2. If the user describes the scenario in free text: match the closest scene_id by keywords. If no match, fall back to general mode and tune the questionnaire to the closest scenario
 3. Load `assets/scene_profiles/{scene_id}.json`
-4. Validate: valid JSON syntax, all 7 top-level fields present, scene_id matches the file name. Then move to Step 2.
+4. Validate: valid JSON syntax, all 7 top-level fields present, scene_id matches the file name
+
+>>> **STOP.** Wait for the user to pick or describe their scenario. Do NOT proceed to Step 2 until the user has chosen or described their scenario. <<<
 
 > See `references/scene_format_spec.md` for the scene profile format spec.
 > See `references/scene_configs.md` for the scene library guide and extension notes.
@@ -85,14 +116,16 @@ The Skill asks the questions from the scenario's questionnaire template step by 
 
 **Execution**: ask rounds in the order of `round_id` in `questionnaire_template.rounds`; evaluate each question's `condition` before rendering it to decide show/skip; after each round, check `skip_logic.rules` to decide whether to add or drop questions.
 
-### Step 3: Follow-up dialogue
+>>> **STOP.** Ask the questionnaire questions round by round. After each round, STOP and wait for the user's answers before asking the next round. Do NOT generate topic ideas during the questionnaire. Do NOT skip the questionnaire even if the user's initial message already contains some information — the questionnaire gathers structured data (level, length, timeline, resources, exclusions) that the engines need. <<<
 
-After the questionnaire, the Skill asks 3-5 follow-up questions about preferences the user has not stated. If local file reading is authorized, it also reads local files to fill in the profile.
+### Step 3: Follow-up dialogue + Profile loading
 
-**Profile loading**:
+After the questionnaire, the Skill asks 3-5 follow-up questions about preferences the user has not stated. It also loads or creates the user's local profile.
+
+**Profile loading** (run the script):
 
 1. Run `scripts/init_profile.py` to check whether a profile file already exists locally (default path `~/.creative-clone/profile.json`)
-2. If not, create an empty profile from `assets/profile_template.json` (schema_version 2, light mode, `mode=light`)
+2. If not, the script creates an empty profile from `assets/profile_template.json` (schema_version 2, light mode, `mode=light`)
 3. If the user has authorized local file reading (`privacy.local_reading_enabled == true`):
    - Read documents under the directories listed in `privacy.authorized_dirs`
    - Extract only four summary features: writing style, knowledge background, areas of interest, depth of thinking
@@ -109,6 +142,8 @@ After the questionnaire, the Skill asks 3-5 follow-up questions about preference
 - What makes a good topic idea in your judgment? (stored into `preferences`)
 - What topic ideas have you worked on before? Were you satisfied? (reused across scenarios)
 
+>>> **STOP.** Ask the follow-up questions and wait for the user's answers. Run `scripts/init_profile.py` and report the profile status to the user (new or existing, how many weighted topics, etc.). Do NOT proceed to Step 4 until the follow-up questions are answered and the profile is loaded. <<<
+
 **Profile read/write rules** (see `references/profile_schema.md` for details):
 
 - R1 Explicit beats inferred: preferences stated by the user override inferences
@@ -120,66 +155,196 @@ After the questionnaire, the Skill asks 3-5 follow-up questions about preference
 
 > See `references/profile_schema.md` for the profile system, `scripts/init_profile.py` for the init script, and `scripts/update_profile.py` for the update script.
 
+---
+
 ### Step 4: Topic generation (three engines in sequence)
 
-The three engines run strictly in sequence, passing outputs to the next engine, so the results are not overdone, are original, and are actionable:
+**Pre-flight checklist** (verify before starting any engine):
+
+- [ ] Step 1 complete — scenario selected, scene profile loaded
+- [ ] Step 2 complete — questionnaire answered (all rounds)
+- [ ] Step 3 complete — follow-up questions answered, `init_profile.py` executed, profile loaded
+
+If any item is unchecked, go back and complete it. Do NOT start the engines with missing inputs.
+
+**Mandatory rule**: Each engine's output MUST be shown to the user as a visible, structured section before proceeding to the next engine. Do NOT collapse the three engines into a single generation. The engines run strictly in sequence — A feeds B, B feeds C.
 
 #### Engine A · Saturation scan (find overdone directions)
 
-First check which directions are already overdone, then find the gaps.
+**Goal**: before any topic idea is generated, scan the target domain for which directions are already overdone and which still have gaps. Saturated directions become forbidden areas; gaps become priority targets for Engine B.
 
-**Workflow**:
-1. Extract keywords from the questionnaire answers and the profile (core domain, object keywords, method keywords, interest keywords, qualifiers)
-2. Make a search plan first, then execute it (at most 3 search rounds)
-3. Run real-time WebSearch (the main MVP path), recording over-saturation signals and gap signals
-4. Score on four dimensions (volume 35% + homogeneity 25% + recency 20% + inverse-gap 20%), then tier the results
-5. Output a saturation report; pass saturated directions as forbidden areas and gaps as priority targets to Engine B
+**Steps** (execute all):
 
-**Fallback tiers** (three levels):
-- Real-time WebSearch (most reliable; its conclusions may enter the hard blacklist)
-- Free academic sources (Google Scholar / arXiv / open CNKI pages)
-- The model's own knowledge base (marked "not searched in real time"; conclusions are only advisory)
+1. **Extract keywords** from the questionnaire answers and the profile:
+   - Core domain (e.g. "communication studies")
+   - Object keywords (e.g. "short video", "bisexual women")
+   - Method keywords (e.g. "text analysis", "interview")
+   - Interest keywords — record but do NOT search these (leave for Engine B's collision)
+   - Qualifiers (level, region, population, platform, time)
 
-**No-fabrication rule**: do not invent precise numbers, references, journals, or search results. Always mark quantities as "about" or "estimated".
+2. **Build a search plan**: list the queries you plan to run before executing them:
+   - Broad sweep for the current state of the field
+   - Confirm suspected saturated directions
+   - Target gaps and "future research directions"
+   - At most 3 search rounds
 
-> Engine prompt: `references/engine_saturation_scan.md`.
+3. **Run real-time WebSearch** (the main MVP path):
+   - Search with the planned queries; read titles, snippets, sites, dates
+   - Record over-saturation signals: many same-topic results, homogeneous titles, reviews saying "research is fairly mature"
+   - Record gap signals: directions named in "future outlook" but rarely studied, new objects from cross-disciplinary work
+   - **Fallback tiers**: (1) real-time WebSearch → (2) free academic sources (Google Scholar / arXiv / open CNKI) → (3) model's own knowledge base (must label "not searched in real time"; conclusions are advisory only)
+   - **No-fabrication rule**: do not invent precise numbers, references, journals, or search results. Always mark quantities as "about" or "estimated".
+
+4. **Score each direction** on four dimensions:
+   | Dimension | Weight | What to observe |
+   |------|:----:|------|
+   | Volume signal | 35% | Number of papers/content on the same topic |
+   | Homogeneity signal | 25% | Whether titles/frameworks are highly similar |
+   | Recency signal | 20% | Whether work clusters around old hotspots |
+   | Gap signal (reverse) | 20% | Whether there is an obvious opening |
+
+   **Saturation bands**:
+   - 🔴 Saturated (≥80): add to `saturated_topics` — forbidden areas for Engine B
+   - 🟠 Hot (50-79): not banned, but Engine B must add a new angle before using
+   - 🟡 Gap (20-49): add to `gaps` — priority targets for Engine B
+   - 🟢 Blue ocean (<20): add to `gaps`, but verify "why no one has done this" (is it an opportunity, or undoable/worthless?)
+
+5. **Cross-check** against the global blacklist (five bad-topic types in `references/bad_topic_blacklist.md`).
+
+**⚠ VISIBLE OUTPUT REQUIRED — Engine A Saturation Scan Report**
+
+Output the following as a visible section to the user. This is NOT internal — the user must see it.
+
+```
+## Engine A · Saturation Scan Report
+
+**Domain scanned**: [core domain / main object]
+**Search rounds**: [list each query run and key finding]
+
+### Saturated directions (will be avoided):
+1. [direction] — saturation score: XX, reason: [evidence-based judgment]
+2. ...
+
+### Gaps found (priority targets for Engine B):
+1. [gap] — reason: [why this is a gap]
+2. ...
+
+### Blacklist hits:
+- [type]: [topic] — [reason]
+
+### Evidence:
+- Real-time search: [yes/no]
+- Sources: [list of source titles/URLs]
+- Note: [e.g. "counts are approximate estimates from search results"]
+```
+
+After outputting this report, proceed to Engine B. Pass `saturated_topics` as forbidden domains and `gaps` as priority targets.
+
+> Full engine prompt and detailed spec: `references/engine_saturation_scan.md`.
 
 #### Engine B · Cross-domain collision (find new angles)
 
-Extract the user's multi-domain profile and combine domains.
+**Goal**: cross the core domain (A) with the user's interest domains (X) to produce novel, counter-consensus angles. Engine A's gaps are priority targets; Engine A's saturated topics are forbidden areas.
 
-**Five collision operators**:
-1. Perspective borrowing: re-examine the object of A through the theoretical lens of X
-2. Method transfer: apply X's analytical method to A
-3. Mutual evidence: compare how the same object appears in A and in X
-4. Mechanism analogy: argue that A and X share an isomorphic mechanism (must be falsifiable)
-5. Media / audience reflexivity: study X as the medium through which the public encounters A
+**Steps** (execute all):
 
-**Anti-fabrication step**: every collision point must include a `why_link` (why the two domains are genuinely related). Filter into `strong / medium / loose`; drop `loose` points and record them as "concept stacking".
+1. **Take inputs from Engine A**: `saturated_topics` (forbidden) + `gaps` (priority targets) + the user's interest keywords from the questionnaire/profile.
 
-**From collision point to concrete question**: anchor to a concrete object → add qualifiers (population / region / platform / time) → use a testable sentence pattern ("How does X affect Y") → add a method hint → mark points that fill a gap as `fills_gap`.
+2. **Apply five collision operators** — for each interest domain X, try all five:
+   | Operator | What it does |
+   |----------|------|
+   | Perspective borrowing | Re-examine the object of A through the theoretical lens of X |
+   | Method transfer | Apply X's analytical method to A |
+   | Mutual evidence | Compare how the same object appears in A and in X |
+   | Mechanism analogy | Argue that A and X share an isomorphic mechanism (must be falsifiable) |
+   | Media / audience reflexivity | Study X as the medium through which the public encounters A |
 
-> Engine prompt: `references/engine_cross_collision.md`.
+3. **Anti-fabrication step**: every collision point MUST include a `why_link` — a one-sentence explanation of why the two domains are genuinely related, not just surface-level keyword overlap. Filter each collision point:
+   - **strong**: clear, specific logical link → keep
+   - **medium**: plausible but needs more evidence → keep
+   - **loose**: keyword overlap only, no real link → DROP and record as "concept stacking"
+
+4. **Convert survivors to concrete questions**:
+   - Anchor to a concrete object → add qualifiers (population / region / platform / time) → use a testable sentence pattern ("How does X affect Y") → add a method hint → mark points that fill an Engine A gap as `fills_gap: true`
+
+**⚠ VISIBLE OUTPUT REQUIRED — Engine B Collision Candidates**
+
+Output the following as a visible section to the user. This is NOT internal.
+
+```
+## Engine B · Cross-Domain Collision Report
+
+### Collision points generated:
+1. [Domain A × Interest X] — operator: [which of the 5]
+   - why_link: [why these two domains are genuinely related]
+   - strength: [strong/medium]
+   - candidate question: [the concrete, testable question]
+   - fills_gap: [yes/no — which Engine A gap?]
+
+### Dropped (concept stacking — no real link):
+- [domain A × domain X] — reason: [why it was dropped]
+
+### Candidates ready for Engine C:
+[list of candidates that survived filtering]
+```
+
+After outputting this report, proceed to Engine C.
+
+> Full engine prompt and detailed spec: `references/engine_cross_collision.md`.
 
 #### Engine C · Self-critique iteration (polish the research question)
 
-The model switches to a strict reviewer role: it picks flaws in each candidate, judges each against the six hard constraints, and revises or drops candidates that fail.
+**Goal**: switch to a strict reviewer role. Judge each Engine B candidate against the six hard constraints. Revise or drop candidates that fail. **The gate is never lowered to fill the quota.**
 
-**Six hard constraints** (the `pass_all` gate):
-- C1 Has a concrete research object (identifiable, observable, bounded)
-- C2 Has a clear, falsifiable question (not a topic, not a fake problem)
-- C3 Has an actionable research method (matches the question, materials available)
-- C4 Within the user's ability / resources (matches `resources`, level, and time frame)
-- C5 Not an overdone direction (new object / new perspective / new method / new evidence)
-- C6 Matches the scenario tone (no glibness in academic settings, no stiffness in playful settings)
+**Six hard constraints** (the `pass_all` gate — all six must pass):
 
-**Five blacklist types, one-strike review**: concept stacking / over-saturation / not actionable / scope too broad / fake problem.
+| # | Constraint | What it checks |
+|---|------|------|
+| C1 | Concrete research object | Identifiable, observable, bounded — not a broad theme |
+| C2 | Clear, falsifiable question | Not a topic, not a fake problem — answerable with evidence |
+| C3 | Actionable research method | Matches the question, materials available |
+| C4 | Within user's ability / resources | Matches `resources`, level, and time frame |
+| C5 | Not an overdone direction | New object / new perspective / new method / new evidence |
+| C6 | Matches scenario tone | No glibness in academic settings, no stiffness in playful settings |
 
-**Iteration**: 2 rounds by default (at most 3); for salvageable candidates, give a direct revised replacement. If candidates that pass the gate are fewer than `target_count`, feed the per-candidate issues back to Engine B for another collision round; the outer loop runs at most 3 rounds. **The gate is never lowered to fill the quota.**
+**Five blacklist types** (one-strike review): concept stacking / over-saturation / not actionable / scope too broad / fake problem.
 
-**Three stopping conditions**: pass / round limit reached / nitpicking only (remaining issues are all wording-level nits).
+**Steps** (execute all):
 
-> Engine prompt: `references/engine_self_critique.md`; bad-topic blacklist: `references/bad_topic_blacklist.md`.
+1. **Judge each candidate** from Engine B against C1–C6 and the five blacklist types. For each, output a verdict:
+   - **PASS**: all six constraints satisfied, zero blacklist hits
+   - **REJECT**: [which constraint failed, which blacklist type matched, why]
+   - **REVISE**: [which constraint failed, what specific fix is needed] → produce a revised version and re-check
+
+2. **Iterate**: 2 rounds by default (at most 3). For salvageable candidates, give a direct revised replacement.
+
+3. **If pass count < target_count** (default 5): feed the per-candidate issues back to Engine B for another collision round. The outer loop runs at most 3 rounds. **NEVER lower the gate to fill the quota — if fewer qualify, output fewer and say so honestly.**
+
+4. **Three stopping conditions**: (a) pass — enough candidates pass the gate; (b) round limit reached; (c) nitpicking only — remaining issues are all wording-level nits.
+
+**⚠ VISIBLE OUTPUT REQUIRED — Engine C Self-Critique Report**
+
+Output the following as a visible section to the user. This is NOT internal.
+
+```
+## Engine C · Self-Critique Report
+
+### Round 1 verdicts:
+1. [candidate] — C1: pass, C2: pass, C3: fail (method doesn't match question), C4: pass, C5: pass, C6: pass
+   → REVISE: [specific fix] → revised: [new question]
+2. [candidate] — C1: pass, C2: pass, C3: pass, C4: pass, C5: fail (overdone direction), C6: pass
+   → REJECT: [reason]
+3. [candidate] — all pass → PASS
+
+### Rounds run: [N]
+### Final candidates: [list of those that passed all checks]
+### Rejected: [list with reasons]
+### Loopback to Engine B needed? [yes/no — if yes, how many candidates short]
+```
+
+After outputting this report, verify the post-engine compliance checklist below, then proceed to Step 5.
+
+> Full engine prompt and detailed spec: `references/engine_self_critique.md`; bad-topic blacklist: `references/bad_topic_blacklist.md`.
 
 #### Data flow across the three engines
 
@@ -187,17 +352,37 @@ The model switches to a strict reviewer role: it picks flaws in each candidate, 
 Step 1-3 outputs (scene profile + profile snapshot + questionnaire answers)
     |
     v
-Engine A saturation scan -> saturated_topics[] (forbidden areas) + gaps[] (priority targets) + blacklist_hits[]
+Engine A saturation scan → VISIBLE OUTPUT
+  → saturated_topics[] (forbidden areas) + gaps[] (priority targets) + blacklist_hits[]
     |
     v
-Engine B cross-domain collision -> gaps injected, keep only logically linked intersections -> candidates[] (each with why_link)
+Engine B cross-domain collision → VISIBLE OUTPUT
+  → gaps injected, keep only logically linked intersections
+  → candidates[] (each with why_link)
     |
     v
-Engine C self-critique -> judge each against the six hard constraints -> final_candidates[] (those that pass the gate)
-    |                 if too few, feed back to Engine B (outer loop <= 3 rounds)
+Engine C self-critique → VISIBLE OUTPUT
+  → judge each against the six hard constraints
+  → final_candidates[] (those that pass the gate)
+  → if too few, feed back to Engine B (outer loop <= 3 rounds)
+    |
     v
 Step 5 formatter outputs the four-element template
 ```
+
+#### Post-engine compliance checklist
+
+Before presenting final topic ideas, verify:
+
+- [ ] Engine A saturation report was output and visible to the user
+- [ ] Engine B collision candidates with `why_link` were output and visible
+- [ ] Engine C verdicts (pass/reject with reason) were output and visible
+- [ ] Candidates were actually filtered (some rejected or revised — if everything passed unchanged, the critique was not real)
+- [ ] Final candidate count is honest (if fewer than target_count, this was stated)
+
+If any item is unchecked, go back and complete it. Do NOT proceed to Step 5 with missing intermediate outputs.
+
+---
 
 ### Step 5: Output topic ideas
 
@@ -223,9 +408,22 @@ Every candidate topic idea must include all four elements; none may be missing:
 
 ### Step 6: Feedback loop
 
-The user marks feedback → the Skill adjusts the next generation → the finally selected topic idea is saved into the user's profile.
+The user marks feedback → the Skill records the feedback with weight deltas → the finally selected topic idea is saved into the user's profile.
 
-**Four feedback types and profile updates** (executed by `scripts/update_profile.py`):
+**Run the script**: After the user provides feedback, execute `scripts/update_profile.py` with the appropriate parameters. This is not optional — the weight system depends on the script being run.
+
+```bash
+# Example: user selects a topic
+python3 scripts/update_profile.py --feedback select --topic "the topic title" --scenario academic_paper
+
+# Example: user says "this is interesting"
+python3 scripts/update_profile.py --feedback like --topic "the topic title"
+
+# Example: user says "off track"
+python3 scripts/update_profile.py --feedback redirect --topic "the topic title" --query "the direction they want instead"
+```
+
+**Four feedback types and profile updates**:
 
 | Feedback | Parameter value | Weight delta | Update action |
 |------|--------|------|---------|
@@ -307,7 +505,7 @@ Every topic the user gives feedback on gets a weight in `weighted_topics` (range
 
 ```
 creative-clone/
-├── SKILL.md                          # This file: 6-step flow + three engines + scenario adaptation + profile read/write
+├── SKILL.md                          # This file: execution rules + 6-step flow + three engines + profile
 ├── scripts/
 │   ├── init_profile.py               # Profile init (stdlib only, atomic write)
 │   ├── update_profile.py             # Profile update: weighted feedback + decay + idempotency (stdlib only)
@@ -321,9 +519,9 @@ creative-clone/
 ├── references/
 │   ├── scene_format_spec.md          # Scene profile format spec
 │   ├── scene_configs.md              # Scene library guide + extension notes
-│   ├── engine_saturation_scan.md     # Engine A: saturation scan prompt
-│   ├── engine_cross_collision.md     # Engine B: cross-domain collision prompt
-│   ├── engine_self_critique.md       # Engine C: self-critique iteration prompt
+│   ├── engine_saturation_scan.md     # Engine A: full saturation scan prompt + spec
+│   ├── engine_cross_collision.md     # Engine B: full cross-domain collision prompt + spec
+│   ├── engine_self_critique.md       # Engine C: full self-critique iteration prompt + spec
 │   ├── bad_topic_blacklist.md        # Five bad-topic types
 │   ├── output_template.md            # Four-element output template
 │   ├── profile_schema.md             # Profile JSON schema + authorization mechanism
@@ -351,13 +549,15 @@ creative-clone/
 
 ### Design principles
 
-1. **Scenario adaptation**: questionnaire questions, tone, hard-constraint list, and output format all switch with the scene profile
-2. **Profile accumulates across scenarios**: feedback and preferences from any scenario are saved into the same profile
-3. **Weighted profile**: every feedback adjusts a topic's weight (0.0–1.0); time decay keeps recent interests dominant; top-weighted topics steer the engines
-4. **General engines**: saturation scan + cross-domain collision + self-critique iteration, not tied to any discipline or scenario
-5. **Unified output standard**: every candidate includes the four elements (concrete question / why it fits you / three angles / risk notes)
-6. **Extensible scenarios**: adding a scenario requires only one JSON file; no core logic changes
-7. **Schema-validated**: engine outputs, scene profiles, and the user profile are all validated against JSON Schema files in `schemas/`
+1. **Interactive flow**: the 6-step loop is multi-turn; the AI pauses at each STOP marker and waits for user input — this is what makes the questionnaire and engines real, not decorative
+2. **Visible engines**: each engine's intermediate output is shown to the user; the AI cannot skip or collapse them into a single generation
+3. **Scenario adaptation**: questionnaire questions, tone, hard-constraint list, and output format all switch with the scene profile
+4. **Profile accumulates across scenarios**: feedback and preferences from any scenario are saved into the same profile via `update_profile.py`
+5. **Weighted profile**: every feedback adjusts a topic's weight (0.0–1.0); time decay keeps recent interests dominant; top-weighted topics steer the engines
+6. **General engines**: saturation scan + cross-domain collision + self-critique iteration, not tied to any discipline or scenario
+7. **Unified output standard**: every candidate includes the four elements (concrete question / why it fits you / three angles / risk notes)
+8. **Extensible scenarios**: adding a scenario requires only one JSON file; no core logic changes
+9. **Schema-validated**: engine outputs, scene profiles, and the user profile are all validated against JSON Schema files in `schemas/`
 
 ### Cross-model compatibility
 
