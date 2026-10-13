@@ -1,0 +1,110 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "scene_profile.json",
+  "title": "Scene Profile",
+  "description": "Validation schema for scene profile JSON files under assets/scene_profiles/",
+  "type": "object",
+  "required": ["scene_id", "scene_name", "scene_description", "questionnaire_template", "tone_rules", "constraint_list", "exclusion_rules"],
+  "properties": {
+    "scene_id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$",
+      "description": "Lowercase snake_case identifier"
+    },
+    "scene_name": { "type": "string" },
+    "scene_description": { "type": "string" },
+    "questionnaire_template": {
+      "type": "object",
+      "required": ["rounds"],
+      "properties": {
+        "rounds": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["round_id", "round_title", "questions"],
+            "properties": {
+              "round_id": { "type": "integer" },
+              "round_title": { "type": "string" },
+              "questions": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "required": ["field", "question", "type", "required"],
+                  "properties": {
+                    "field": { "type": "string" },
+                    "question": { "type": "string" },
+                    "type": {
+                      "type": "string",
+                      "enum": ["text", "choice", "multi_choice"]
+                    },
+                    "options": {
+                      "type": "array",
+                      "items": { "type": "string" }
+                    },
+                    "required": { "type": "boolean" },
+                    "condition": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "skip_logic": {
+      "type": "object",
+      "properties": {
+        "rules": {
+          "type": "array",
+          "minItems": 2,
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "tone_rules": {
+      "type": "object",
+      "required": ["base_tone"],
+      "properties": {
+        "base_tone": {
+          "type": "string",
+          "enum": ["academic", "formal", "playful"]
+        },
+        "adjustments": { "type": "string" }
+      }
+    },
+    "constraint_list": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string" }
+    },
+    "exclusion_rules": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "engine_params": {
+      "type": "object",
+      "properties": {
+        "sources": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "horizon": {
+          "type": "string",
+          "enum": ["3y", "1y", "current"]
+        }
+      }
+    },
+    "output_format_adjustments": {
+      "type": "object"
+    },
+    "output": {
+      "type": "object",
+      "properties": {
+        "count": { "type": "integer" },
+        "sort_by": { "type": "string" }
+      }
+    }
+  }
+}

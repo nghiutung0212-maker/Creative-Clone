@@ -1,0 +1,94 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "engine_a_output.json",
+  "title": "Engine A: Saturation Scan Output",
+  "description": "Output contract for the saturation scan engine. Produced by Engine A, consumed by Engine B.",
+  "type": "object",
+  "required": ["engine", "scanned_at", "domain", "saturation_report", "saturated_topics", "gaps", "blacklist_hits", "evidence"],
+  "properties": {
+    "engine": {
+      "type": "string",
+      "const": "saturation_scan"
+    },
+    "scanned_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "domain": {
+      "type": "string",
+      "description": "Core domain / main object scanned"
+    },
+    "saturation_report": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["topic", "saturation_score", "level", "reason"],
+        "properties": {
+          "topic": { "type": "string" },
+          "saturation_score": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "level": {
+            "type": "string",
+            "enum": ["saturated", "hot", "gap", "blue_ocean"]
+          },
+          "reason": { "type": "string" },
+          "evidence_ids": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "blacklist_type": {
+            "type": "string",
+            "enum": ["over_saturated", "concept_stack", "none"]
+          },
+          "pseudo_blue_ocean": { "type": "boolean" }
+        }
+      }
+    },
+    "saturated_topics": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Forbidden domains for Engine B"
+    },
+    "gaps": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Priority targets for Engine B"
+    },
+    "blacklist_hits": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["matched_type", "topic"],
+        "properties": {
+          "matched_type": { "type": "string" },
+          "topic": { "type": "string" }
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "required": ["checked", "real_time"],
+      "properties": {
+        "checked": { "type": "boolean" },
+        "real_time": { "type": "boolean" },
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "title"],
+            "properties": {
+              "id": { "type": "string" },
+              "title": { "type": "string" },
+              "url": { "type": "string" },
+              "date": { "type": "string" }
+            }
+          }
+        },
+        "note": { "type": "string" }
+      }
+    }
+  }
+}

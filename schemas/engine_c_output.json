@@ -1,0 +1,99 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "engine_c_output.json",
+  "title": "Engine C: Self-Critique Iteration Output",
+  "description": "Output contract for the self-critique engine. Produced by Engine C, consumed by the Step 5 formatter.",
+  "type": "object",
+  "required": ["engine", "finished_at", "rounds_run", "verdicts", "final_candidates"],
+  "properties": {
+    "engine": {
+      "type": "string",
+      "const": "self_critique"
+    },
+    "finished_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "rounds_run": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 3
+    },
+    "outer_loops": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 3
+    },
+    "verdicts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["candidate_id", "final_verdict", "checklist"],
+        "properties": {
+          "candidate_id": { "type": "string" },
+          "final_verdict": {
+            "type": "string",
+            "enum": ["pass", "reject"]
+          },
+          "fatal_flaw": {
+            "type": ["string", "null"]
+          },
+          "checklist": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["item", "pass"],
+              "properties": {
+                "item": {
+                  "type": "string",
+                  "enum": ["C1", "C2", "C3", "C4", "C5", "C6"]
+                },
+                "pass": { "type": "boolean" },
+                "note": { "type": "string" }
+              }
+            }
+          },
+          "refined": {
+            "type": ["object", "null"]
+          }
+        }
+      }
+    },
+    "final_candidates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["candidate_id", "title", "question"],
+        "properties": {
+          "candidate_id": { "type": "string" },
+          "title": { "type": "string" },
+          "question": { "type": "string" },
+          "object": { "type": "string" },
+          "method_hint": { "type": "string" },
+          "passed_checklist": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["C1", "C2", "C3", "C4", "C5", "C6"]
+            }
+          }
+        }
+      }
+    },
+    "reloop_request": {
+      "type": "object",
+      "required": ["needed"],
+      "properties": {
+        "needed": { "type": "boolean" },
+        "shortfall": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "instructions": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}

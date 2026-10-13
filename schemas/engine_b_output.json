@@ -1,0 +1,78 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "engine_b_output.json",
+  "title": "Engine B: Cross-Domain Collision Output",
+  "description": "Output contract for the cross-domain collision engine. Produced by Engine B, consumed by Engine C.",
+  "type": "object",
+  "required": ["engine", "generated_at", "base_domain", "candidates"],
+  "properties": {
+    "engine": {
+      "type": "string",
+      "const": "cross_collision"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "base_domain": {
+      "type": "string"
+    },
+    "collision_points": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "a", "b", "logic_link", "why_link"],
+        "properties": {
+          "id": { "type": "string" },
+          "a": { "type": "string" },
+          "b": { "type": "string" },
+          "operator": { "type": "string" },
+          "logic_link": {
+            "type": "string",
+            "enum": ["strong", "medium", "loose"]
+          },
+          "why_link": { "type": "string" },
+          "candidate_angle": { "type": "string" },
+          "candidate_question": { "type": "string" },
+          "fills_gap": {
+            "type": ["string", "null"]
+          },
+          "resource_check": { "type": "string" }
+        }
+      }
+    },
+    "candidates": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["candidate_id", "title", "question", "why_link"],
+        "properties": {
+          "candidate_id": { "type": "string" },
+          "title": { "type": "string" },
+          "question": { "type": "string" },
+          "object": { "type": "string" },
+          "method_hint": { "type": "string" },
+          "why_link": {
+            "type": "string",
+            "description": "Logical link explanation; required, cannot be empty"
+          },
+          "fills_gap": {
+            "type": ["string", "null"]
+          }
+        }
+      }
+    },
+    "filtered_out": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["raw", "reason"],
+        "properties": {
+          "raw": { "type": "string" },
+          "reason": { "type": "string" }
+        }
+      }
+    }
+  }
+}

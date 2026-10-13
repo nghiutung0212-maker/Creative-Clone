@@ -1,0 +1,142 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "profile_v2.json",
+  "title": "Creative Avatar User Profile (v2)",
+  "description": "Validation schema for the user profile JSON file at ~/.creative-clone/profile.json",
+  "type": "object",
+  "required": ["schema_version", "profile_meta", "base", "preferences", "weighted_topics", "feedback_log", "history", "signals", "stats", "privacy"],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "profile_meta": {
+      "type": "object",
+      "required": ["user_id", "created_at", "updated_at", "mode"],
+      "properties": {
+        "user_id": { "type": "string" },
+        "created_at": { "type": ["string", "null"] },
+        "updated_at": { "type": ["string", "null"] },
+        "mode": { "type": "string", "enum": ["light", "full"] }
+      }
+    },
+    "base": {
+      "type": "object",
+      "required": ["language", "backgrounds", "interests", "resources"],
+      "properties": {
+        "language": { "type": "string" },
+        "backgrounds": { "type": "array", "items": { "type": "string" } },
+        "interests": { "type": "array", "items": { "type": "string" } },
+        "resources": { "type": "array", "items": { "type": "string" } },
+        "writing_style": { "type": ["string", "null"] },
+        "thinking_depth": { "type": ["string", "null"] }
+      }
+    },
+    "preferences": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["key", "value", "source", "scope"],
+        "properties": {
+          "key": { "type": "string" },
+          "value": { "type": "string" },
+          "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+          "source": { "type": "string" },
+          "scope": { "type": "string" },
+          "scenario": { "type": ["string", "null"] },
+          "evidence": { "type": "array", "items": { "type": "string" } },
+          "updated_at": { "type": "string" }
+        }
+      }
+    },
+    "weighted_topics": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["topic", "weight", "last_feedback", "last_feedback_at"],
+        "properties": {
+          "topic": { "type": "string" },
+          "weight": { "type": "number", "minimum": 0, "maximum": 1 },
+          "last_feedback": {
+            "type": "string",
+            "enum": ["like", "dislike", "redirect", "select"]
+          },
+          "last_feedback_at": { "type": "string" },
+          "last_decay_at": { "type": ["string", "null"] },
+          "feedback_history": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["feedback", "at"],
+              "properties": {
+                "feedback": { "type": "string" },
+                "at": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "feedback_log": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["topic", "feedback", "at"],
+        "properties": {
+          "topic": { "type": "string" },
+          "feedback": { "type": "string" },
+          "at": { "type": "string" }
+        }
+      }
+    },
+    "history": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["scenario", "topic", "feedback", "timestamp"],
+        "properties": {
+          "scenario": { "type": "string" },
+          "query": { "type": "string" },
+          "topic": { "type": "string" },
+          "chosen_topics": { "type": "array", "items": { "type": "string" } },
+          "feedback": { "type": "string" },
+          "timestamp": { "type": "string" }
+        }
+      }
+    },
+    "signals": {
+      "type": "object",
+      "required": ["liked_topics", "disliked_topics", "redirected_topics", "selected_topics"],
+      "properties": {
+        "liked_topics": { "type": "array", "items": { "type": "string" } },
+        "disliked_topics": { "type": "array", "items": { "type": "string" } },
+        "redirected_topics": { "type": "array", "items": { "type": "string" } },
+        "selected_topics": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "stats": {
+      "type": "object",
+      "required": ["total_sessions", "like_count", "dislike_count", "redirect_count", "select_count"],
+      "properties": {
+        "total_sessions": { "type": "integer" },
+        "like_count": { "type": "integer" },
+        "dislike_count": { "type": "integer" },
+        "redirect_count": { "type": "integer" },
+        "select_count": { "type": "integer" },
+        "total_weighted_topics": { "type": "integer" },
+        "avg_weight": { "type": "number" }
+      }
+    },
+    "privacy": {
+      "type": "object",
+      "required": ["local_reading_enabled", "authorized_dirs"],
+      "properties": {
+        "local_reading_enabled": { "type": "boolean" },
+        "authorized_dirs": { "type": "array", "items": { "type": "string" } },
+        "consented_at": { "type": ["string", "null"] },
+        "consent_version": { "type": ["string", "null"] },
+        "last_reviewed_at": { "type": ["string", "null"] }
+      }
+    }
+  }
+}
