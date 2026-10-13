@@ -1,340 +1,344 @@
 ---
 name: creative-clone
 description: >-
-  全场景通用创意选题分身。当用户需要从零构思选题、找角度、找方向时触发——
-  覆盖论文选题、PPT 汇报、短视频选题、公众号文章、创业方向、活动策划、
-  播客选题、展览策划、课程设计、人物采访提纲等任何需要创意选题的场景。
-  核心能力：场景自适应问卷 + 用户画像沉淀 + 三引擎选题生成
-  （领域饱和扫描排雷 + 跨界知识碰撞找新角度 + 自我批判迭代打磨）。
-  越用越懂你，输出真正有原创性又能落地的个性化选题。
+  Creative Avatar: a general topic-ideation skill for any scenario. Trigger when
+  the user needs to come up with topic ideas from scratch, find angles, or find
+  a direction. Covers academic papers, PPT presentations, short videos, WeChat
+  articles, startup ideas, event planning, podcast topics, exhibition planning,
+  course design, and interview outlines. Uses a scenario questionnaire, a local
+  profile of the user's feedback, and three generation engines to produce
+  original, actionable topic ideas: a saturation scan flags overdone directions,
+  cross-domain collision finds new angles, and self-critique iteration polishes
+  the results. The profile accumulates the user's feedback over time, so later
+  topic ideas fit the user better.
 agent_created: true
 ---
 
-# 创意分身 — 全场景通用创意选题 Skill
+# Creative Avatar: General-Purpose Topic Ideation Skill
 
-## 产品定位
+## What this is
 
-这不是一个「选题生成器」，而是一个「你的第二大脑 / 创意分身」。
+Creative Avatar keeps a local profile of the user's feedback and uses it on every run, instead of answering from a generic prompt.
 
-- **懂你** — 不是输出通用答案，而是匹配你的思维模式、知识背景、兴趣倾向
-- **真创新** — 不套模板、不堆热词，找领域缺口和反共识角度
-- **有分寸** — 知道什么时候该天马行空，什么时候必须落地严谨
+- **Matches how you think**: it does not output generic answers; it matches your thinking style, knowledge background, and interests
+- **Finds real gaps**: no templates, no buzzword stacking; it looks for gaps in the field and counter-consensus angles
+- **Keeps the right tone**: it switches between open brainstorming and grounded rigor depending on the scenario
 
 ---
 
-## 核心用户流程（6 步闭环）
+## Core workflow (6-step loop)
 
-### Step 1：场景选择
+### Step 1: Pick a scenario
 
-用户进入后选择或描述自己的具体场景。Skill 根据场景加载对应的场景配置文件。
+The user picks or describes their scenario when they start. The Skill loads the matching scene profile.
 
-**当前支持 9 个场景**（配置文件位于 `assets/scene_profiles/*.json`）：
+**9 scenarios are supported** (profile files under `assets/scene_profiles/*.json`):
 
-| 场景 | scene_id | 基调 | 适用场景 |
-|------|----------|------|---------|
-| 学术论文 | `academic_paper` | 严肃学术 | 课程论文、毕设、开题、期刊投稿 |
-| PPT 汇报 | `ppt_presentation` | 商业正式 | 课程汇报、答辩、工作汇报、路演 |
-| 短视频 | `short_video` | 轻松玩梗 | 抖音/快手/B站/小红书选题 |
-| 公众号文章 | `wechat_article` | 商业正式 | 观点评论、干货、行业分析 |
-| 创业方向 | `startup_idea` | 商业正式 | 创业点子、产品方向、商业机会 |
-| 活动策划 | `event_planning` | 轻松玩梗 | 社团、团建、商业活动、沙龙 |
-| 播客选题 | `podcast` | 轻松玩梗 | 播客单集话题、讨论点 |
-| 课程设计 | `course_design` | 严肃学术 | 单节课、单元课、整门课设计 |
-| 人物采访 | `interview_outline` | 商业正式 | 人物特稿、行业/事件采访 |
+| Scenario | scene_id | Tone | What it covers |
+|----------|----------|------|---------|
+| Academic paper | `academic_paper` | Academic | Course papers, thesis, proposal, journal submission |
+| PPT presentation | `ppt_presentation` | Formal | Course presentation, defense, work report, pitch |
+| Short video | `short_video` | Playful | Topic ideas for Douyin / Kuaishou / Bilibili / Xiaohongshu |
+| WeChat article | `wechat_article` | Formal | Opinion pieces, tutorials, industry analysis |
+| Startup idea | `startup_idea` | Formal | Startup ideas, product direction, business opportunities |
+| Event planning | `event_planning` | Playful | Campus clubs, team building, business events, salons |
+| Podcast | `podcast` | Playful | Episode topics, discussion points |
+| Course design | `course_design` | Academic | Single lesson, unit, or whole course design |
+| Interview outline | `interview_outline` | Formal | Profiles, industry / event interviews |
 
-**选择交互逻辑**：
+**Selection flow**:
 
-1. 展示场景菜单（上表），用户直接选择或自由描述场景
-2. 若用户自由描述：根据关键词匹配最接近的 scene_id；无匹配时回退到通用模式，问卷按最接近场景调整
-3. 加载 `assets/scene_profiles/{scene_id}.json`
-4. 校验：JSON 语法合法 + 7 个顶层字段齐全 + scene_id 与文件名一致 → 通过后进入 Step 2
+1. Show the menu above; the user picks an option or describes their scenario in free text
+2. If the user describes the scenario in free text: match the closest scene_id by keywords. If no match, fall back to general mode and tune the questionnaire to the closest scenario
+3. Load `assets/scene_profiles/{scene_id}.json`
+4. Validate: valid JSON syntax, all 7 top-level fields present, scene_id matches the file name. Then move to Step 2.
 
-> 场景配置格式规范见 `references/scene_format_spec.md`。
-> 场景库使用说明和扩展指南见 `references/scene_configs.md`。
-> **新增场景只需加一个 JSON 文件 + 在场景库索引追加一行，不改任何核心逻辑。**
+> See `references/scene_format_spec.md` for the scene profile format spec.
+> See `references/scene_configs.md` for the scene library guide and extension notes.
+> **To add a scenario, add one JSON file and append one row to the scene library index; no core logic changes.**
 
-### Step 2：场景化问卷
+### Step 2: Scenario questionnaire
 
-根据场景配置中的问卷模板，对话式分步追问（每轮 2-3 个问题）。问题之间有逻辑跳转。
+The Skill asks the questions from the scenario's questionnaire template step by step (2-3 questions per round). Questions have conditional jumps between them.
 
-**问卷维度**（各场景按需裁剪，论文场景最全）：
+**Questionnaire dimensions** (each scenario uses a subset; the academic paper scenario is the most complete):
 
-| 维度 | 说明 | 示例 |
+| Dimension | What it means | Example |
 |------|------|------|
-| 学科/领域 | 核心方向 | 传播学、中国近现代史 |
-| 层级/阶段 | 学术层级或账号阶段 | 课程论文 / 零粉冷启动 |
-| 研究类型/形式 | 方法或内容形态 | 实证/定量 / 真人口播 |
-| 篇幅/时长 | 产出体量 | 3000-5000字 / 30-60秒 |
-| 基调/态度 | 语气偏好 | 严肃严谨 / 轻松玩梗 |
-| 兴趣 | 跨界碰撞输入源 | 电子游戏、养猫、乐队文化 |
-| 资源 | 可用数据/渠道/设备 | 图书馆数据库 / 一人一手机 |
-| 硬约束 | 必须满足的条件 | 导师指定方向 / 预算500元 |
-| 排斥项 | 明确不想碰的方向 | 纯文献综述 / 引战话题 |
+| Discipline / field | Core direction | Communication studies, modern Chinese history |
+| Level / stage | Academic level or account stage | Course paper / zero-follower cold start |
+| Research type / format | Method or content form | Empirical / quantitative / talking-head video |
+| Length / duration | Output size | 3000-5000 words / 30-60 seconds |
+| Tone | Voice preference | Academic / playful |
+| Interests | Inputs for cross-domain collision | Video games, cat ownership, band culture |
+| Resources | Available data / channels / equipment | Library databases / one person with a phone |
+| Hard constraints | Required conditions | Advisor-assigned direction / 500 RMB budget |
+| Exclusions | Directions the user explicitly does not want | Pure literature review / flame-bait topics |
 
-**跳转逻辑**（各场景配置 `skip_logic.rules` 中声明，不少于 2 条）：
+**Skip logic** (declared in each scenario's `skip_logic.rules`, at least 2 rules):
 
-- **层级跳转**：选「课程论文」→ 不问博士级理论贡献要求
-- **目标跳转**：选「带货」→ 追加产品信息 + 广告法合规提醒
-- **资源跳转**：已写明现成数据集 → 不再追问数据可得性
-- **时长跳转**：选「30秒以内」→ 每个选题只给单一观点
-- **平台跳转**：选「小红书」→ 形式优先实拍/图文，追加标签建议
+- **Level jump**: if "course paper" is picked, do not ask about PhD-level theoretical contribution
+- **Goal jump**: if "product sales" is picked, ask for product details and add an advertising-law compliance reminder
+- **Resource jump**: if the user already states they have a dataset, do not ask about data availability
+- **Duration jump**: if "under 30 seconds" is picked, give one single point per topic idea
+- **Platform jump**: if "Xiaohongshu" is picked, prefer photo or image-text formats and add hashtag suggestions
 
-**执行方式**：按 `questionnaire_template.rounds` 中 `round_id` 顺序逐轮提问；渲染每题前先求值 `condition`，决定 show/skip；每轮结束后对照 `skip_logic.rules` 判断是否追加或省略问题。
+**Execution**: ask rounds in the order of `round_id` in `questionnaire_template.rounds`; evaluate each question's `condition` before rendering it to decide show/skip; after each round, check `skip_logic.rules` to decide whether to add or drop questions.
 
-### Step 3：对话式补充
+### Step 3: Follow-up dialogue
 
-用户回答完问卷后，Skill 主动追问用户没说出口的偏好（3-5 个追问）。同时读取本地授权信息（如已授权），补充用户画像。
+After the questionnaire, the Skill asks 3-5 follow-up questions about preferences the user has not stated. If local file reading is authorized, it also reads local files to fill in the profile.
 
-**画像读取逻辑**：
+**Profile loading**:
 
-1. 运行 `scripts/init_profile.py` 检查本地是否已有画像文件（默认路径 `~/.creative-clone/profile.json`）
-2. 若无，从 `assets/profile_template.json` 创建空画像（轻量模式，`mode=light`）
-3. 若用户已授权本地文件读取（`privacy.local_reading_enabled == true`）：
-   - 读取 `privacy.authorized_dirs` 指定目录下的文档
-   - 只提取四类摘要特征：写作风格、知识背景、关注领域、思考深度
-   - 不复制原文、不修改原文件、不扫描授权目录外
-4. 将画像快照（`base` + `preferences` + `signals`）注入三引擎
+1. Run `scripts/init_profile.py` to check whether a profile file already exists locally (default path `~/.creative-clone/profile.json`)
+2. If not, create an empty profile from `assets/profile_template.json` (light mode, `mode=light`)
+3. If the user has authorized local file reading (`privacy.local_reading_enabled == true`):
+   - Read documents under the directories listed in `privacy.authorized_dirs`
+   - Extract only four summary features: writing style, knowledge background, areas of interest, depth of thinking
+   - Does not copy the original text, does not modify the files, does not scan outside the authorized directories
+4. Inject the profile snapshot (`base` + `preferences` + `signals`) into the three engines
 
-**追问策略**（3-5 个，针对画像缺口）：
+**Follow-up questions** (3-5, targeting profile gaps):
 
-- 你对反常识角度的容忍度？（决定引擎 B 碰撞强度）
-- 你希望选题偏理论还是偏实操？（决定方法暗示）
-- 有没有可用的样本/数据渠道？（决定可行性边界）
-- 你对「好选题」的判断标准是什么？（沉淀进 `preferences`）
-- 之前做过什么选题？满意吗？（跨场景复用）
+- How open are you to counter-consensus angles? (sets the collision strength of Engine B)
+- Do you prefer more theoretical or more hands-on topic ideas? (sets the method hints)
+- Do you have sample / data sources available? (sets the feasibility boundary)
+- What makes a good topic idea in your judgment? (stored into `preferences`)
+- What topic ideas have you worked on before? Were you satisfied? (reused across scenarios)
 
-**画像读写规则**（详见 `references/profile_schema.md`）：
+**Profile read/write rules** (see `references/profile_schema.md` for details):
 
-- R1 显式大于推断：用户明说的偏好优先于推断
-- R2 推断需一致证据：跨会话至少两次支持才写入推断偏好
-- R3 当前请求大于存储：本次表达与画像冲突时以本次为准
-- R4 本地可管理：明文 JSON，可随时查看/编辑/删除
-- R5 批量写入：每轮结束后统一更新，不在生成中途写入
-- R6 最小采集：只采集生成选题必需的字段
+- R1 Explicit beats inferred: preferences stated by the user override inferences
+- R2 Inferences need consistent evidence: write an inferred preference only after at least two supporting signals across sessions
+- R3 Current request beats stored data: if the current request conflicts with the profile, use the current request
+- R4 Locally manageable: plain-text JSON; view, edit, or delete at any time
+- R5 Batch writes: update once at the end of each round; do not write mid-generation
+- R6 Minimal collection: store only the fields needed to generate topic ideas
 
-> 用户画像系统见 `references/profile_schema.md`，初始化脚本见 `scripts/init_profile.py`，更新脚本见 `scripts/update_profile.py`。
+> See `references/profile_schema.md` for the profile system, `scripts/init_profile.py` for the init script, and `scripts/update_profile.py` for the update script.
 
-### Step 4：选题生成（三引擎协同）
+### Step 4: Topic generation (three engines in sequence)
 
-三引擎**严格串行、逐级传参**，确保选题不是烂大街的、有真正创新性、且能落地：
+The three engines run strictly in sequence, passing outputs to the next engine, so the results are not overdone, are original, and are actionable:
 
-#### 引擎 A · 领域饱和扫描（排雷）
+#### Engine A · Saturation scan (find overdone directions)
 
-先查哪些题已被做烂，再找缺口。
+First check which directions are already overdone, then find the gaps.
 
-**工作流程**：
-1. 从问卷答案与画像中提取关键词（核心领域、对象关键词、方法关键词、兴趣关键词、限定词）
-2. 制定检索计划（先计划后执行，检索不超过 3 轮）
-3. 执行 WebSearch 实时检索（MVP 主力方案），记录过载信号与缺口信号
-4. 按四维度打分（数量 35% + 同构 25% + 时效 20% + 缺口反向 20%），分档处置
-5. 输出饱和度报告，把饱和方向作为禁止域、缺口作为优先靶区下传引擎 B
+**Workflow**:
+1. Extract keywords from the questionnaire answers and the profile (core domain, object keywords, method keywords, interest keywords, qualifiers)
+2. Make a search plan first, then execute it (at most 3 search rounds)
+3. Run real-time WebSearch (the main MVP path), recording over-saturation signals and gap signals
+4. Score on four dimensions (volume 35% + homogeneity 25% + recency 20% + inverse-gap 20%), then tier the results
+5. Output a saturation report; pass saturated directions as forbidden areas and gaps as priority targets to Engine B
 
-**能力降级**（三级兜底）：
-- WebSearch 实时检索（最可信，结论可进硬黑名单）
-- 免费学术入口兜底（Google Scholar / arXiv / CNKI 开放页）
-- 模型自身知识库（标注「未实时检索」，结论只作提示性规避）
+**Fallback tiers** (three levels):
+- Real-time WebSearch (most reliable; its conclusions may enter the hard blacklist)
+- Free academic sources (Google Scholar / arXiv / open CNKI pages)
+- The model's own knowledge base (marked "not searched in real time"; conclusions are only advisory)
 
-**反编造红线**：禁止编造精确数字、文献、期刊、检索结果；数量一律用「约/估计」。
+**No-fabrication rule**: do not invent precise numbers, references, journals, or search results. Always mark quantities as "about" or "estimated".
 
-> 引擎 Prompt 见 `references/engine_saturation_scan.md`。
+> Engine prompt: `references/engine_saturation_scan.md`.
 
-#### 引擎 B · 跨界知识碰撞（找新角度）
+#### Engine B · Cross-domain collision (find new angles)
 
-提取用户多领域画像，做交叉组合。
+Extract the user's multi-domain profile and combine domains.
 
-**五种碰撞算子**：
-1. 视角借用：用 X 的理论透镜重新审视 A 的对象
-2. 方法移植：把 X 的分析方法搬到 A
-3. 对象互证：同一对象在 A 与 X 中的呈现差异比较
-4. 机制类比：论证 A 与 X 存在同构机制（须可证伪）
-5. 媒介/受众反身：把 X 当作大众接触 A 的媒介来研究
+**Five collision operators**:
+1. Perspective borrowing: re-examine the object of A through the theoretical lens of X
+2. Method transfer: apply X's analytical method to A
+3. Mutual evidence: compare how the same object appears in A and in X
+4. Mechanism analogy: argue that A and X share an isomorphic mechanism (must be falsifiable)
+5. Media / audience reflexivity: study X as the medium through which the public encounters A
 
-**核心防伪步骤**：对每个碰撞点强制写出 `why_link`（为什么二者真的有关），按 `strong/medium/loose` 三级筛选，loose 直接剔除并记录为「概念堆砌」。
+**Anti-fabrication step**: every collision point must include a `why_link` (why the two domains are genuinely related). Filter into `strong / medium / loose`; drop `loose` points and record them as "concept stacking".
 
-**从碰撞点到具体问题**：锚定具体对象 → 加限定词（人群/地域/平台/时间）→ 用可检验句式（「X 如何影响 Y」）→ 配方法暗示 → 能填缺口的标注 `fills_gap`。
+**From collision point to concrete question**: anchor to a concrete object → add qualifiers (population / region / platform / time) → use a testable sentence pattern ("How does X affect Y") → add a method hint → mark points that fill a gap as `fills_gap`.
 
-> 引擎 Prompt 见 `references/engine_cross_collision.md`。
+> Engine prompt: `references/engine_cross_collision.md`.
 
-#### 引擎 C · 自我批判迭代（打磨问题意识）
+#### Engine C · Self-critique iteration (polish the research question)
 
-AI 切换为严苛审稿人，对每个候选逐题挑毛病、按 6 条硬约束裁决，不达标就修改或淘汰。
+The model switches to a strict reviewer role: it picks flaws in each candidate, judges each against the six hard constraints, and revises or drops candidates that fail.
 
-**6 条硬约束**（`pass_all` 闸门）：
-- C1 有具体研究对象（可识别、可观测、有边界）
-- C2 有明确的问题且可证伪（不是主题、不是假问题）
-- C3 有可操作的研究方法（与问题匹配、材料可得）
-- C4 在用户能力/资源范围内（与 resources、层级、周期匹配）
-- C5 不是烂大街的方向（有新对象/新视角/新方法/新证据）
-- C6 符合场景态度基调（严肃场不油、轻松场不端）
+**Six hard constraints** (the `pass_all` gate):
+- C1 Has a concrete research object (identifiable, observable, bounded)
+- C2 Has a clear, falsifiable question (not a topic, not a fake problem)
+- C3 Has an actionable research method (matches the question, materials available)
+- C4 Within the user's ability / resources (matches `resources`, level, and time frame)
+- C5 Not an overdone direction (new object / new perspective / new method / new evidence)
+- C6 Matches the scenario tone (no glibness in academic settings, no stiffness in playful settings)
 
-**黑名单 5 类一票否决复核**：概念堆砌 / 过度饱和 / 无法落地 / 范围过大 / 假问题。
+**Five blacklist types, one-strike review**: concept stacking / over-saturation / not actionable / scope too broad / fake problem.
 
-**迭代逻辑**：默认 2 轮（最多 3 轮），对有救候选给出可直接替换的精修；若通过闸门的候选不足 `target_count`，把逐题 issues 回灌引擎 B 重新碰撞，外层总循环不超过 3 轮。**绝不降闸门凑数。**
+**Iteration**: 2 rounds by default (at most 3); for salvageable candidates, give a direct revised replacement. If candidates that pass the gate are fewer than `target_count`, feed the per-candidate issues back to Engine B for another collision round; the outer loop runs at most 3 rounds. **The gate is never lowered to fill the quota.**
 
-**三条终止条件**：达标终止 / 轮次上限终止 / 吹毛求疵终止（剩余问题全部仅为措辞级 nitpick）。
+**Three stopping conditions**: pass / round limit reached / nitpicking only (remaining issues are all wording-level nits).
 
-> 引擎 Prompt 见 `references/engine_self_critique.md`，烂选题黑名单见 `references/bad_topic_blacklist.md`。
+> Engine prompt: `references/engine_self_critique.md`; bad-topic blacklist: `references/bad_topic_blacklist.md`.
 
-#### 三引擎串联数据流
+#### Data flow across the three engines
 
 ```
-Step 1-3 产物（场景配置 + 画像快照 + 问卷答案）
+Step 1-3 outputs (scene profile + profile snapshot + questionnaire answers)
     |
     v
-引擎 A 饱和扫描 -> saturated_topics[]（禁止域）+ gaps[]（优先靶区）+ blacklist_hits[]
+Engine A saturation scan -> saturated_topics[] (forbidden areas) + gaps[] (priority targets) + blacklist_hits[]
     |
     v
-引擎 B 跨界碰撞 -> 注入 gaps，只保留有逻辑关联的交叉点 -> candidates[]（每个带 why_link）
+Engine B cross-domain collision -> gaps injected, keep only logically linked intersections -> candidates[] (each with why_link)
     |
     v
-引擎 C 自我批判 -> 按 6 条硬约束逐题裁决 -> final_candidates[]（通过闸门者）
-    |                 不足则回灌引擎 B（外循环 <=3 轮）
+Engine C self-critique -> judge each against the six hard constraints -> final_candidates[] (those that pass the gate)
+    |                 if too few, feed back to Engine B (outer loop <= 3 rounds)
     v
-Step 5 formatter 按四要素模板输出
+Step 5 formatter outputs the four-element template
 ```
 
-### Step 5：输出选题
+### Step 5: Output topic ideas
 
-每个候选选题必须包含**四要素**，缺一不可：
+Every candidate topic idea must include all four elements; none may be missing:
 
-| 要素 | 必须做到 | 常见不合格 |
+| Element | Must | Common failures |
 |------|----------|------------|
-| 选题标题 | 具体问题（含对象 + 限定词），可回答、可证伪 | 宽泛主题、热词堆砌 |
-| 为什么适合你 | 引用画像具体条目，说明如何被用到 | 只写「很适合你」无依据；编造画像 |
-| 三个切入角度 | 互不重叠、可直接动手的不同路径 | 三条同义反复；只写方向不写怎么做 |
-| 风险提醒 | 覆盖可行性 / 难度 / 伦理合规，务实不敷衍 | 回避真问题；只写「难度不大」 |
+| Title | A concrete question (object + qualifiers), answerable and falsifiable | Broad theme, buzzword stacking |
+| Why it fits you | Cites specific profile entries and explains how they are used | "Fits you well" with no evidence; fabricated profile |
+| Three angles to approach it | Non-overlapping, actionable paths | Three near-duplicates; direction only, no how-to |
+| Risk notes | Covers feasibility / difficulty / ethics and compliance, practical | Avoids real issues; "not very difficult" only |
 
-**场景微调**：四要素不可省略，场景配置可通过 `output_format_adjustments` 追加字段（如短视频追加「前3秒钩子」，创业追加「MVP验证路径」）和调整标题格式。
+**Scenario tweaks**: the four elements may not be omitted. A scene profile can use `output_format_adjustments` to add fields (e.g. short video adds "first-3-second hook"; startup adds "MVP validation path") and adjust the title format.
 
-**整批输出规范**：
-- 按 `output.count` 输出（默认 5 个），合格不足时如实说明，不凑数
-- 按相关度排序，统一编号，卡片间用分隔线区隔
-- 开头一句话说明这批选题围绕什么
-- 结尾提示用户可回复「这个有意思 / 换一批 / 方向偏了」
-- 末尾固定附 AI 生成标注与免责声明
+**Batch output rules**:
+- Output `output.count` ideas (default 5); if fewer qualify, say so honestly, do not pad
+- Sort by relevance, number them, separate cards with dividers
+- Open with one sentence about what this batch covers
+- End by telling the user they can reply "this is interesting / give me another batch / off track"
+- Always close with the AI-generated notice and disclaimer
 
-> 输出模板见 `references/output_template.md`（含 2 个完整示例：严肃学术 + 轻松玩梗）。
+> Output template: `references/output_template.md` (includes 2 full examples: academic + playful).
 
-### Step 6：反馈迭代
+### Step 6: Feedback loop
 
-用户标记反馈 → Skill 根据反馈调整下一轮生成 → 最终选中的选题自动沉淀进用户画像。
+The user marks feedback → the Skill adjusts the next generation → the finally selected topic idea is saved into the user's profile.
 
-**四种反馈类型与画像更新**（由 `scripts/update_profile.py` 执行）：
+**Four feedback types and profile updates** (executed by `scripts/update_profile.py`):
 
-| 反馈 | 参数值 | 更新动作 |
+| Feedback | Parameter value | Update action |
 |------|--------|---------|
-| 这个有意思 | `like` | 追加 `history` + `signals.liked_topics`，`stats.like_count + 1` |
-| 换一批 | `dislike` | 追加 `history` + `signals.disliked_topics`，`stats.dislike_count + 1` |
-| 方向偏了 | `redirect` | 追加 `history` + `signals.redirected_topics`，`stats.redirect_count + 1` |
-| 最终选中 | `select` | 上述全部 + 选中选题沉淀进 `base.interests` + `preferences`（`source=explicit`，`confidence=0.9`） |
+| "This is interesting" | `like` | Append to `history` + `signals.liked_topics`; `stats.like_count + 1` |
+| "Give me another batch" | `dislike` | Append to `history` + `signals.disliked_topics`; `stats.dislike_count + 1` |
+| "Off track" | `redirect` | Append to `history` + `signals.redirected_topics`; `stats.redirect_count + 1` |
+| "Selected" | `select` | All of the above + save the selected topic into `base.interests` + `preferences` (`source=explicit`, `confidence=0.9`) |
 
-**画像更新逻辑**：
-- 所有写回采用「临时文件 + 原子替换」，避免进程中断损坏画像
-- `history` 上限 500 条，`signals` 每类上限 50 条，超出删除最旧
-- 每次反馈后 `profile_meta.updated_at` 刷新为当前时间
-- 选中的选题跨场景沉淀，下次在其他场景使用时自动复用
+**Profile update logic**:
+- All writes use a temp file + atomic replace, so an interrupted process cannot corrupt the profile
+- `history` is capped at 500 entries; each `signals` category at 50; oldest entries are dropped first
+- After each feedback, `profile_meta.updated_at` is set to the current time
+- Selected topic ideas are stored across scenarios and reused automatically in later sessions
 
-**跨场景复用设计**：
-- 全局字段（`base`、`preferences` 中 `scope=cross_scenario`、`signals`、`stats`）跨所有场景共享
-- 场景字段（`preferences` 中 `scope` 为具体场景标识、`history.scenario`）只在对应场景生效
-- 场景级偏好若在多场景出现一致证据，可升级为跨场景偏好
+**Cross-scenario design**:
+- Global fields (`base`, `preferences` entries with `scope=cross_scenario`, `signals`, `stats`) are shared across all scenarios
+- Scenario-specific fields (`preferences` entries whose `scope` is a specific scenario id, `history.scenario`) apply only within that scenario
+- A scenario-level preference can be promoted to a cross-scenario preference if consistent evidence appears in multiple scenarios
 
-> 画像 Schema 见 `references/profile_schema.md`，更新脚本见 `scripts/update_profile.py`。
-
----
-
-## 授权与隐私
-
-> 完整隐私政策见 `references/privacy_policy.md`。
-
-- **默认轻量模式，本地读取默认关闭**：首次使用无需授权即可走完 6 步流程
-- **授权两步走**：Step 3 弹出告知弹窗 → 用户主动勾选「我已阅读并同意」→ 系统文件夹选择器中亲自指定目录；无默认勾选、无诱导
-- **最小权限**：只读授权目录、不跟随符号链接、不扫全盘、只提取四类摘要特征（写作风格/知识背景/关注领域/思考深度）、不改原文件
-- **随时撤回**：设置中一键关闭即降级为轻量模式，6 步流程与输出标准不降级
-- **零上传**：Skill 自身不包含任何服务器地址、上传接口或统计 SDK；画像为明文 JSON，只存本地
-- **不收集任何用户数据**：没有账号、没有遥测、没有崩溃上报
-
-**关于模型运行环境的诚实说明**：通过云端模型生成选题时，对话内容（含本地提取的摘要特征）会按该模型服务的隐私政策处理；文件原文不会进入对话。想完全离线，可挂载本地模型后端。
-
-> 授权交互细则、状态机、弹窗文案、跨模型授权 Prompt 契约见 `references/privacy_policy.md` 第 6 节与附录 A。
+> Profile schema: `references/profile_schema.md`; update script: `scripts/update_profile.py`.
 
 ---
 
-## 质量保障
+## Authorization and privacy
 
-> 质量评分标准见 `references/quality_standards.md`，测试用例见 `references/test_scenarios.md`，验收清单见 `references/acceptance_checklist.md`。
+> Full privacy policy: `references/privacy_policy.md`.
 
-**选题质量评分卡**（5 维度 x 1-5 分，满分 25）：
+- **Light mode by default, local reading off by default**: the 6-step flow works without any authorization on first use
+- **Two-step authorization**: at Step 3, an info dialog appears → the user actively checks "I have read and agree" → the user picks a directory themselves in the system folder picker. No pre-checked boxes, no nudging
+- **Least privilege**: read only the authorized directories, do not follow symlinks, do not scan the whole disk, extract only the four summary features (writing style / knowledge background / areas of interest / depth of thinking), do not modify the original files
+- **Revoke any time**: one toggle in Settings drops back to light mode; the 6-step flow and output standards do not degrade
+- **Zero upload**: the Skill contains no server address, no upload endpoint, no analytics SDK; the profile is plain-text JSON stored only locally
+- **No user data collected**: no account, no telemetry, no crash reporting
 
-| 维度 | 评估问题 | 对应审稿项 |
+**Note on the model runtime**: when topic ideas are generated through a cloud model, the conversation (including the locally extracted summary features) is handled under that model service's privacy policy. The original file content never enters the conversation. To work fully offline, point the Skill at a local model backend.
+
+> Authorization interaction details, state machine, dialog copy, and the cross-model authorization prompt contract are in `references/privacy_policy.md` section 6 and appendix A.
+
+---
+
+## Quality assurance
+
+> Scoring rubric: `references/quality_standards.md`; test cases: `references/test_scenarios.md`; acceptance checklist: `references/acceptance_checklist.md`.
+
+**Topic quality scorecard** (5 dimensions × 1-5 points, max 25):
+
+| Dimension | Question reviewed | Review criterion |
 |------|---------|-----------|
-| D1 具体性 | 是具体问题还是宽泛主题？ | C1 / C2 |
-| D2 创新性 | 有没有领域增量？是不是烂大街？ | C5 |
-| D3 可行性 | 用户能力/资源范围内做得出来吗？ | C4 |
-| D4 匹配度 | 贴合用户画像的程度？ | 画像引用真实性 |
-| D5 分寸感 | 符合场景态度基调吗？ | C6 |
+| D1 Concreteness | Is it a concrete question or a broad theme? | C1 / C2 |
+| D2 Novelty | Does it add something to the field? Is it overdone? | C5 |
+| D3 Feasibility | Can it be done with the user's ability and resources? | C4 |
+| D4 Fit | How well does it match the user's profile? | Accuracy of profile references |
+| D5 Tone control | Does it match the scenario tone? | C6 |
 
-**通过线**：总分 >= 18 + 每个维度 >= 3 + 黑名单零命中。
+**Pass line**: total >= 18, each dimension >= 3, zero blacklist hits.
 
-**质量保障流程**：
-1. 引擎 C 先按 6 条硬约束 `pass_all` 放行（资格判定）
-2. 对通过闸门的候选按 5 维度打分（质量排序）
-3. 同分候选按场景配置 `output.sort_by` 定序
-4. 每轮评分写入留痕，供回溯
+**QA flow**:
+1. Engine C first admits candidates via the six hard constraints (`pass_all`) (eligibility check)
+2. Score gate-passing candidates on the 5 dimensions (quality ranking)
+3. Rank ties by the scenario profile's `output.sort_by`
+4. Log every round's scores for later review
 
-**实跑结论**（F 部用例 1 完整 6 步闭环）：三引擎串联正常，离线降级路径正确，概念堆砌反例被正确淘汰，最终候选评分 24/25（优秀），黑名单零命中。
+**Test-run result** (section F, case 1, full 6-step loop): the three engines chain correctly, the offline fallback path works, the concept-stacking counter-example is dropped as expected, the final candidate scores 24/25, and the blacklist has zero hits.
 
 ---
 
-## 技术架构
+## Technical architecture
 
-### 文件结构
+### File layout
 
 ```
 creative-clone/
-├── SKILL.md                          # 本文件：6步流程 + 三引擎调用 + 场景自适应 + 画像读写
+├── SKILL.md                          # This file: 6-step flow + three engines + scenario adaptation + profile read/write
 ├── scripts/
-│   ├── init_profile.py               # 画像初始化（仅标准库，原子写）
-│   └── update_profile.py             # 选题后画像更新（四种反馈类型）
+│   ├── init_profile.py               # Profile init (stdlib only, atomic write)
+│   └── update_profile.py             # Profile update after ideation (four feedback types)
 ├── references/
-│   ├── scene_format_spec.md          # 场景配置统一格式规范
-│   ├── scene_configs.md              # 场景库使用说明 + 扩展指南
-│   ├── engine_saturation_scan.md     # 引擎A：领域饱和扫描 Prompt
-│   ├── engine_cross_collision.md     # 引擎B：跨界知识碰撞 Prompt
-│   ├── engine_self_critique.md       # 引擎C：自我批判迭代 Prompt
-│   ├── bad_topic_blacklist.md        # 五种烂选题黑名单
-│   ├── output_template.md            # 选题输出四要素模板
-│   ├── profile_schema.md             # 用户画像 JSON Schema + 授权机制
-│   ├── privacy_policy.md             # 完整隐私政策
-│   ├── quality_standards.md          # 选题质量评分卡
-│   ├── test_scenarios.md             # 3个场景测试用例
-│   └── acceptance_checklist.md       # PRD验收清单
+│   ├── scene_format_spec.md          # Scene profile format spec
+│   ├── scene_configs.md              # Scene library guide + extension notes
+│   ├── engine_saturation_scan.md     # Engine A: saturation scan prompt
+│   ├── engine_cross_collision.md      # Engine B: cross-domain collision prompt
+│   ├── engine_self_critique.md        # Engine C: self-critique iteration prompt
+│   ├── bad_topic_blacklist.md        # Five bad-topic types
+│   ├── output_template.md            # Four-element output template
+│   ├── profile_schema.md              # Profile JSON schema + authorization mechanism
+│   ├── privacy_policy.md              # Full privacy policy
+│   ├── quality_standards.md           # Topic quality scorecard
+│   ├── test_scenarios.md              # 3 scenario test cases
+│   └── acceptance_checklist.md        # PRD acceptance checklist
 ├── assets/
-│   ├── profile_template.json         # 默认画像模板（空值）
+│   ├── profile_template.json          # Default profile template (empty values)
 │   └── scene_profiles/
-│       ├── academic_paper.json        # 学术论文场景
-│       ├── ppt_presentation.json      # PPT汇报场景
-│       ├── short_video.json           # 短视频场景
-│       ├── wechat_article.json        # 公众号文章场景
-│       ├── startup_idea.json          # 创业方向场景
-│       ├── event_planning.json        # 活动策划场景
-│       ├── podcast.json               # 播客选题场景
-│       ├── course_design.json         # 课程设计场景
-│       └── interview_outline.json     # 人物采访场景
+│       ├── academic_paper.json        # Academic paper scenario
+│       ├── ppt_presentation.json      # PPT presentation scenario
+│       ├── short_video.json           # Short video scenario
+│       ├── wechat_article.json       # WeChat article scenario
+│       ├── startup_idea.json         # Startup idea scenario
+│       ├── event_planning.json       # Event planning scenario
+│       ├── podcast.json              # Podcast scenario
+│       ├── course_design.json        # Course design scenario
+│       └── interview_outline.json     # Interview outline scenario
 ├── README.md
 ├── LICENSE
 ├── CONTRIBUTING.md
 └── .gitignore
 ```
 
-### 设计原则
+### Design principles
 
-1. **场景自适应**：问卷问题、语气基调、硬约束清单、输出格式全部随场景配置切换
-2. **用户画像跨场景沉淀**：不管在哪个场景使用，所有反馈和偏好都沉淀到同一份画像
-3. **三引擎通用**：领域饱和扫描 + 跨界知识碰撞 + 自我批判迭代，不绑死任何学科或场景
-4. **输出标准统一**：每个候选选题必须包含四要素（具体问题/为什么适合你/三个切入方向/风险提醒）
-5. **场景维度可扩展**：新增场景只需加一个 JSON 文件，不改核心逻辑
+1. **Scenario adaptation**: questionnaire questions, tone, hard-constraint list, and output format all switch with the scene profile
+2. **Profile accumulates across scenarios**: feedback and preferences from any scenario are saved into the same profile
+3. **General engines**: saturation scan + cross-domain collision + self-critique iteration, not tied to any discipline or scenario
+4. **Unified output standard**: every candidate includes the four elements (concrete question / why it fits you / three angles / risk notes)
+5. **Extensible scenarios**: adding a scenario requires only one JSON file; no core logic changes
 
-### 跨模型兼容
+### Cross-model compatibility
 
-画像 Schema 按 JSON Schema draft-07 设计，支持挂载到 GPT / Gemini / DeepSeek 等主流模型后端。画像读写走 Python 脚本（确定性），不交给 LLM 处理，模型不确定性不污染数据层。
+The profile schema follows JSON Schema draft-07 and can be mounted on mainstream model backends such as GPT / Gemini / DeepSeek. Profile reads and writes go through Python scripts (deterministic), not through the LLM, so model uncertainty does not affect the data layer.
