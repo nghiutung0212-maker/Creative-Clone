@@ -31,7 +31,7 @@ This policy applies to everything in the Creative Avatar (`creative-clone`) Skil
 - All reference docs and the three engine prompts under `references/`;
 - `assets/profile_template.json` and the scene profiles in `assets/scene_profiles/*.json`.
 
-It does not apply to the host platform that runs this Skill (such as WorkBuddy AI) or its model providers (such as GPT, Gemini, DeepSeek), whose own terms of service and privacy policies apply. It also does not apply to other software on your device.
+It does not apply to the host platform that runs this Skill or its model providers (such as GPT, Gemini, DeepSeek), whose own terms of service and privacy policies apply. It also does not apply to other software on your device.
 
 ### 1.2 Key terms
 
@@ -72,7 +72,7 @@ Therefore, for this Skill itself, the developer is not a processor of your perso
 
 ### 2.3 Honest note on the model runtime (data flow outside the Skill)
 
-This Skill uses a large language model to run dialogue and generation. When you use it on a host platform (such as WorkBuddy AI), two data flows must be kept separate:
+This Skill uses a large language model to run dialogue and generation. When you use it on a host platform, two data flows must be kept separate:
 
 1. **The Skill's own data flow**: as described in this policy: zero collection, zero upload, all local.
 2. **The model inference channel**: your questionnaire answers, dialogue content, and the locally generated profile summary after consent (read by the three engines) are sent as part of the prompt to **the model service you are using** (GPT / Gemini / DeepSeek, etc.). That channel is governed by the host platform's and model provider's own privacy policies and terms, and is outside this Skill's control.

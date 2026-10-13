@@ -158,7 +158,7 @@ Search rules:
 
 ### 3.3 Step 3: WebSearch retrieval (main MVP path)
 
-In the WorkBuddy AI environment, **prefer the WebSearch tool** for real-time retrieval; do not tie to any paid academic API:
+In the Skill runtime environment, **prefer the WebSearch tool** for real-time retrieval; do not tie to any paid academic API:
 
 1. Run WebSearch with the 3.2 queries; read the returned titles, snippets, sites, and dates.
 2. Record **overload signals**: many structurally identical titles for the same topic, reviews that explicitly state "research is already fairly mature / output is abundant", complaints about platform homogenization.

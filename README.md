@@ -33,17 +33,15 @@ Full details in the [privacy policy](references/privacy_policy.md).
 
 ## Installation
 
-### Install in WorkBuddy AI
+### Install as a Skill
 
 1. Clone or download this repository
-2. Put the `creative-clone/` directory into WorkBuddy AI's Skill directory:
-   - User level (recommended): `~/.workbuddy-ai/skills/creative-clone/`
-   - Project level: `{workspace}/.workbuddy-ai/skills/creative-clone/`
-3. In WorkBuddy AI, type a trigger phrase such as "help me come up with topic ideas" or "I'm looking for a paper topic" to load the Skill automatically
+2. Put the `creative-clone/` directory into your AI assistant's Skill directory
+3. Type a trigger phrase such as "help me come up with topic ideas" or "I'm looking for a paper topic" to load the Skill automatically
 
 ### Manual use
 
-Outside WorkBuddy AI, you can still:
+For standalone use, you can still:
 
 1. Read `SKILL.md` for the full workflow
 2. Run the three engines manually with the engine prompts under `references/`
