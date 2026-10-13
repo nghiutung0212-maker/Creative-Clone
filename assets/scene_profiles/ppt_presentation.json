@@ -1,87 +1,87 @@
 {
   "scene_id": "ppt_presentation",
-  "scene_name": "PPT 汇报选题",
-  "scene_description": "课程汇报、毕业答辩、工作汇报、商业路演与会议分享的汇报主题构思，产出在限定时长与页数内可讲透、有明确汇报目的的选题。",
+  "scene_name": "Presentation topic ideas",
+  "scene_description": "Topic ideation for class presentations, thesis defenses, work reports, business pitches and conference talks. Produces topics that can be covered within the time and slide limits, with a clear presentation purpose.",
   "questionnaire_template": {
     "rounds": [
       {
         "round_id": 1,
-        "round_title": "场合与听众",
+        "round_title": "Occasion and audience",
         "questions": [
           {
             "field": "occasion",
-            "question": "这次汇报是什么场合？",
+            "question": "What is the occasion for this presentation?",
             "type": "choice",
-            "options": ["课程汇报", "毕业答辩", "工作汇报", "商业路演", "会议分享"],
+            "options": ["class presentation", "thesis defense", "work report", "business pitch", "conference talk"],
             "required": true
           },
           {
             "field": "topic_domain",
-            "question": "汇报所属的主题方向是什么？（课程/项目/业务领域）",
+            "question": "What is the subject area of the presentation? (course / project / business area)",
             "type": "text",
             "required": true
           },
           {
             "field": "audience",
-            "question": "主要听众是谁？",
+            "question": "Who is the main audience?",
             "type": "choice",
-            "options": ["同学", "老师或答辩评委", "公司领导", "客户或投资人", "混合听众"],
+            "options": ["classmates", "teachers or defense committee", "company leadership", "clients or investors", "mixed audience"],
             "required": true
           }
         ]
       },
       {
         "round_id": 2,
-        "round_title": "时长、页数与风格",
+        "round_title": "Length, slides and style",
         "questions": [
           {
             "field": "duration",
-            "question": "汇报时长是多少？",
+            "question": "How long is the presentation?",
             "type": "choice",
-            "options": ["5分钟以内", "5-10分钟", "10-20分钟", "20分钟以上"],
+            "options": ["under 5 minutes", "5-10 minutes", "10-20 minutes", "over 20 minutes"],
             "required": true
           },
           {
             "field": "slide_count",
-            "question": "预期 PPT 页数？",
+            "question": "How many slides are expected?",
             "type": "choice",
-            "options": ["10页以内", "10-20页", "20页以上"],
+            "options": ["under 10 slides", "10-20 slides", "over 20 slides"],
             "required": true
           },
           {
             "field": "style",
-            "question": "希望以什么方式支撑汇报？",
+            "question": "How do you want to support the presentation?",
             "type": "choice",
-            "options": ["数据图表型", "故事叙事型", "观点论证型", "图文视觉型"],
+            "options": ["data and charts", "storytelling", "argument-driven", "visual and image-led"],
             "required": true
           }
         ]
       },
       {
         "round_id": 3,
-        "round_title": "内容要求与雷区",
+        "round_title": "Content requirements and minefields",
         "questions": [
           {
             "field": "must_include",
-            "question": "有哪些必须包含的内容？（如：某项目数据、某理论框架、产品 demo）",
+            "question": "Which content must be included? (e.g. a project's data, a theoretical framework, a product demo)",
             "type": "text",
             "required": false
           },
           {
             "field": "humor_allowed",
-            "question": "是否允许幽默或互动环节？",
+            "question": "Is humor or interaction allowed?",
             "type": "choice",
-            "options": ["完全严肃", "可适度幽默", "欢迎玩梗互动"],
+            "options": ["completely serious", "mild humor OK", "jokes and interaction welcome"],
             "required": false,
             "condition": {
-              "if": {"field": "occasion", "in": ["课程汇报", "工作汇报", "会议分享"]},
+              "if": {"field": "occasion", "in": ["class presentation", "work report", "conference talk"]},
               "then": "show",
               "else": "skip"
             }
           },
           {
             "field": "excludes",
-            "question": "有哪些雷区或不想出现的内容？",
+            "question": "What minefields or content do you want to avoid?",
             "type": "text",
             "required": false
           }
@@ -89,50 +89,50 @@
       }
     ],
     "skip_logic": {
-      "description": "根据场合与时长调整提问和选题范围。",
+      "description": "Adjust the questions and topic scope based on occasion and length.",
       "rules": [
-        "用户选「毕业答辩」→ 跳过「是否允许幽默」问题，语气按严肃学术处理，选题须能回应评委对创新点的追问",
-        "用户选「商业路演」且听众为「客户或投资人」→ 追加追问产品/数据现状，输出追加「商业化与关键指标」字段",
-        "用户选「5分钟以内」→ 建议页数不超过 10 页，选题只保留单一核心观点，不输出多主题拼盘",
-        "用户选「数据图表型」→ Step 3 追问数据来源；无现成数据时改推观点/叙事型选题，风险提醒注明数据缺口",
-        "用户选「图文视觉型」→ 输出追加视觉呈现建议，风险提醒提醒避免大段文字堆砌"
+        "If the user picks \"thesis defense\", skip the humor question, treat the tone as academic, and ensure the topic can answer committee questions about novelty",
+        "If the user picks \"business pitch\" with a \"clients or investors\" audience, ask about the product and data status, and add a \"commercialization and key metrics\" field to the output",
+        "If the user picks \"under 5 minutes\", suggest no more than 10 slides and keep a single core point; no multi-topic mashups",
+        "If the user picks \"data and charts\", ask about data sources in Step 3; with no existing data, suggest argument- or narrative-led topics instead and note the data gap in the risk warnings",
+        "If the user picks \"visual and image-led\", add visual presentation suggestions and warn against text-heavy slides"
       ]
     }
   },
   "tone_rules": {
-    "base_tone": "商业正式",
+    "base_tone": "formal",
     "allow_humor": false,
     "allow_informal": true,
     "tone_examples": [
-      "正确：本季度用户留存率环比提升 4 个百分点，主要来自新人引导流程的两处改动。",
-      "正确：下面用三页说明我们为什么选这个方向、怎么做、需要什么资源。",
-      "错误：哈哈大家好我又来水汇报了，随便讲讲啊。",
-      "错误：这个项目巨牛，反正听我的准没错。"
+      "Good: Quarterly user retention rose 4 points quarter over quarter, mainly from two changes to the onboarding flow.",
+      "Good: Over the next three slides, we explain why we picked this direction, how we will do it, and what resources we need.",
+      "Bad: Hi everyone, here with another filler report, let me just wing it.",
+      "Bad: This project is huge, just trust me, you cannot go wrong."
     ],
     "conditional_notes": [
-      "场合为「毕业答辩」或学术会议时，基调切换为严肃学术，禁用口语化表达。",
-      "场合为「课程汇报」且用户选「欢迎玩梗互动」时，可在开场与案例部分适度幽默，但结论须完整。"
+      "For \"thesis defense\" or academic conferences, switch to an academic tone and no colloquial expressions.",
+      "For \"class presentation\" where the user picks \"jokes and interaction welcome\", mild humor in the opening and cases is fine, but the conclusion must be complete."
     ]
   },
   "constraint_list": [
-    "选题必须能在规定时长内讲完，页数与时长匹配",
-    "每页只承载一个核心观点，整条汇报有一条清晰主线",
-    "必须有明确的汇报目的：告知、说服、展示或决策建议",
-    "选题深度与听众知识水平匹配",
-    "关键结论须有数据、事实或文献支撑，不得空谈",
-    "选题必须覆盖 must_include 中的内容要求"
+    "The topic must be coverable within the allotted time, and the slide count must match the duration",
+    "Each slide carries one core point, and the whole talk has one clear main line",
+    "There must be a clear purpose: inform, persuade, show, or recommend a decision",
+    "The depth must match the audience's knowledge level",
+    "Key conclusions must be backed by data, facts or literature; no empty talk",
+    "The topic must cover the content required in must_include"
   ],
   "exclusion_rules": [
-    "在限定页数/时长内无法展开的大主题",
-    "听众无法理解的专业黑话与未解释的缩写",
-    "无事实支撑的断言，尤其在答辩与商业场合",
-    "与汇报场合无关的铺垫和个人发挥",
-    "需要复杂演示条件但现场无法保障的环节",
-    "用户在 excludes 中明确列出的内容"
+    "Big themes that cannot be covered within the slide / time limits",
+    "Jargon and unexplained abbreviations the audience cannot follow",
+    "Assertions with no factual backing, especially in defense and business settings",
+    "Warm-up and personal asides unrelated to the occasion",
+    "Segments needing complex demo conditions that the venue cannot guarantee",
+    "Content the user explicitly lists in excludes"
   ],
   "output_format_adjustments": {
-    "title_format": "《{核心观点}——{汇报场合}汇报》",
-    "extra_fields": ["建议时长", "建议页数", "视觉呈现建议", "可能被追问的问题"],
+    "title_format": "\"{core point}: {occasion} presentation\"",
+    "extra_fields": ["suggested length", "suggested slide count", "visual presentation suggestions", "likely follow-up questions"],
     "suppress_fields": []
   }
 }

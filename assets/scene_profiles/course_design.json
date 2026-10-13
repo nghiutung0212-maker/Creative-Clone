@@ -1,55 +1,55 @@
 {
   "scene_id": "course_design",
-  "scene_name": "课程设计选题",
-  "scene_description": "单节课、单元课或整门课程的教学设计主题构思，产出教学目标可衡量、环节完整、与授课对象和教学条件匹配的课程设计。",
+  "scene_name": "Course design topic ideas",
+  "scene_description": "Topic ideation for a single lesson, a unit or a whole course. Produces course designs with measurable learning goals, complete segments, and a match for the learners and teaching conditions.",
   "questionnaire_template": {
     "rounds": [
       {
         "round_id": 1,
-        "round_title": "学科、对象与类型",
+        "round_title": "Subject, learners and type",
         "questions": [
           {
             "field": "course_subject",
-            "question": "课程的学科或主题是什么？",
+            "question": "What is the course subject or topic?",
             "type": "text",
             "required": true
           },
           {
             "field": "target_learners",
-            "question": "授课对象是？",
+            "question": "Who are the learners?",
             "type": "choice",
-            "options": ["小学生", "中学生", "大学生", "成人培训", "企业内训"],
+            "options": ["primary school students", "secondary school students", "college students", "adult training", "in-company training"],
             "required": true
           },
           {
             "field": "course_type",
-            "question": "课程类型是？",
+            "question": "What type of course is it?",
             "type": "choice",
-            "options": ["理论课", "实验实践课", "通识选修课", "技能培训", "在线课程"],
+            "options": ["theory lecture", "lab / hands-on session", "general education elective", "skills training", "online course"],
             "required": true
           }
         ]
       },
       {
         "round_id": 2,
-        "round_title": "课时、目标与条件",
+        "round_title": "Lesson hours, goals and conditions",
         "questions": [
           {
             "field": "lesson_count",
-            "question": "课时安排是？",
+            "question": "What is the lesson-hour arrangement?",
             "type": "choice",
-            "options": ["单节课", "4-8 课时单元", "整学期课程", "一次性工作坊"],
+            "options": ["single lesson", "unit of 4-8 lessons", "full-semester course", "one-off workshop"],
             "required": true
           },
           {
             "field": "teaching_goal",
-            "question": "学生学完后应该能做到什么？（请尽量具体，如：能独立完成某操作、能解释某概念）",
+            "question": "What should students be able to do after the lesson? (Be as specific as possible, e.g. perform an operation on their own, explain a concept)",
             "type": "text",
             "required": true
           },
           {
             "field": "resources",
-            "question": "教学条件如何？（实验室、机房、线上工具、教具、班级人数）",
+            "question": "What are the teaching conditions? (Lab, computer room, online tools, teaching aids, class size)",
             "type": "text",
             "required": true
           }
@@ -57,25 +57,25 @@
       },
       {
         "round_id": 3,
-        "round_title": "风格、考核与禁忌",
+        "round_title": "Style, assessment and taboos",
         "questions": [
           {
             "field": "style",
-            "question": "希望什么教学风格？",
+            "question": "What teaching style do you want?",
             "type": "choice",
-            "options": ["严谨系统", "案例驱动", "趣味互动", "项目实战"],
+            "options": ["rigorous and systematic", "case-driven", "fun and interactive", "project-based practice"],
             "required": true
           },
           {
             "field": "assessment",
-            "question": "考核或评价方式？",
+            "question": "What is the assessment or evaluation method?",
             "type": "choice",
-            "options": ["考试", "课后作业", "项目作品", "课堂表现", "不考核"],
+            "options": ["exam", "homework", "project deliverable", "classroom participation", "no assessment"],
             "required": true
           },
           {
             "field": "constraints_excludes",
-            "question": "有哪些硬约束或禁忌？（如：不能联网、必须符合某课标、避免敏感话题）",
+            "question": "What hard constraints or taboos apply? (e.g. no internet access, must follow a certain curriculum standard, avoid sensitive topics)",
             "type": "text",
             "required": false
           }
@@ -83,50 +83,50 @@
       }
     ],
     "skip_logic": {
-      "description": "根据课程类型、授课对象与课时调整选题。",
+      "description": "Adjust the topic based on course type, learners and lesson hours.",
       "rules": [
-        "用户选「实验实践课」→ 必须追问设备、耗材与安全条件，排除无设备支撑的实验设计",
-        "用户选「小学生」或「中学生」→ 排除超出认知水平的内容，增加具象案例与互动，知识密度相应降低",
-        "用户选「单节课」或「一次性工作坊」→ 只输出单课时设计，不输出完整学期大纲",
-        "用户选「趣味互动」且课程为理论课 → 幽默与游戏须服务教学目标，风险提醒注明不得喧宾夺主",
-        "用户选「在线课程」→ 输出追加线上互动与学习任务设计，风险提醒注明自律与完课率问题"
+        "If the user picks \"lab / hands-on session\", ask about equipment, materials and safety conditions; exclude lab designs with no equipment to support them",
+        "If the user picks \"primary school students\" or \"secondary school students\", exclude content above their cognitive level, add concrete examples and interaction, and lower the information density accordingly",
+        "If the user picks \"single lesson\" or \"one-off workshop\", output only that lesson's design, not a full semester outline",
+        "If the user picks \"fun and interactive\" for a theory lecture, humor and games must serve the learning goal; note in the risk warnings that they must not overshadow the content",
+        "If the user picks \"online course\", add online interaction and assignment design; note in the risk warnings the issues of self-discipline and completion rate"
       ]
     }
   },
   "tone_rules": {
-    "base_tone": "严肃学术",
+    "base_tone": "academic",
     "allow_humor": false,
     "allow_informal": false,
     "tone_examples": [
-      "正确：本课结束时，学生能够用自己的话解释概念，并在给定案例中正确识别其两种表现形式。",
-      "正确：实验环节两人一组，操作前须完成安全检查单，教师确认后方可通电。",
-      "错误：这节课就是带大家玩一玩，开心最重要，学什么无所谓。",
-      "错误：知识点很多，我尽量都讲，讲不完的你们自己看。"
+      "Good: By the end of this lesson, students can explain the concept in their own words and correctly identify its two forms in a given case.",
+      "Good: The lab segment runs in pairs; each pair must complete the safety checklist before operating, and the teacher confirms power-on.",
+      "Bad: This lesson is just for fun, having a good time matters most, it does not matter what you learn.",
+      "Bad: There are a lot of points, I will try to cover them all, read the rest on your own."
     ],
     "conditional_notes": [
-      "教学风格选「趣味互动」时，允许游戏化设计和轻松语言，但每个环节须对应明确的教学目标。",
-      "面向低龄学习者时，语言可更亲切，但教学逻辑与安全要求不能放松。"
+      "When the teaching style is \"fun and interactive\", gamified design and light language are allowed, but every segment must map to a clear learning goal.",
+      "For younger learners, the language can be warmer, but the teaching logic and safety requirements must not be loosened."
     ]
   },
   "constraint_list": [
-    "必须有明确、可衡量的教学目标",
-    "内容与活动须符合授课对象的认知水平",
-    "教学环节完整：导入、新授、练习、反馈、总结",
-    "必须有可执行的考核或评价方式",
-    "设计须与课时、班级人数、教学资源匹配",
-    "符合课程标准、教学大纲与安全规范"
+    "There must be clear, measurable learning goals",
+    "Content and activities must match the learners' cognitive level",
+    "The lesson must have complete segments: warm-up, new material, practice, feedback, wrap-up",
+    "There must be a workable assessment or evaluation method",
+    "The design must fit the lesson hours, class size and teaching resources",
+    "It must follow curriculum standards, the syllabus and safety rules"
   ],
   "exclusion_rules": [
-    "超出课时容量的内容堆砌",
-    "无实验条件支撑的实验设计",
-    "学习者无法达成的过高要求",
-    "存在安全或合规风险的实践环节",
-    "全程单向灌输、无互动无反馈的设计",
-    "用户在 constraints_excludes 中明确列出的禁忌"
+    "Content overload beyond the lesson's capacity",
+    "Lab designs with no lab conditions to support them",
+    "Goals the learners cannot actually reach",
+    "Practice segments with safety or compliance risks",
+    "One-way lecturing with no interaction and no feedback",
+    "Taboos the user explicitly lists in constraints_excludes"
   ],
   "output_format_adjustments": {
-    "title_format": "《{课程主题}》{课时}教学设计",
-    "extra_fields": ["教学目标", "课时安排", "教学环节流程", "课后作业", "考核方式", "板书/课件要点"],
+    "title_format": "\"{course topic}\" lesson design",
+    "extra_fields": ["learning goals", "lesson plan", "segment flow", "homework", "assessment method", "board / slide key points"],
     "suppress_fields": []
   }
 }

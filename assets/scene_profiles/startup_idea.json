@@ -1,80 +1,80 @@
 {
   "scene_id": "startup_idea",
-  "scene_name": "创业方向选题",
-  "scene_description": "创业点子、产品方向与商业机会的构思，产出有明确目标用户、真实痛点、可低成本验证且与团队资源匹配的方向。",
+  "scene_name": "Startup direction topic ideas",
+  "scene_description": "Ideation for startup ideas, product directions and business opportunities. Produces directions with a clear target user, a real pain point, a low-cost way to validate, and a match for the team's resources.",
   "questionnaire_template": {
     "rounds": [
       {
         "round_id": 1,
-        "round_title": "背景、阶段与团队",
+        "round_title": "Background, stage and team",
         "questions": [
           {
             "field": "background_domain",
-            "question": "你的专业或行业背景是什么？（团队成员的背景也可一并写上）",
+            "question": "What is your professional or industry background? (Include team members' backgrounds if relevant.)",
             "type": "text",
             "required": true
           },
           {
             "field": "startup_stage",
-            "question": "目前处于什么阶段？",
+            "question": "What stage are you at?",
             "type": "choice",
-            "options": ["仅有想法", "在校探索", "已有 MVP", "已注册公司", "已在运营"],
+            "options": ["idea only", "exploring in school", "have an MVP", "company registered", "already operating"],
             "required": true
           },
           {
             "field": "team",
-            "question": "团队情况如何？",
+            "question": "What does the team look like?",
             "type": "choice",
-            "options": ["一个人", "2-3 人合伙人", "有完整团队", "暂无团队"],
+            "options": ["solo founder", "2-3 co-founders", "full team", "no team yet"],
             "required": true
           }
         ]
       },
       {
         "round_id": 2,
-        "round_title": "客户、痛点与赛道",
+        "round_title": "Customer, pain point and niche",
         "questions": [
           {
             "field": "target_customer",
-            "question": "想服务的目标客户或用户是谁？",
+            "question": "Who is the target customer or user you want to serve?",
             "type": "text",
             "required": true
           },
           {
             "field": "pain_point",
-            "question": "你观察到他们有什么具体痛点？（什么场景下、现在怎么凑合解决）",
+            "question": "What specific pain point have you observed? (In what situation, and how do they make do today?)",
             "type": "text",
             "required": true
           },
           {
             "field": "industry",
-            "question": "感兴趣的行业或赛道？",
+            "question": "Which industry or niche interests you?",
             "type": "choice",
-            "options": ["AI/大模型应用", "消费/零售", "教育", "企业服务", "硬科技", "内容/传媒", "本地生活", "其他"],
+            "options": ["AI / large model applications", "consumer / retail", "education", "B2B services", "hard tech", "content / media", "local services", "other"],
             "required": true
           }
         ]
       },
       {
         "round_id": 3,
-        "round_title": "资源、目标与红线",
+        "round_title": "Resources, goal and red lines",
         "questions": [
           {
             "field": "resources",
-            "question": "可调用的资源有哪些？（资金量级、技术能力、渠道、供应链）",
+            "question": "What resources can you call on? (capital level, technical skills, channels, supply chain)",
             "type": "text",
             "required": true
           },
           {
             "field": "goal",
-            "question": "这次构思的目标是？",
+            "question": "What is the goal of this ideation round?",
             "type": "choice",
-            "options": ["创业比赛", "课程作业", "准备融资", "真实创业", "做副业"],
+            "options": ["startup competition", "course assignment", "preparing to raise funding", "real startup", "side project"],
             "required": true
           },
           {
             "field": "red_lines",
-            "question": "有哪些不可接受的风险或合规红线？",
+            "question": "Which unacceptable risks or compliance red lines apply?",
             "type": "text",
             "required": false
           }
@@ -82,50 +82,50 @@
       }
     ],
     "skip_logic": {
-      "description": "根据创业阶段、团队与目标调整选题。",
+      "description": "Adjust the topics based on startup stage, team and goal.",
       "rules": [
-        "用户选「仅有想法」→ 不问运营数据，每个方向必须给出低成本验证（MVP）路径与第一个验证实验",
-        "用户选「一个人」或「暂无团队」→ 排除需要完整团队才能启动的方向，优先个人可独立验证的机会",
-        "用户选「准备融资」或「真实创业」→ 输出追加「市场规模与商业模式」字段，风险提醒增加政策与现金流分析",
-        "用户选「创业比赛」或「课程作业」→ 侧重创新性与逻辑完整度，风险提醒补充评审偏好与评委高频提问",
-        "用户在 resources 中已有明确渠道或供应链 → 选题优先复用该资源，避免重资产方向"
+        "If the user picks \"idea only\", do not ask about operating metrics; each direction must give a low-cost validation (MVP) path and a first validation experiment",
+        "If the user picks \"solo founder\" or \"no team yet\", exclude directions that need a full team to start; prefer opportunities one person can validate alone",
+        "If the user picks \"preparing to raise funding\" or \"real startup\", add a \"market size and business model\" field and add policy and cash-flow analysis to the risk warnings",
+        "If the user picks \"startup competition\" or \"course assignment\", weight novelty and logical completeness; add reviewer preferences and common judge questions to the risk warnings",
+        "If the user already has a clear channel or supply chain in resources, reuse it in the topics and avoid capital-heavy directions"
       ]
     }
   },
   "tone_rules": {
-    "base_tone": "商业正式",
+    "base_tone": "formal",
     "allow_humor": false,
     "allow_informal": true,
     "tone_examples": [
-      "正确：我们面向的是刚开始租房的应届生，核心痛点是搬家成本高且信息不透明，先用两周做一个信息撮合群验证需求。",
-      "正确：该方向的获客成本目前高于客单价，这是最大的不确定性，需要在 MVP 阶段验证。",
-      "错误：我们要做下一个千亿级平台，颠覆整个行业！",
-      "错误：这个点子绝对没人做过，肯定能成，闭眼投。"
+      "Good: We target new grads renting their first place; the core pain point is high moving costs and opaque information. Start with a two-week information-matching group to validate demand.",
+      "Good: Customer acquisition cost is currently above average order value; that is the biggest uncertainty and must be validated during the MVP stage.",
+      "Bad: We are building the next hundred-billion-dollar platform that disrupts the whole industry!",
+      "Bad: No one has done this idea, it is a sure thing, invest without looking."
     ],
     "conditional_notes": [
-      "比赛路演场景可适度使用有感染力的表达，但市场与财务数据必须真实、可核查。",
-      "任何阶段都不得编造市场规模、增长率或用户访谈数据。"
+      "Competition pitches may use more expressive language, but market and financial data must be real and checkable.",
+      "At any stage, do not fabricate market size, growth rates or user-interview data."
     ]
   },
   "constraint_list": [
-    "必须有明确的目标用户与真实、具体的痛点",
-    "方向必须可被低成本验证，给出 MVP 路径与关键假设",
-    "必须与团队资源、能力、时间匹配",
-    "必须有清晰的价值主张与差异化，而非抄袭现有模式",
-    "必须回答如何获取第一批用户/客户",
-    "符合法律法规与行业监管要求"
+    "There must be a clear target user and a real, specific pain point",
+    "The direction must be low-cost to validate, with an MVP path and key assumptions",
+    "It must match the team's resources, skills and time",
+    "There must be a clear value proposition and differentiation, not a copy of an existing model",
+    "It must answer how the first users / customers will be acquired",
+    "It must follow the law and industry regulation"
   ],
   "exclusion_rules": [
-    "伪需求：用户不存在该痛点或已有足够好的解决方案",
-    "超出团队资源的重资产、高门槛方向",
-    "政策禁止或强监管下无法合规的方向",
-    "纯概念包装、没有商业模式与变现路径",
-    "无差异化的模式照搬",
-    "用户在 red_lines 中明确列出的风险方向"
+    "Fake demand: users do not have the pain point, or already have a good enough solution",
+    "Capital-heavy, high-barrier directions beyond the team's resources",
+    "Directions banned by policy or impossible to comply with under heavy regulation",
+    "Pure concept packaging with no business model or monetization path",
+    "Model copies with no differentiation",
+    "Risk directions the user explicitly lists in red_lines"
   ],
   "output_format_adjustments": {
-    "title_format": "面向{目标用户}的{产品或服务}：解决{具体痛点}",
-    "extra_fields": ["MVP 验证路径", "目标用户画像", "商业模式画布要点", "关键指标", "首批用户获取方式"],
+    "title_format": "{product or service} for {target user}: solving {specific pain point}",
+    "extra_fields": ["MVP validation path", "target user profile", "business model canvas points", "key metrics", "first-user acquisition method"],
     "suppress_fields": []
   }
 }

@@ -1,83 +1,83 @@
 {
   "scene_id": "short_video",
-  "scene_name": "短视频选题",
-  "scene_description": "三分钟以内短视频的选题与切入角度构思，产出可在时长内讲清、前三秒有钩子、与账号人设一致的视频选题。",
+  "scene_name": "Short video topic ideas",
+  "scene_description": "Topic and angle ideation for short videos under three minutes. Produces video topics that can be explained within the duration, have a hook in the first three seconds, and match the account's persona.",
   "questionnaire_template": {
     "rounds": [
       {
         "round_id": 1,
-        "round_title": "赛道、平台与观众",
+        "round_title": "Niche, platform and audience",
         "questions": [
           {
             "field": "account_domain",
-            "question": "账号定位或赛道是什么？（如：大学生知识区、职场干货、宿舍搞笑日常）",
+            "question": "What is the account's positioning or niche? (e.g. student knowledge content, workplace tips, dorm comedy)",
             "type": "text",
             "required": true
           },
           {
             "field": "platform",
-            "question": "主要发布在哪个平台？",
+            "question": "Which platform do you mainly publish on?",
             "type": "choice",
-            "options": ["抖音", "快手", "视频号", "B站", "小红书", "多平台分发"],
+            "options": ["Douyin", "Kuaishou", "WeChat Channels", "Bilibili", "Xiaohongshu", "multi-platform distribution"],
             "required": true
           },
           {
             "field": "audience",
-            "question": "目标观众是谁？",
+            "question": "Who is the target audience?",
             "type": "choice",
-            "options": ["大学生", "职场新人", "宝妈", "下沉市场大众", "同好圈层", "泛兴趣大众"],
+            "options": ["college students", "early-career professionals", "mothers", "mass lower-tier audience", "niche interest group", "broad interest audience"],
             "required": true
           }
         ]
       },
       {
         "round_id": 2,
-        "round_title": "时长、形式与阶段",
+        "round_title": "Length, format and stage",
         "questions": [
           {
             "field": "duration",
-            "question": "单条视频时长？",
+            "question": "How long is a single video?",
             "type": "choice",
-            "options": ["30秒以内", "30-60秒", "1-3分钟", "3分钟以上"],
+            "options": ["under 30 seconds", "30-60 seconds", "1-3 minutes", "over 3 minutes"],
             "required": true
           },
           {
             "field": "form",
-            "question": "主要表现形式？",
+            "question": "What is the main format?",
             "type": "choice",
-            "options": ["真人口播", "剧情演绎", "实拍记录", "混剪解说", "图文动画"],
+            "options": ["talking head", "scripted skit", "filmed documentary", "edit with voiceover", "image / text animation"],
             "required": true
           },
           {
             "field": "account_stage",
-            "question": "账号目前处于什么阶段？",
+            "question": "What stage is the account at?",
             "type": "choice",
-            "options": ["零粉冷启动", "千粉以下", "成长期", "成熟账号"],
+            "options": ["zero followers, cold start", "under 1,000 followers", "growing", "established account"],
             "required": true
           }
         ]
       },
       {
         "round_id": 3,
-        "round_title": "钩子、目标与红线",
+        "round_title": "Hook, goal and red lines",
         "questions": [
           {
             "field": "hook_style",
-            "question": "偏好什么类型的钩子？",
+            "question": "What type of hook do you prefer?",
             "type": "choice",
-            "options": ["反常识", "制造悬念", "情绪共鸣", "实用干货", "吐槽玩梗"],
+            "options": ["counterintuitive", "build suspense", "emotional resonance", "practical tips", "roast / meme"],
             "required": true
           },
           {
             "field": "goal",
-            "question": "现阶段最主要的目标是？",
+            "question": "What is the main goal at this stage?",
             "type": "choice",
-            "options": ["涨粉", "获客转化", "打造人设", "纯表达", "带货"],
+            "options": ["grow followers", "lead generation", "build persona", "self-expression", "product sales"],
             "required": true
           },
           {
             "field": "red_lines",
-            "question": "有哪些不能碰的话题或红线？",
+            "question": "Which topics or red lines must you stay away from?",
             "type": "text",
             "required": false
           }
@@ -85,50 +85,50 @@
       }
     ],
     "skip_logic": {
-      "description": "根据平台、时长、账号阶段与目标调整选题。",
+      "description": "Adjust the topic based on platform, duration, account stage and goal.",
       "rules": [
-        "用户选「零粉冷启动」→ 不问粉丝画像细节，选题优先低门槛、高共鸣、可蹭平台热点的方向",
-        "用户选「30秒以内」→ 每个选题只给一个信息点，不输出多观点、多步骤内容",
-        "用户选「小红书」平台 → 形式优先实拍/图文，标题与封面改为小红书风格，输出追加标签建议",
-        "用户选「带货」目标 → 追加追问产品/商品信息，风险提醒增加广告法与平台带货合规提示",
-        "用户选「B站」且时长「3分钟以上」→ 选题可做深度论证，钩子可改为观点或故事开场"
+        "If the user picks \"zero followers, cold start\", do not ask for audience-profile details; prefer low-barrier, high-relativeness topics that can ride platform trends",
+        "If the user picks \"under 30 seconds\", give one information point per topic; no multi-point or multi-step content",
+        "If the platform is \"Xiaohongshu\", prefer filmed / image-text formats, switch the title and cover to Xiaohongshu style, and add hashtag suggestions",
+        "If the goal is \"product sales\", ask about the product and add advertising-law and platform e-commerce compliance notes to the risk warnings",
+        "If the platform is \"Bilibili\" and the length is \"over 3 minutes\", the topic can be a deep argument and the hook can open with an opinion or a story"
       ]
     }
   },
   "tone_rules": {
-    "base_tone": "轻松玩梗",
+    "base_tone": "playful",
     "allow_humor": true,
     "allow_informal": true,
     "tone_examples": [
-      "正确：家人们谁懂啊，我花三周才搞明白的事，今天一分钟给你讲清楚。",
-      "正确：先别急着做笔记，这个方法 90% 的人第一步就做错了。",
-      "错误：兹有下述视频一则，旨在向诸位阐述若干问题。",
-      "错误：某某群体就是不行，这种人活该。（引战、歧视、人身攻击）"
+      "Good: You know that thing I spent three weeks figuring out? I will explain it to you in one minute today.",
+      "Good: Do not take notes yet, 90% of people get the first step of this method wrong.",
+      "Bad: Herein lies a video that aims to expound several issues to all of you.",
+      "Bad: Group X just sucks, people like that deserve it. (provocation, discrimination, personal attack)"
     ],
     "conditional_notes": [
-      "账号定位为「干货分享」时，口语化保留但信息密度要高，梗不能喧宾夺主。",
-      "观点可以锐利，但不得引战、歧视、造谣或触碰平台违规清单。"
+      "When the account is \"tips / educational\", keep the colloquial tone but raise the information density; jokes must not overshadow the content.",
+      "Opinions can be sharp, but no provocation, discrimination, rumors, or platform-rule violations."
     ]
   },
   "constraint_list": [
-    "选题必须能在目标时长内讲清单一观点",
-    "前 3 秒必须有明确钩子，并在选题中给出钩子文案",
-    "一条视频只表达一个核心信息，不做多主题堆砌",
-    "选题必须与账号定位和人设一致",
-    "必须能由现有设备、人力完成（冷启动期默认一人一部手机）",
-    "观点表达符合平台规则与法律法规"
+    "The topic must explain a single point within the target duration",
+    "The first 3 seconds must have a clear hook, and the hook copy must be written into the topic",
+    "One video expresses one core message; no multi-theme stacking",
+    "The topic must match the account's positioning and persona",
+    "It must be producible with existing equipment and people (cold start defaults to one person with one phone)",
+    "Opinions must follow platform rules and the law"
   ],
   "exclusion_rules": [
-    "平台敏感、违规、引战话题",
-    "与账号赛道无关的硬蹭热点",
-    "需要团队、道具或预算才能完成的拍摄（用户无相关资源时）",
-    "无法在时长内完成的复杂论证",
-    "洗稿、搬运、翻拍他人内容",
-    "虚假宣传、夸大功效，尤其带货内容"
+    "Topics the platform flags as sensitive, rule-breaking or provocative",
+    "Trends force-fitted to the account's niche",
+    "Shoots needing a team, props or budget the user does not have",
+    "Complex arguments that cannot be finished in the duration",
+    "Rewrites, reposts or remakes of others' content",
+    "False advertising or exaggerated claims, especially in product sales content"
   ],
   "output_format_adjustments": {
-    "title_format": "「{钩子文案}」{选题标题}",
-    "extra_fields": ["前3秒钩子", "建议时长", "拍摄形式", "标签与封面建议"],
+    "title_format": "\"{hook copy}\" {video topic title}",
+    "extra_fields": ["first-3-second hook", "suggested length", "shooting format", "hashtag and cover suggestions"],
     "suppress_fields": []
   }
 }

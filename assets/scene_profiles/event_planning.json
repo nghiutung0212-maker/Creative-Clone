@@ -1,29 +1,29 @@
 {
   "scene_id": "event_planning",
-  "scene_name": "活动策划选题",
-  "scene_description": "校园社团、团建、商业活动、沙龙比赛与线上活动的策划主题构思，产出在预算、场地与筹备周期内可执行、有创意且安全合规的方案。",
+  "scene_name": "Event planning topic ideas",
+  "scene_description": "Topic ideation for campus club events, team building, commercial events, salons, competitions and online events. Produces plans that are executable within the budget, venue and prep time, creative, and safe and compliant.",
   "questionnaire_template": {
     "rounds": [
       {
         "round_id": 1,
-        "round_title": "主办方、类型与对象",
+        "round_title": "Organizer, type and audience",
         "questions": [
           {
             "field": "organizer",
-            "question": "主办方或组织者是谁？（如：某高校动漫社、公司行政、班级班委）",
+            "question": "Who is the organizer? (e.g. a university anime club, company admin, class committee)",
             "type": "text",
             "required": true
           },
           {
             "field": "event_type",
-            "question": "活动属于哪种类型？",
+            "question": "What type of event is it?",
             "type": "choice",
-            "options": ["校园社团活动", "班级团建", "商业活动", "婚礼/庆典", "展览沙龙", "比赛演出", "线上活动"],
+            "options": ["campus club event", "class team building", "commercial event", "wedding / celebration", "exhibition / salon", "competition / performance", "online event"],
             "required": true
           },
           {
             "field": "audience",
-            "question": "参与对象和预计人数是？（如：在校大学生 30-50 人）",
+            "question": "Who are the participants and how many are expected? (e.g. 30-50 current students)",
             "type": "text",
             "required": true
           }
@@ -31,51 +31,51 @@
       },
       {
         "round_id": 2,
-        "round_title": "预算、周期与目标",
+        "round_title": "Budget, timeline and goal",
         "questions": [
           {
             "field": "budget",
-            "question": "预算情况？",
+            "question": "What is the budget?",
             "type": "choice",
-            "options": ["零预算", "500 元以内", "500-3000 元", "3000-10000 元", "10000 元以上"],
+            "options": ["zero budget", "under 500 yuan", "500-3,000 yuan", "3,000-10,000 yuan", "over 10,000 yuan"],
             "required": true
           },
           {
             "field": "cycle",
-            "question": "筹备时间有多久？",
+            "question": "How much prep time do you have?",
             "type": "choice",
-            "options": ["三天内", "一周左右", "两周至一个月", "一个月以上"],
+            "options": ["within three days", "about one week", "two weeks to one month", "over one month"],
             "required": true
           },
           {
             "field": "goal",
-            "question": "活动最主要的目标是？",
+            "question": "What is the main goal of the event?",
             "type": "choice",
-            "options": ["招新", "宣传曝光", "团队凝聚", "盈利", "公益传播", "庆祝纪念"],
+            "options": ["recruiting members", "exposure", "team cohesion", "profit", "charity outreach", "celebration / commemoration"],
             "required": true
           }
         ]
       },
       {
         "round_id": 3,
-        "round_title": "场地、风格与禁忌",
+        "round_title": "Venue, style and taboos",
         "questions": [
           {
             "field": "venue",
-            "question": "场地条件是？（室内/室外/线上，是否已确定，能容纳多少人）",
+            "question": "What are the venue conditions? (indoor / outdoor / online, whether confirmed, capacity)",
             "type": "text",
             "required": true
           },
           {
             "field": "style",
-            "question": "希望活动什么基调？",
+            "question": "What tone do you want for the event?",
             "type": "choice",
-            "options": ["轻松玩梗", "温馨治愈", "正式专业", "潮酷酷炫"],
+            "options": ["light and playful", "warm and comforting", "formal and professional", "trendy and cool"],
             "required": true
           },
           {
             "field": "constraints_excludes",
-            "question": "有哪些硬约束或禁忌？（如：校方报备要求、不能有明火、参与人有过敏忌口）",
+            "question": "What hard constraints or taboos apply? (e.g. school approval requirements, no open flame, participant allergies or dietary restrictions)",
             "type": "text",
             "required": false
           }
@@ -83,50 +83,50 @@
       }
     ],
     "skip_logic": {
-      "description": "根据预算、场地、类型与周期调整选题。",
+      "description": "Adjust the topic based on budget, venue, type and timeline.",
       "rules": [
-        "用户选「零预算」→ 排除需要采购和场地费的方向，优先线上玩法、校内免费场地与自带物品",
-        "用户选「商业活动」→ 语气切换商业正式，输出追加「招商/赞助与 ROI」字段",
-        "用户选「线上活动」或场地为线上 → 排除线下强互动游戏，追加直播/会议平台方案与互动工具",
-        "用户选「三天内」→ 只输出轻执行方案，不输出多环节、多供应商的复杂活动",
-        "目标为「招新」→ 选题必须包含低门槛参与和留存/转化设计，风险提醒补充报名漏斗"
+        "If the user picks \"zero budget\", exclude directions that need purchases or venue fees; prefer online activities, free campus spaces and items participants bring themselves",
+        "If the user picks \"commercial event\", switch to a formal tone and add a \"business sponsorship and ROI\" field to the output",
+        "If the user picks \"online event\" or the venue is online, exclude offline heavy-interaction games; add livestream / meeting platform options and interaction tools",
+        "If the user picks \"within three days\", output only light-execution plans, not multi-segment, multi-vendor complex events",
+        "If the goal is \"recruiting members\", the topic must include low-barrier participation and retention / conversion design; add a signup funnel note in the risk warnings"
       ]
     }
   },
   "tone_rules": {
-    "base_tone": "轻松玩梗",
+    "base_tone": "playful",
     "allow_humor": true,
     "allow_informal": true,
     "tone_examples": [
-      "正确：规则简单到看一眼就懂，赢了有小奖品，输了也不尴尬，社恐也能参与。",
-      "正确：整个活动分三个环节，每个环节都写了负责人和备用方案。",
-      "错误：活动嘛，到时候看情况弄弄就行，问题不大。",
-      "错误：输了的人要接受羞辱性惩罚，这样才好玩。（不尊重参与者、有安全风险）"
+      "Good: The rules are simple enough to understand at a glance; winners get small prizes, losers do not feel awkward, even socially anxious people can join.",
+      "Good: The event has three segments, and each segment has an owner and a backup plan written out.",
+      "Bad: It is an event, we will just wing it on the day, it will be fine.",
+      "Bad: Losers have to take humiliating punishments, that is what makes it fun. (disrespectful to participants, safety risk)"
     ],
     "conditional_notes": [
-      "活动类型为「商业活动」「婚礼/庆典」时，基调切换商业正式，执行文档须严谨。",
-      "任何玩笑与游戏环节不得侮辱参与者、不得设置安全隐患。"
+      "When the event type is \"commercial event\" or \"wedding / celebration\", switch to a formal tone and the execution document must be rigorous.",
+      "No joke or game segment may humiliate participants or create safety hazards."
     ]
   },
   "constraint_list": [
-    "方案必须在预算、人力与筹备周期内可执行",
-    "必须有明确的活动目标与衡量方式",
-    "参与门槛与受众匹配，照顾不同性格与身体条件的参与者",
-    "安全合规：场地、消防、人群密度、食品与用电须符合规定",
-    "每个方案给出关键流程、时间节点与负责人",
-    "必须有应急预案（天气、设备、人数、突发状况）"
+    "The plan must be executable within the budget, staffing and prep time",
+    "There must be a clear event goal and a way to measure it",
+    "The participation bar must match the audience, accommodating different personalities and physical conditions",
+    "Safety and compliance: venue, fire safety, crowd density, food and electricity must follow regulations",
+    "Each plan must give the key flow, timeline milestones and owners",
+    "There must be contingency plans (weather, equipment, attendance, unexpected incidents)"
   ],
   "exclusion_rules": [
-    "超出预算、人力或场地条件的方案",
-    "存在安全隐患的环节（危险游戏、明火、食品风险等）",
-    "涉及政治敏感、低俗、违规内容的设计",
-    "无创意的常规流程堆砌",
-    "只有单点方案、没有任何容错的设计",
-    "用户在 constraints_excludes 中明确列出的禁忌"
+    "Plans beyond the budget, staffing or venue conditions",
+    "Segments with safety hazards (dangerous games, open flame, food risks, etc.)",
+    "Designs involving politically sensitive, vulgar or rule-breaking content",
+    "Routine process stacking with no creativity",
+    "Single-point plans with no fallback at all",
+    "Taboos the user explicitly lists in constraints_excludes"
   ],
   "output_format_adjustments": {
-    "title_format": "「{活动主题名}」{活动类型}策划方案",
-    "extra_fields": ["预算分配建议", "关键流程时间线", "人员分工", "物料清单", "应急预案"],
+    "title_format": "\"{event topic}\" {event type} plan",
+    "extra_fields": ["budget allocation suggestions", "key flow timeline", "role assignments", "materials checklist", "contingency plan"],
     "suppress_fields": []
   }
 }
