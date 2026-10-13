@@ -56,6 +56,19 @@ python3 scripts/update_profile.py --feedback select --topic "your topic title" -
 python3 scripts/update_profile.py --feedback like --topic "your topic title"
 python3 scripts/update_profile.py --feedback dislike --topic "your topic title"
 python3 scripts/update_profile.py --feedback redirect --topic "your topic title" --query "a more actionable direction"
+
+# Apply time decay to stale topic weights
+python3 scripts/update_profile.py --decay
+
+# Print the user's top-N interests by weight
+python3 scripts/update_profile.py --top-interests 10
+
+# Validate outputs and configs
+python3 scripts/validate_output.py --scenes                    # validate all scene profiles
+python3 scripts/validate_output.py --engine a <file>           # validate Engine A output
+python3 scripts/validate_output.py --engine b <file>           # validate Engine B output
+python3 scripts/validate_output.py --engine c <file>           # validate Engine C output
+python3 scripts/validate_output.py --profile ~/.creative-clone/profile.json  # validate profile
 ```
 
 > The scripts use only the Python standard library; no third-party dependencies are needed.
@@ -76,7 +89,7 @@ Step 6 Feedback loop  ← Step 5 Topic ideas   ← Step 4 Three-engine generatio
 3. **Follow-up dialogue**: 3-5 follow-up questions to fill profile gaps, plus local file reading if enabled
 4. **Three-engine generation**: saturation scan for overdone directions → cross-domain collision for new angles → self-critique iteration for polish
 5. **Topic ideas**: each idea has four elements — the concrete question / why it fits you / three angles to approach it / risk notes
-6. **Feedback loop**: mark "interesting / show others / off track / selected" → the profile accumulates across scenarios → later suggestions fit you better
+6. **Feedback loop**: mark "interesting / show others / off track / selected" → each feedback adjusts a topic weight (select +0.30, like +0.10, dislike -0.20, redirect -0.40); weights decay over time so recent interests stay dominant → later suggestions fit you better
 
 ---
 
@@ -117,11 +130,20 @@ Step 6 Feedback loop  ← Step 5 Topic ideas   ← Step 4 Three-engine generatio
 ```
 creative-clone/
 ├── SKILL.md                    # Main file: 6-step flow + three engines + scenario adaptation
-├── scripts/                    # Profile scripts (standard library only)
+├── scripts/
+│   ├── init_profile.py         # Profile init (standard library only)
+│   ├── update_profile.py       # Weighted feedback + time decay + idempotency
+│   └── validate_output.py      # Validate engine outputs, scene profiles, and profile
+├── schemas/                    # JSON Schema files for validation
+│   ├── engine_a_output.json    # Engine A saturation scan output schema
+│   ├── engine_b_output.json    # Engine B cross-domain collision output schema
+│   ├── engine_c_output.json    # Engine C self-critique output schema
+│   ├── scene_profile.json      # Scene profile JSON schema
+│   └── profile_v2.json         # User profile schema (v2, weighted topics)
 ├── references/                 # Engine prompts + blacklist + output template + privacy policy + quality standards
 ├── assets/
-│   ├── profile_template.json   # Default profile template
-│   └── scene_profiles/          # 9 scene profile JSONs
+│   ├── profile_template.json   # Default profile template (schema_version 2)
+│   └── scene_profiles/         # 9 scene profile JSONs
 ├── README.md
 ├── LICENSE
 ├── CONTRIBUTING.md

@@ -92,12 +92,14 @@ After the questionnaire, the Skill asks 3-5 follow-up questions about preference
 **Profile loading**:
 
 1. Run `scripts/init_profile.py` to check whether a profile file already exists locally (default path `~/.creative-clone/profile.json`)
-2. If not, create an empty profile from `assets/profile_template.json` (light mode, `mode=light`)
+2. If not, create an empty profile from `assets/profile_template.json` (schema_version 2, light mode, `mode=light`)
 3. If the user has authorized local file reading (`privacy.local_reading_enabled == true`):
    - Read documents under the directories listed in `privacy.authorized_dirs`
    - Extract only four summary features: writing style, knowledge background, areas of interest, depth of thinking
    - Does not copy the original text, does not modify the files, does not scan outside the authorized directories
-4. Inject the profile snapshot (`base` + `preferences` + `signals`) into the three engines
+4. Inject the profile snapshot (`base` + `preferences` + `signals` + top-weighted topics from `weighted_topics`) into the three engines
+
+> Profiles created under v1 are automatically migrated to schema_version 2 on the next `update_profile.py` run (adds `weighted_topics` and `feedback_log`; existing data is preserved).
 
 **Follow-up questions** (3-5, targeting profile gaps):
 
@@ -225,17 +227,26 @@ The user marks feedback → the Skill adjusts the next generation → the finall
 
 **Four feedback types and profile updates** (executed by `scripts/update_profile.py`):
 
-| Feedback | Parameter value | Update action |
-|------|--------|---------|
-| "This is interesting" | `like` | Append to `history` + `signals.liked_topics`; `stats.like_count + 1` |
-| "Give me another batch" | `dislike` | Append to `history` + `signals.disliked_topics`; `stats.dislike_count + 1` |
-| "Off track" | `redirect` | Append to `history` + `signals.redirected_topics`; `stats.redirect_count + 1` |
-| "Selected" | `select` | All of the above + save the selected topic into `base.interests` + `preferences` (`source=explicit`, `confidence=0.9`) |
+| Feedback | Parameter value | Weight delta | Update action |
+|------|--------|------|---------|
+| "Selected" | `select` | +0.30 | Save to `base.interests` + `preferences` (`source=explicit`, `confidence=0.9`); `weighted_topics` weight +0.30 |
+| "This is interesting" | `like` | +0.10 | Append to `history` + `signals.liked_topics`; `weighted_topics` weight +0.10 |
+| "Give me another batch" | `dislike` | -0.20 | Append to `history` + `signals.disliked_topics`; `weighted_topics` weight -0.20 |
+| "Off track" | `redirect` | -0.40 | Append to `history` + `signals.redirected_topics`; `weighted_topics` weight -0.40 |
+
+**Profile weight system** (v2):
+
+Every topic the user gives feedback on gets a weight in `weighted_topics` (range 0.0–1.0). The weight reflects how well the topic aligns with the user's interests, and accumulates across sessions. When generating new ideas, the top-weighted topics are injected into the engines as priority directions — so topics the user repeatedly likes or selects steer future generation, while topics the user redirects away from are deprioritized.
+
+- **Weights accumulate**: multiple feedbacks on the same topic add up (clamped to [0.0, 1.0])
+- **Time decay**: topics not touched in 90 days have their weight halved (×0.5). Decay is applied lazily — only when the profile is updated or when `update_profile.py --decay` is run. Recent interests stay more influential than stale ones.
+- **Idempotency**: each (topic, feedback) pair is tracked in `feedback_log`. If the same topic receives the same feedback type again, the weight is not updated a second time — preventing accidental double-counting from retries or replays.
 
 **Profile update logic**:
 - All writes use a temp file + atomic replace, so an interrupted process cannot corrupt the profile
+- `weighted_topics` is capped at 200 entries; lowest-weight entries are dropped first
 - `history` is capped at 500 entries; each `signals` category at 50; oldest entries are dropped first
-- After each feedback, `profile_meta.updated_at` is set to the current time
+- After each feedback, `profile_meta.updated_at` is set to the current time and `stats` are recalculated
 - Selected topic ideas are stored across scenarios and reused automatically in later sessions
 
 **Cross-scenario design**:
@@ -299,22 +310,29 @@ creative-clone/
 ├── SKILL.md                          # This file: 6-step flow + three engines + scenario adaptation + profile read/write
 ├── scripts/
 │   ├── init_profile.py               # Profile init (stdlib only, atomic write)
-│   └── update_profile.py             # Profile update after ideation (four feedback types)
+│   ├── update_profile.py             # Profile update: weighted feedback + decay + idempotency (stdlib only)
+│   └── validate_output.py            # Validate engine outputs, scene profiles, and profile (stdlib only)
+├── schemas/
+│   ├── engine_a_output.json          # JSON Schema: Engine A saturation scan output
+│   ├── engine_b_output.json          # JSON Schema: Engine B cross-domain collision output
+│   ├── engine_c_output.json          # JSON Schema: Engine C self-critique output
+│   ├── scene_profile.json            # JSON Schema: scene profile files
+│   └── profile_v2.json               # JSON Schema: user profile (schema_version 2)
 ├── references/
 │   ├── scene_format_spec.md          # Scene profile format spec
 │   ├── scene_configs.md              # Scene library guide + extension notes
 │   ├── engine_saturation_scan.md     # Engine A: saturation scan prompt
-│   ├── engine_cross_collision.md      # Engine B: cross-domain collision prompt
-│   ├── engine_self_critique.md        # Engine C: self-critique iteration prompt
+│   ├── engine_cross_collision.md     # Engine B: cross-domain collision prompt
+│   ├── engine_self_critique.md       # Engine C: self-critique iteration prompt
 │   ├── bad_topic_blacklist.md        # Five bad-topic types
 │   ├── output_template.md            # Four-element output template
-│   ├── profile_schema.md              # Profile JSON schema + authorization mechanism
-│   ├── privacy_policy.md              # Full privacy policy
-│   ├── quality_standards.md           # Topic quality scorecard
-│   ├── test_scenarios.md              # 3 scenario test cases
-│   └── acceptance_checklist.md        # PRD acceptance checklist
+│   ├── profile_schema.md             # Profile JSON schema + authorization mechanism
+│   ├── privacy_policy.md             # Full privacy policy
+│   ├── quality_standards.md          # Topic quality scorecard
+│   ├── test_scenarios.md             # 3 scenario test cases
+│   └── acceptance_checklist.md       # PRD acceptance checklist
 ├── assets/
-│   ├── profile_template.json          # Default profile template (empty values)
+│   ├── profile_template.json         # Default profile template (schema_version 2, empty values)
 │   └── scene_profiles/
 │       ├── academic_paper.json        # Academic paper scenario
 │       ├── ppt_presentation.json      # PPT presentation scenario
@@ -335,9 +353,11 @@ creative-clone/
 
 1. **Scenario adaptation**: questionnaire questions, tone, hard-constraint list, and output format all switch with the scene profile
 2. **Profile accumulates across scenarios**: feedback and preferences from any scenario are saved into the same profile
-3. **General engines**: saturation scan + cross-domain collision + self-critique iteration, not tied to any discipline or scenario
-4. **Unified output standard**: every candidate includes the four elements (concrete question / why it fits you / three angles / risk notes)
-5. **Extensible scenarios**: adding a scenario requires only one JSON file; no core logic changes
+3. **Weighted profile**: every feedback adjusts a topic's weight (0.0–1.0); time decay keeps recent interests dominant; top-weighted topics steer the engines
+4. **General engines**: saturation scan + cross-domain collision + self-critique iteration, not tied to any discipline or scenario
+5. **Unified output standard**: every candidate includes the four elements (concrete question / why it fits you / three angles / risk notes)
+6. **Extensible scenarios**: adding a scenario requires only one JSON file; no core logic changes
+7. **Schema-validated**: engine outputs, scene profiles, and the user profile are all validated against JSON Schema files in `schemas/`
 
 ### Cross-model compatibility
 
