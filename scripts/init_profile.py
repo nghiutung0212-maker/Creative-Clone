@@ -22,7 +22,7 @@ import json
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict
 
 DEFAULT_PROFILE_PATH = Path.home() / ".creative-clone" / "profile.json"
 
@@ -30,7 +30,7 @@ DEFAULT_PROFILE_PATH = Path.home() / ".creative-clone" / "profile.json"
 # is missing. It mirrors the structure of assets/profile_template.json so the
 # script can run even outside the repository directory.
 FALLBACK_TEMPLATE: Dict = {
-    "schema_version": 1,
+    "schema_version": 2,
     "profile_meta": {
         "user_id": "local-anon",
         "created_at": None,
@@ -46,6 +46,8 @@ FALLBACK_TEMPLATE: Dict = {
         "thinking_depth": None,
     },
     "preferences": [],
+    "weighted_topics": [],
+    "feedback_log": [],
     "history": [],
     "signals": {
         "liked_topics": [],
@@ -59,6 +61,8 @@ FALLBACK_TEMPLATE: Dict = {
         "dislike_count": 0,
         "redirect_count": 0,
         "select_count": 0,
+        "total_weighted_topics": 0,
+        "avg_weight": 0.0,
     },
     "privacy": {
         "local_reading_enabled": False,
@@ -74,6 +78,8 @@ REQUIRED_TOP_LEVEL_KEYS = (
     "profile_meta",
     "base",
     "preferences",
+    "weighted_topics",
+    "feedback_log",
     "history",
     "signals",
     "stats",
