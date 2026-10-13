@@ -1,129 +1,129 @@
-# 创意分身 — 全场景通用创意选题 Skill
+# Creative Avatar: Topic Ideation Skill for Any Scenario
 
-> 一个「你的第二大脑 / 创意分身」——覆盖论文、PPT、短视频、公众号、创业、活动策划、播客、课程设计、人物采访等所有需要从零构思选题的场景。三引擎协同生成（领域饱和扫描排雷 + 跨界知识碰撞找新角度 + 自我批判迭代打磨），越用越懂你。
-
----
-
-## 🔒 隐私安全：先说最重要的事
-
-**创意分身不收集你的任何数据。**
-
-- **没有账号、没有服务器、没有埋点**：所有数据处理逻辑开源，你可以逐行审查。
-- **读你文件这件事，默认关闭**：只有你主动勾选授权、并亲自选择文件夹后才会开启；不授权，全部功能照样能用。
-- **只读你指定的文件夹，不扫全盘**：只提取「写作风格、知识背景、关注领域、思考深度」四类摘要特征，不复制原文、不改动你的文件；结果只存在你本机 `~/.creative-clone/profile.json`。
-- **随时可以反悔**：设置里一键关闭即退回「问卷 + 对话」模式；画像可随时查看、编辑、删除。
-
-> 小提示：通过云端模型（GPT / Gemini / DeepSeek 等）生成选题时，你的对话内容（含本地提取的摘要特征）会按该模型服务的隐私政策处理；**文件原文不会进入对话**。想完全离线，可挂载本地模型后端。
-
-| 数据 | 存哪 | 是否上传 |
-|------|------|----------|
-| 问卷回答、对话、反馈、选中的选题 | 你的本机画像文件 | 否 |
-| 授权后提取的摘要特征（风格 / 背景 / 兴趣 / 思考深度） | 你的本机画像文件 | 否 |
-| 文档原文 | 不提取、不保存 | 否 |
-
-**常用操作**：
-
-- 查看画像：打开 `~/.creative-clone/profile.json`
-- 关闭本地读取：设置 → 隐私与授权 → 关闭「本地文件读取」
-- 清空一切：删除画像文件即可，无云端副本
-
-👉 完整说明见 [隐私政策](references/privacy_policy.md)。
+> A Skill for generating creative topic ideas from scratch, for scenarios such as academic papers, PPT presentations, short videos, WeChat articles, startup ideas, event planning, podcasts, course design, and interviews. It runs three engines together: a saturation scan to flag overdone directions, cross-domain collision to find new angles, and self-critique iteration to polish the results. It keeps a local profile of your feedback, so later topic ideas fit you better.
 
 ---
 
-## 安装方式
+## Privacy and security
 
-### 在 WorkBuddy AI 中安装
+**Creative Avatar does not collect any of your data.**
 
-1. 将本仓库克隆或下载到本地
-2. 将 `creative-clone/` 目录放入 WorkBuddy AI 的 Skill 目录：
-   - 用户级（推荐）：`~/.workbuddy-ai/skills/creative-clone/`
-   - 项目级：`{workspace}/.workbuddy-ai/skills/creative-clone/`
-3. 在 WorkBuddy AI 中输入「帮我做选题」「我想找论文方向」等触发词即可自动加载
+- **No account, no server, no tracking**: all data-processing logic is open source; you can review it line by line.
+- **File reading is off by default**: it only turns on when you explicitly grant access and pick a folder yourself. Without access, every feature still works.
+- **It reads only the folder you specify, not the whole disk**: it extracts four kinds of summary features (writing style, knowledge background, interests, depth of thinking), and does not copy or modify your files. The results are stored only in `~/.creative-clone/profile.json` on your machine.
+- **You can change your mind at any time**: turn it off in one click in Settings and it falls back to questionnaire + dialogue mode. The profile can be viewed, edited, or deleted at any time.
 
-### 手动使用
+> Note: when topic ideas are generated through a cloud model (GPT / Gemini / DeepSeek, etc.), your conversation — including the summary features extracted locally — is handled under that model service's privacy policy. The original file content never enters the conversation. To work fully offline, you can point the Skill at a local model backend.
 
-即使不在 WorkBuddy AI 中，你也可以：
+| Data | Where it is stored | Uploaded? |
+|------|--------------------|-----------|
+| Questionnaire answers, dialogue, feedback, selected topic ideas | Your local profile file | No |
+| Summary features extracted after authorization (style / background / interests / depth of thinking) | Your local profile file | No |
+| Original document content | Not extracted, not stored | No |
 
-1. 直接阅读 `SKILL.md` 了解完整流程
-2. 按 `references/` 下的引擎 Prompt 手动执行三引擎
-3. 运行画像脚本：
+**Common operations**:
+
+- View the profile: open `~/.creative-clone/profile.json`
+- Disable local file reading: Settings → Privacy & Authorization → turn off "Local file reading"
+- Remove everything: delete the profile file; there is no cloud copy
+
+Full details in the [privacy policy](references/privacy_policy.md).
+
+---
+
+## Installation
+
+### Install in WorkBuddy AI
+
+1. Clone or download this repository
+2. Put the `creative-clone/` directory into WorkBuddy AI's Skill directory:
+   - User level (recommended): `~/.workbuddy-ai/skills/creative-clone/`
+   - Project level: `{workspace}/.workbuddy-ai/skills/creative-clone/`
+3. In WorkBuddy AI, type a trigger phrase such as "help me come up with topic ideas" or "I'm looking for a paper topic" to load the Skill automatically
+
+### Manual use
+
+Outside WorkBuddy AI, you can still:
+
+1. Read `SKILL.md` for the full workflow
+2. Run the three engines manually with the engine prompts under `references/`
+3. Run the profile scripts:
 
 ```bash
-# 初始化画像
+# Initialize the profile
 python3 scripts/init_profile.py
 
-# 选题后更新画像（四种反馈）
-python3 scripts/update_profile.py --feedback select --topic "你的选题标题" --scenario academic_paper
-python3 scripts/update_profile.py --feedback like --topic "你的选题标题"
-python3 scripts/update_profile.py --feedback dislike --topic "你的选题标题"
-python3 scripts/update_profile.py --feedback redirect --topic "你的选题标题" --query "想要更落地的方向"
+# Update the profile after ideation (four feedback types)
+python3 scripts/update_profile.py --feedback select --topic "your topic title" --scenario academic_paper
+python3 scripts/update_profile.py --feedback like --topic "your topic title"
+python3 scripts/update_profile.py --feedback dislike --topic "your topic title"
+python3 scripts/update_profile.py --feedback redirect --topic "your topic title" --query "a more actionable direction"
 ```
 
-> 脚本仅使用 Python 标准库，无需安装任何第三方依赖。
+> The scripts use only the Python standard library; no third-party dependencies are needed.
 
 ---
 
-## 使用方式（6 步闭环）
+## Usage (6-step loop)
 
 ```
-Step 1 场景选择 → Step 2 场景化问卷 → Step 3 对话式补充
+Step 1 Pick a scenario → Step 2 Scenario questionnaire → Step 3 Follow-up dialogue
                                               ↓
-Step 6 反馈迭代 ← Step 5 输出选题    ← Step 4 三引擎生成
-(画像沉淀)         (四要素卡片)         (扫描→碰撞→批判)
+Step 6 Feedback loop  ← Step 5 Topic ideas   ← Step 4 Three-engine generation
+(profile update)       (four-element card)    (scan → collide → critique)
 ```
 
-1. **场景选择**：选择或描述你的场景（论文/短视频/活动策划等），加载对应配置
-2. **场景化问卷**：分步追问（每轮 2-3 题），有逻辑跳转
-3. **对话式补充**：追问 3-5 个画像缺口 + 读取本地授权信息（如已开启）
-4. **三引擎生成**：饱和扫描排雷 → 跨界碰撞找新角度 → 自我批判迭代打磨
-5. **输出选题**：每个选题含四要素（具体问题/为什么适合你/三个切入角度/风险提醒）
-6. **反馈迭代**：标记「有意思/换一批/方向偏了/选中」→ 画像跨场景沉淀 → 越用越懂你
+1. **Pick a scenario**: choose or describe your scenario (paper / short video / event planning, etc.); the matching scene profile loads
+2. **Scenario questionnaire**: step-by-step questions (2-3 per round) with conditional jumps
+3. **Follow-up dialogue**: 3-5 follow-up questions to fill profile gaps, plus local file reading if enabled
+4. **Three-engine generation**: saturation scan for overdone directions → cross-domain collision for new angles → self-critique iteration for polish
+5. **Topic ideas**: each idea has four elements — the concrete question / why it fits you / three angles to approach it / risk notes
+6. **Feedback loop**: mark "interesting / show others / off track / selected" → the profile accumulates across scenarios → later suggestions fit you better
 
 ---
 
-## 当前支持的场景
+## Supported scenarios
 
-| 场景 | 基调 | 一句话说明 |
-|------|------|------------|
-| 学术论文 | 严肃学术 | 课程论文、毕设、开题、期刊投稿与基金申请 |
-| PPT 汇报 | 商业正式 | 课程汇报、答辩、工作汇报、路演与会议分享 |
-| 短视频 | 轻松玩梗 | 三分钟以内短视频的选题、钩子与拍摄形式 |
-| 公众号文章 | 商业正式 | 观点评论、干货、行业分析、情感故事与热点解读 |
-| 创业方向 | 商业正式 | 创业点子、产品方向与商业机会，含 MVP 验证路径 |
-| 活动策划 | 轻松玩梗 | 校园社团、团建、商业活动、沙龙比赛与线上活动 |
-| 播客选题 | 轻松玩梗 | 播客单集话题、讨论点与节目规划 |
-| 课程设计 | 严肃学术 | 单节课、单元课与整门课的教学设计 |
-| 人物采访 | 商业正式 | 人物特稿、行业/事件/宣传采访的问题清单 |
+| Scenario | Tone | What it covers |
+|----------|------|----------------|
+| Academic paper | Academic | Course papers, thesis, proposal, journal submission, grant applications |
+| PPT presentation | Formal | Course presentation, defense, work report, pitch, conference sharing |
+| Short video | Playful | Topic ideas, hooks, and shooting formats for videos under three minutes |
+| WeChat article | Formal | Opinion pieces, tutorials, industry analysis, stories, hot-topic takes |
+| Startup idea | Formal | Startup ideas, product direction, business opportunities, with an MVP validation path |
+| Event planning | Playful | Campus clubs, team building, business events, salons, competitions, online events |
+| Podcast | Playful | Episode topics, discussion points, show planning |
+| Course design | Academic | Teaching design for a single lesson, a unit, or a whole course |
+| Interview | Formal | Question lists for profiles, industry / event / promotion interviews |
 
-**新增场景**：只需在 `assets/scene_profiles/` 下加一个 JSON 文件 + 在 `references/scene_configs.md` 索引追加一行。详见 [场景配置格式规范](references/scene_format_spec.md) 和 [场景库使用说明](references/scene_configs.md)。
-
----
-
-## 三引擎核心逻辑
-
-| 引擎 | 职责 | 输出 |
-|------|------|------|
-| A · 领域饱和扫描 | 扫描哪些方向已被做烂、哪些有缺口 | saturated_topics（禁止域）+ gaps（优先靶区） |
-| B · 跨界知识碰撞 | 核心领域 x 兴趣领域交叉碰撞，找反共识角度 | candidates[]（每个带 why_link） |
-| C · 自我批判迭代 | 严苛审稿人按 6 条硬约束逐题裁决 | final_candidates[]（通过闸门者） |
-
-**6 条硬约束**：有具体研究对象 / 有明确问题且可证伪 / 有可操作方法 / 在用户资源内 / 不是烂大街 / 符合场景基调
-
-**5 种烂选题黑名单**：概念堆砌 / 过度饱和 / 无法落地 / 范围过大 / 假问题
+**Adding a scenario**: add a JSON file under `assets/scene_profiles/` and append one row to the index in `references/scene_configs.md`. See [scene profile format spec](references/scene_format_spec.md) and [scene library guide](references/scene_configs.md).
 
 ---
 
-## 项目结构
+## Three-engine logic
+
+| Engine | Job | Output |
+|--------|-----|--------|
+| A · Saturation scan | Detect which directions are overdone and which have gaps | saturated_topics (avoid list) + gaps (priority targets) |
+| B · Cross-domain collision | Cross the core domain with interest domains to find counter-consensus angles | candidates[] (each with why_link) |
+| C · Self-critique iteration | Judge each topic against the six hard constraints like a strict reviewer | final_candidates[] (those that pass) |
+
+**Six hard constraints**: has a concrete subject / has a clear, falsifiable question / has an actionable method / fits the user's resources / not overdone / matches the scenario tone
+
+**Five bad-topic types (blacklist)**: concept stacking / over-saturation / not actionable / scope too broad / fake problem
+
+---
+
+## Project structure
 
 ```
 creative-clone/
-├── SKILL.md                    # 主文件：6步流程 + 三引擎调用 + 场景自适应
-├── scripts/                    # 画像脚本（仅标准库）
-├── references/                 # 引擎Prompt + 黑名单 + 输出模板 + 隐私政策 + 质量标准
+├── SKILL.md                    # Main file: 6-step flow + three engines + scenario adaptation
+├── scripts/                    # Profile scripts (standard library only)
+├── references/                 # Engine prompts + blacklist + output template + privacy policy + quality standards
 ├── assets/
-│   ├── profile_template.json   # 默认画像模板
-│   └── scene_profiles/          # 9个场景配置JSON
+│   ├── profile_template.json   # Default profile template
+│   └── scene_profiles/          # 9 scene profile JSONs
 ├── README.md
 ├── LICENSE
 ├── CONTRIBUTING.md
@@ -132,19 +132,19 @@ creative-clone/
 
 ---
 
-## 贡献
+## Contributing
 
-欢迎贡献！详见 [贡献指南](CONTRIBUTING.md)。
+Contributions are welcome. See the [contribution guide](CONTRIBUTING.md).
 
-你可以：
-- 新增场景配置（加一个 JSON 文件）
-- 改进引擎 Prompt
-- 报告 Bug 或提出建议（请勿在 Issue 中粘贴画像原文）
+You can:
+- Add a scene profile (add one JSON file)
+- Improve the engine prompts
+- Report bugs or suggest improvements (do not paste profile content into issues)
 
 ---
 
-## 开源协议
+## License
 
-MIT License — 自由使用、修改、分发。
+MIT License — free to use, modify, and distribute.
 
-隐私政策见 [references/privacy_policy.md](references/privacy_policy.md)，AI 生成内容仅供参考。
+Privacy policy: [references/privacy_policy.md](references/privacy_policy.md). AI-generated content is for reference only.

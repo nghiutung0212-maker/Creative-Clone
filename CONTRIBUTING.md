@@ -1,37 +1,37 @@
-# 贡献指南
+# Contributing
 
-感谢你对「创意分身」项目的关注！本文档说明如何参与贡献。
-
----
-
-## 行为准则
-
-- 尊重所有贡献者，不人身攻击、不歧视
-- 讨论聚焦内容本身，对事不对人
-- 发现安全或隐私问题请先私信维护者，不要在公开 Issue 中暴露
+Thanks for your interest in Creative Avatar. This guide explains how to contribute.
 
 ---
 
-## 如何新增场景配置
+## Code of conduct
 
-新增场景是最高频的贡献方式，只需两步：
+- Respect all contributors; no personal attacks, no discrimination
+- Focus discussion on the work, not the person
+- If you find a security or privacy issue, contact the maintainer privately first; do not disclose it in a public issue
 
-1. 在 `assets/scene_profiles/` 下新建 `{scene_id}.json`（蛇形命名）
-2. 在 `references/scene_configs.md` 的场景索引表中追加一行
+---
 
-**配置文件必须包含 7 个顶层字段**：
+## How to add a scene profile
+
+Adding a scenario is the most common contribution. It takes two steps:
+
+1. Create `{scene_id}.json` under `assets/scene_profiles/` (snake_case naming)
+2. Append one row to the scenario index table in `references/scene_configs.md`
+
+**The file must contain these 7 top-level fields**:
 
 ```json
 {
   "scene_id": "scene_identifier",
-  "scene_name": "场景中文名",
-  "scene_description": "一句话描述",
+  "scene_name": "human-readable scenario name",
+  "scene_description": "one-line description",
   "questionnaire_template": {
     "rounds": [],
     "skip_logic": { "rules": [] }
   },
   "tone_rules": {
-    "base_tone": "严肃学术|轻松玩梗|商业正式",
+    "base_tone": "academic|playful|formal",
     "allow_humor": false,
     "allow_informal": false,
     "tone_examples": []
@@ -46,112 +46,112 @@
 }
 ```
 
-**自检清单**：
-- [ ] 文件名蛇形命名，且与 `scene_id` 完全一致
-- [ ] 7 个顶层字段齐全
-- [ ] 问卷分步进行，每轮 2-3 题
-- [ ] `skip_logic.rules` 不少于 2 条
-- [ ] 通过 `python3 -m json.tool` 语法校验
+**Self-check list**:
+- [ ] File name is snake_case and exactly matches `scene_id`
+- [ ] All 7 top-level fields are present
+- [ ] Questionnaire runs in steps, 2-3 questions per round
+- [ ] `skip_logic.rules` has at least 2 entries
+- [ ] Passes `python3 -m json.tool` syntax check
 
-详见 [场景配置格式规范](references/scene_format_spec.md)。
-
----
-
-## 如何改进引擎 Prompt
-
-三引擎 Prompt 位于 `references/engine_*.md`，每个文件含系统提示词和用户输入模板。
-
-改进原则：
-1. **不破坏数据契约**：引擎间的 JSON 输入输出格式是核心契约，修改时确保上下游兼容
-2. **保留反编造红线**：引擎 A 的证据要求与降级逻辑不可弱化
-3. **保留 why_link 强制**：引擎 B 的逻辑关联筛选是防伪核心，不可省略
-4. **不降闸门**：引擎 C 的 6 条硬约束与 pass_all 闸门不可放宽
-5. **附测试**：改动后请用 `references/test_scenarios.md` 中的用例验证
+See [scene profile format spec](references/scene_format_spec.md).
 
 ---
 
-## 如何报 Bug
+## How to improve engine prompts
 
-1. 在 GitHub Issues 中搜索是否已有相同问题
-2. 新建 Issue，请包含：
-   - 复现步骤
-   - 期望行为 vs 实际行为
-   - 运行环境（操作系统、Python 版本、使用场景）
-   - （如有）报错信息
+The three engine prompts live in `references/engine_*.md`. Each file contains the system prompt and the user-input template.
 
-> **请勿在 Issue 中粘贴你的画像原文（`~/.creative-clone/profile.json`）或任何敏感内容。**
-
----
-
-## 如何提功能建议
-
-1. 先在 Issues 中搜索是否已有类似建议
-2. 新建 Issue，说明：
-   - 解决什么问题
-   - 建议的方案
-   - 是否影响现有流程
+Guidelines:
+1. **Do not break the data contract**: the JSON input/output format between engines is the core contract; keep changes backwards-compatible
+2. **Keep the no-fabrication rule**: Engine A's evidence requirements and fallback logic must not be weakened
+3. **Keep the mandatory why_link**: Engine B's logical-link filter is the core anti-fabrication step; do not remove it
+4. **Do not lower the gate**: Engine C's six hard constraints and the pass_all gate must not be relaxed
+5. **Add tests**: verify your change with the cases in `references/test_scenarios.md`
 
 ---
 
-## 代码风格
+## How to report a bug
 
-### Python 脚本
+1. Search GitHub Issues for an existing report
+2. Open a new issue and include:
+   - Steps to reproduce
+   - Expected vs actual behavior
+   - Runtime environment (OS, Python version, scenario used)
+   - Error message, if any
 
-- 仅使用 Python 标准库，不引入第三方依赖
-- 类型标注：使用 `from __future__ import annotations` + 内置类型
-- 写入操作：始终使用「临时文件 + 原子替换」
-- 命名：snake_case
-
-### Markdown 文档
-
-- 引用其他文件时使用相对路径
-- 表格优先于纯文字描述
-- 代码块标注语言
+> **Do not paste your raw profile (`~/.creative-clone/profile.json`) or any sensitive content into an issue.**
 
 ---
 
-## 提交规范
+## How to suggest a feature
+
+1. Search Issues for a similar suggestion first
+2. Open a new issue describing:
+   - What problem it solves
+   - The proposed solution
+   - Whether it changes the existing flow
+
+---
+
+## Code style
+
+### Python scripts
+
+- Use only the Python standard library; no third-party dependencies
+- Type hints: use `from __future__ import annotations` with built-in types
+- Writes: always use temp file + atomic replace
+- Naming: snake_case
+
+### Markdown docs
+
+- Use relative paths when linking to other files
+- Prefer tables over prose
+- Mark code blocks with a language tag
+
+---
+
+## Commit conventions
 
 ```
 <type>: <description>
 
 types:
-  feat:     新功能（如新增场景）
-  fix:      修复 Bug
-  docs:     文档改进
-  refactor:  重构（不改变行为）
-  test:     测试相关
-  chore:    构建/工具/杂项
+  feat:     new feature (e.g. adding a scenario)
+  fix:      bug fix
+  docs:     documentation changes
+  refactor: refactor (no behavior change)
+  test:     test-related
+  chore:    build / tooling / misc
 ```
 
-示例：
-- `feat: 新增展览策划场景配置`
-- `fix: 修复 update_profile.py 在画像不存在时的崩溃`
-- `docs: 补充引擎 B 的碰撞算子示例`
+Examples:
+- `feat: add exhibition planning scene profile`
+- `fix: fix update_profile.py crash when the profile does not exist`
+- `docs: add examples of Engine B collision operators`
 
 ---
 
-## 开发流程
+## Development workflow
 
-1. Fork 仓库
-2. 创建分支：`git checkout -b feat/your-feature`
-3. 提交改动
-4. 推送到你的 Fork：`git push origin feat/your-feature`
-5. 创建 Pull Request
+1. Fork the repository
+2. Create a branch: `git checkout -b feat/your-feature`
+3. Commit your changes
+4. Push to your fork: `git push origin feat/your-feature`
+5. Open a pull request
 
-PR 会经过以下检查：
-- [ ] JSON 语法校验通过
-- [ ] 脚本可独立运行
-- [ ] 无隐私泄露（不包含画像原文、不引入上传代码）
-- [ ] 文档引用路径正确
+The PR will be checked against:
+- [ ] JSON syntax check passes
+- [ ] Scripts run standalone
+- [ ] No privacy leak (no raw profile content, no upload code)
+- [ ] Documentation links resolve
 
 ---
 
-## 隐私与安全
+## Privacy and security
 
-如果你发现了隐私或安全相关问题：
-- **不要**在公开 Issue 中提交
-- 请直接私信仓库维护者
-- 我们会在 48 小时内响应
+If you find a privacy or security issue:
+- **Do not** file it in a public issue
+- Contact the repository maintainer directly
+- We will respond within 48 hours
 
-关于隐私政策的任何修改，都需要升版 `consent_version` 并重新征求已授权用户的同意。
+Any change to the privacy policy requires bumping `consent_version` and re-requesting consent from users who have already authorized.
