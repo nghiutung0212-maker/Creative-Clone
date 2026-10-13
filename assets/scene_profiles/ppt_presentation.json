@@ -1,0 +1,138 @@
+{
+  "scene_id": "ppt_presentation",
+  "scene_name": "PPT 汇报选题",
+  "scene_description": "课程汇报、毕业答辩、工作汇报、商业路演与会议分享的汇报主题构思，产出在限定时长与页数内可讲透、有明确汇报目的的选题。",
+  "questionnaire_template": {
+    "rounds": [
+      {
+        "round_id": 1,
+        "round_title": "场合与听众",
+        "questions": [
+          {
+            "field": "occasion",
+            "question": "这次汇报是什么场合？",
+            "type": "choice",
+            "options": ["课程汇报", "毕业答辩", "工作汇报", "商业路演", "会议分享"],
+            "required": true
+          },
+          {
+            "field": "topic_domain",
+            "question": "汇报所属的主题方向是什么？（课程/项目/业务领域）",
+            "type": "text",
+            "required": true
+          },
+          {
+            "field": "audience",
+            "question": "主要听众是谁？",
+            "type": "choice",
+            "options": ["同学", "老师或答辩评委", "公司领导", "客户或投资人", "混合听众"],
+            "required": true
+          }
+        ]
+      },
+      {
+        "round_id": 2,
+        "round_title": "时长、页数与风格",
+        "questions": [
+          {
+            "field": "duration",
+            "question": "汇报时长是多少？",
+            "type": "choice",
+            "options": ["5分钟以内", "5-10分钟", "10-20分钟", "20分钟以上"],
+            "required": true
+          },
+          {
+            "field": "slide_count",
+            "question": "预期 PPT 页数？",
+            "type": "choice",
+            "options": ["10页以内", "10-20页", "20页以上"],
+            "required": true
+          },
+          {
+            "field": "style",
+            "question": "希望以什么方式支撑汇报？",
+            "type": "choice",
+            "options": ["数据图表型", "故事叙事型", "观点论证型", "图文视觉型"],
+            "required": true
+          }
+        ]
+      },
+      {
+        "round_id": 3,
+        "round_title": "内容要求与雷区",
+        "questions": [
+          {
+            "field": "must_include",
+            "question": "有哪些必须包含的内容？（如：某项目数据、某理论框架、产品 demo）",
+            "type": "text",
+            "required": false
+          },
+          {
+            "field": "humor_allowed",
+            "question": "是否允许幽默或互动环节？",
+            "type": "choice",
+            "options": ["完全严肃", "可适度幽默", "欢迎玩梗互动"],
+            "required": false,
+            "condition": {
+              "if": {"field": "occasion", "in": ["课程汇报", "工作汇报", "会议分享"]},
+              "then": "show",
+              "else": "skip"
+            }
+          },
+          {
+            "field": "excludes",
+            "question": "有哪些雷区或不想出现的内容？",
+            "type": "text",
+            "required": false
+          }
+        ]
+      }
+    ],
+    "skip_logic": {
+      "description": "根据场合与时长调整提问和选题范围。",
+      "rules": [
+        "用户选「毕业答辩」→ 跳过「是否允许幽默」问题，语气按严肃学术处理，选题须能回应评委对创新点的追问",
+        "用户选「商业路演」且听众为「客户或投资人」→ 追加追问产品/数据现状，输出追加「商业化与关键指标」字段",
+        "用户选「5分钟以内」→ 建议页数不超过 10 页，选题只保留单一核心观点，不输出多主题拼盘",
+        "用户选「数据图表型」→ Step 3 追问数据来源；无现成数据时改推观点/叙事型选题，风险提醒注明数据缺口",
+        "用户选「图文视觉型」→ 输出追加视觉呈现建议，风险提醒提醒避免大段文字堆砌"
+      ]
+    }
+  },
+  "tone_rules": {
+    "base_tone": "商业正式",
+    "allow_humor": false,
+    "allow_informal": true,
+    "tone_examples": [
+      "正确：本季度用户留存率环比提升 4 个百分点，主要来自新人引导流程的两处改动。",
+      "正确：下面用三页说明我们为什么选这个方向、怎么做、需要什么资源。",
+      "错误：哈哈大家好我又来水汇报了，随便讲讲啊。",
+      "错误：这个项目巨牛，反正听我的准没错。"
+    ],
+    "conditional_notes": [
+      "场合为「毕业答辩」或学术会议时，基调切换为严肃学术，禁用口语化表达。",
+      "场合为「课程汇报」且用户选「欢迎玩梗互动」时，可在开场与案例部分适度幽默，但结论须完整。"
+    ]
+  },
+  "constraint_list": [
+    "选题必须能在规定时长内讲完，页数与时长匹配",
+    "每页只承载一个核心观点，整条汇报有一条清晰主线",
+    "必须有明确的汇报目的：告知、说服、展示或决策建议",
+    "选题深度与听众知识水平匹配",
+    "关键结论须有数据、事实或文献支撑，不得空谈",
+    "选题必须覆盖 must_include 中的内容要求"
+  ],
+  "exclusion_rules": [
+    "在限定页数/时长内无法展开的大主题",
+    "听众无法理解的专业黑话与未解释的缩写",
+    "无事实支撑的断言，尤其在答辩与商业场合",
+    "与汇报场合无关的铺垫和个人发挥",
+    "需要复杂演示条件但现场无法保障的环节",
+    "用户在 excludes 中明确列出的内容"
+  ],
+  "output_format_adjustments": {
+    "title_format": "《{核心观点}——{汇报场合}汇报》",
+    "extra_fields": ["建议时长", "建议页数", "视觉呈现建议", "可能被追问的问题"],
+    "suppress_fields": []
+  }
+}

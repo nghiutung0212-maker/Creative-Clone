@@ -1,0 +1,132 @@
+{
+  "scene_id": "course_design",
+  "scene_name": "课程设计选题",
+  "scene_description": "单节课、单元课或整门课程的教学设计主题构思，产出教学目标可衡量、环节完整、与授课对象和教学条件匹配的课程设计。",
+  "questionnaire_template": {
+    "rounds": [
+      {
+        "round_id": 1,
+        "round_title": "学科、对象与类型",
+        "questions": [
+          {
+            "field": "course_subject",
+            "question": "课程的学科或主题是什么？",
+            "type": "text",
+            "required": true
+          },
+          {
+            "field": "target_learners",
+            "question": "授课对象是？",
+            "type": "choice",
+            "options": ["小学生", "中学生", "大学生", "成人培训", "企业内训"],
+            "required": true
+          },
+          {
+            "field": "course_type",
+            "question": "课程类型是？",
+            "type": "choice",
+            "options": ["理论课", "实验实践课", "通识选修课", "技能培训", "在线课程"],
+            "required": true
+          }
+        ]
+      },
+      {
+        "round_id": 2,
+        "round_title": "课时、目标与条件",
+        "questions": [
+          {
+            "field": "lesson_count",
+            "question": "课时安排是？",
+            "type": "choice",
+            "options": ["单节课", "4-8 课时单元", "整学期课程", "一次性工作坊"],
+            "required": true
+          },
+          {
+            "field": "teaching_goal",
+            "question": "学生学完后应该能做到什么？（请尽量具体，如：能独立完成某操作、能解释某概念）",
+            "type": "text",
+            "required": true
+          },
+          {
+            "field": "resources",
+            "question": "教学条件如何？（实验室、机房、线上工具、教具、班级人数）",
+            "type": "text",
+            "required": true
+          }
+        ]
+      },
+      {
+        "round_id": 3,
+        "round_title": "风格、考核与禁忌",
+        "questions": [
+          {
+            "field": "style",
+            "question": "希望什么教学风格？",
+            "type": "choice",
+            "options": ["严谨系统", "案例驱动", "趣味互动", "项目实战"],
+            "required": true
+          },
+          {
+            "field": "assessment",
+            "question": "考核或评价方式？",
+            "type": "choice",
+            "options": ["考试", "课后作业", "项目作品", "课堂表现", "不考核"],
+            "required": true
+          },
+          {
+            "field": "constraints_excludes",
+            "question": "有哪些硬约束或禁忌？（如：不能联网、必须符合某课标、避免敏感话题）",
+            "type": "text",
+            "required": false
+          }
+        ]
+      }
+    ],
+    "skip_logic": {
+      "description": "根据课程类型、授课对象与课时调整选题。",
+      "rules": [
+        "用户选「实验实践课」→ 必须追问设备、耗材与安全条件，排除无设备支撑的实验设计",
+        "用户选「小学生」或「中学生」→ 排除超出认知水平的内容，增加具象案例与互动，知识密度相应降低",
+        "用户选「单节课」或「一次性工作坊」→ 只输出单课时设计，不输出完整学期大纲",
+        "用户选「趣味互动」且课程为理论课 → 幽默与游戏须服务教学目标，风险提醒注明不得喧宾夺主",
+        "用户选「在线课程」→ 输出追加线上互动与学习任务设计，风险提醒注明自律与完课率问题"
+      ]
+    }
+  },
+  "tone_rules": {
+    "base_tone": "严肃学术",
+    "allow_humor": false,
+    "allow_informal": false,
+    "tone_examples": [
+      "正确：本课结束时，学生能够用自己的话解释概念，并在给定案例中正确识别其两种表现形式。",
+      "正确：实验环节两人一组，操作前须完成安全检查单，教师确认后方可通电。",
+      "错误：这节课就是带大家玩一玩，开心最重要，学什么无所谓。",
+      "错误：知识点很多，我尽量都讲，讲不完的你们自己看。"
+    ],
+    "conditional_notes": [
+      "教学风格选「趣味互动」时，允许游戏化设计和轻松语言，但每个环节须对应明确的教学目标。",
+      "面向低龄学习者时，语言可更亲切，但教学逻辑与安全要求不能放松。"
+    ]
+  },
+  "constraint_list": [
+    "必须有明确、可衡量的教学目标",
+    "内容与活动须符合授课对象的认知水平",
+    "教学环节完整：导入、新授、练习、反馈、总结",
+    "必须有可执行的考核或评价方式",
+    "设计须与课时、班级人数、教学资源匹配",
+    "符合课程标准、教学大纲与安全规范"
+  ],
+  "exclusion_rules": [
+    "超出课时容量的内容堆砌",
+    "无实验条件支撑的实验设计",
+    "学习者无法达成的过高要求",
+    "存在安全或合规风险的实践环节",
+    "全程单向灌输、无互动无反馈的设计",
+    "用户在 constraints_excludes 中明确列出的禁忌"
+  ],
+  "output_format_adjustments": {
+    "title_format": "《{课程主题}》{课时}教学设计",
+    "extra_fields": ["教学目标", "课时安排", "教学环节流程", "课后作业", "考核方式", "板书/课件要点"],
+    "suppress_fields": []
+  }
+}

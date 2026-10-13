@@ -1,0 +1,133 @@
+{
+  "scene_id": "wechat_article",
+  "scene_name": "公众号文章选题",
+  "scene_description": "微信公众号观点评论、干货教程、行业分析、情感故事与热点解读的选题构思，产出在目标篇幅内可展开、与账号定位一致的具体文章选题。",
+  "questionnaire_template": {
+    "rounds": [
+      {
+        "round_id": 1,
+        "round_title": "定位、类型与读者",
+        "questions": [
+          {
+            "field": "account_position",
+            "question": "公众号的定位或领域是什么？",
+            "type": "text",
+            "required": true
+          },
+          {
+            "field": "article_type",
+            "question": "这次想写哪类文章？",
+            "type": "choice",
+            "options": ["观点评论", "干货教程", "行业分析", "情感故事", "人物特写", "热点解读"],
+            "required": true
+          },
+          {
+            "field": "audience",
+            "question": "目标读者是谁？",
+            "type": "text",
+            "required": true
+          }
+        ]
+      },
+      {
+        "round_id": 2,
+        "round_title": "篇幅、风格与频率",
+        "questions": [
+          {
+            "field": "length",
+            "question": "目标篇幅是多少？",
+            "type": "choice",
+            "options": ["1500字以内", "1500-3000字", "3000-5000字", "5000字以上"],
+            "required": true
+          },
+          {
+            "field": "style",
+            "question": "希望文章什么风格？",
+            "type": "choice",
+            "options": ["深度严谨", "轻松有趣", "理性克制", "情感共鸣"],
+            "required": true
+          },
+          {
+            "field": "update_frequency",
+            "question": "账号更新频率是？",
+            "type": "choice",
+            "options": ["日更", "周更", "不定期", "只写这单篇"],
+            "required": false
+          }
+        ]
+      },
+      {
+        "round_id": 3,
+        "round_title": "目标、素材与排斥",
+        "questions": [
+          {
+            "field": "goal",
+            "question": "这篇文章最主要的目标是？",
+            "type": "choice",
+            "options": ["涨粉", "打造专业形象", "表达观点", "带货转化", "活动宣传"],
+            "required": true
+          },
+          {
+            "field": "must_include",
+            "question": "有哪些必须包含的素材或信息？",
+            "type": "text",
+            "required": false
+          },
+          {
+            "field": "excludes",
+            "question": "有哪些不想写、要排除的方向？",
+            "type": "text",
+            "required": false
+          }
+        ]
+      }
+    ],
+    "skip_logic": {
+      "description": "根据文章类型、风格与目标调整选题。",
+      "rules": [
+        "用户选「热点解读」→ 追问热点时效（24小时内/3天内），选题必须匹配时效，风险提醒注明信源核实",
+        "用户选「轻松有趣」风格 → 语气切换为轻松玩梗，允许玩梗但不得低俗、不得削弱论据",
+        "用户选「1500字以内」→ 只输出单一论点选题，不输出多主题盘点",
+        "用户选「带货转化」目标 → 追加商品信息，风险提醒增加广告法合规与广告标识要求",
+        "用户选「日更」→ 选题优先可持续、可系列化的方向，并给出系列化建议"
+      ]
+    }
+  },
+  "tone_rules": {
+    "base_tone": "商业正式",
+    "allow_humor": false,
+    "allow_informal": true,
+    "tone_examples": [
+      "正确：这件事我观察了三个月，真正值得说的不是热搜上的结论，而是一个被忽略的细节。",
+      "正确：下面分三步说明这个方法，每一步都给出可直接照做的操作。",
+      "错误：震惊！不看后悔一辈子，99% 的人都不知道！",
+      "错误：据说是这样，好像有个报道讲过，大家自己体会吧。"
+    ],
+    "conditional_notes": [
+      "风格选「轻松有趣」时，基调切换为轻松玩梗，允许口语与玩笑，但事实与引用仍须准确。",
+      "风格选「情感共鸣」时，可用第一人称叙事，但避免虚构经历和过度煽情。",
+      "风格选「深度严谨」时，切换为严肃学术式表达，关键论点须有来源。"
+    ]
+  },
+  "constraint_list": [
+    "选题必须能在目标篇幅内充分展开",
+    "标题与正文一致，不做标题党",
+    "观点须有事实、数据或案例支撑，引用可追溯",
+    "符合公众号读者的阅读预期与账号定位",
+    "信息须核实准确，热点解读必须有可靠信源",
+    "段落结构适合手机阅读，有清晰的起承转合"
+  ],
+  "exclusion_rules": [
+    "无法验证的谣言与未经证实的信息",
+    "与账号定位无关的内容",
+    "过度敏感、争议引战话题",
+    "洗稿、搬运、侵犯版权的内容",
+    "纯营销无实质内容的软文（带货须按规标注）",
+    "用户在 excludes 中明确列出的方向"
+  ],
+  "output_format_adjustments": {
+    "title_format": "《{核心观点或悬念}：{具体问题}》",
+    "extra_fields": ["建议篇幅", "备选标题方向", "开头引入方式", "结尾互动引导"],
+    "suppress_fields": []
+  }
+}

@@ -1,0 +1,168 @@
+{
+  "scene_id": "academic_paper",
+  "scene_name": "学术论文选题",
+  "scene_description": "课程论文、毕业论文、开题报告、期刊投稿与基金申请的选题构思，产出可证伪、有学术增量且能落地的具体研究问题。",
+  "questionnaire_template": {
+    "rounds": [
+      {
+        "round_id": 1,
+        "round_title": "学科与层级",
+        "questions": [
+          {
+            "field": "discipline",
+            "question": "你的学科领域或课程方向是什么？（可写具体到二级学科，如：传播学、中国近现代史、计算机视觉）",
+            "type": "text",
+            "required": true
+          },
+          {
+            "field": "level",
+            "question": "这次选题处于哪个层级？",
+            "type": "choice",
+            "options": ["课程论文", "本科毕设或开题", "硕士论文", "博士论文", "期刊投稿", "基金申请"],
+            "required": true
+          },
+          {
+            "field": "research_type",
+            "question": "你期望的研究类型偏向？",
+            "type": "choice",
+            "options": ["理论思辨", "实证/定量", "质性/田野", "案例/文本分析", "实验/系统实现", "还没想好，帮我判断"],
+            "required": true
+          }
+        ]
+      },
+      {
+        "round_id": 2,
+        "round_title": "篇幅、周期与目标",
+        "questions": [
+          {
+            "field": "length",
+            "question": "预期篇幅是多少？",
+            "type": "choice",
+            "options": ["3000字以内", "3000-5000字", "5000-10000字", "10000字以上"],
+            "required": true,
+            "condition": {
+              "if": {"field": "level", "in": ["课程论文", "本科毕设或开题", "硕士论文", "博士论文"]},
+              "then": "show",
+              "else": "skip"
+            }
+          },
+          {
+            "field": "cycle",
+            "question": "可用的研究/写作周期是多久？",
+            "type": "choice",
+            "options": ["两周内", "一个月左右", "一个学期", "半年及以上"],
+            "required": true,
+            "condition": {
+              "if": {"field": "level", "in": ["课程论文", "本科毕设或开题", "硕士论文", "博士论文"]},
+              "then": "show",
+              "else": "skip"
+            }
+          },
+          {
+            "field": "submission_target",
+            "question": "目标期刊/基金的级别或类型是？（如：CSSCI、普通核心、SCI 三区、校级大创）",
+            "type": "text",
+            "required": true,
+            "condition": {
+              "if": {"field": "level", "in": ["期刊投稿", "基金申请"]},
+              "then": "show",
+              "else": "skip"
+            }
+          }
+        ]
+      },
+      {
+        "round_id": 3,
+        "round_title": "基调与兴趣",
+        "questions": [
+          {
+            "field": "tone",
+            "question": "希望选题和行文保持什么态度基调？",
+            "type": "choice",
+            "options": ["严肃严谨", "可带一点趣味", "轻松幽默"],
+            "required": true,
+            "default": "严肃严谨"
+          },
+          {
+            "field": "interests",
+            "question": "你个人感兴趣、愿意长期泡在里面的方向或话题是什么？（哪怕和本专业看似无关，如：电子游戏、养猫、乐队文化）",
+            "type": "text",
+            "required": true
+          }
+        ]
+      },
+      {
+        "round_id": 4,
+        "round_title": "资源、约束与排斥",
+        "questions": [
+          {
+            "field": "resources",
+            "question": "你手上有什么可用资源？（如：能拿到的数据集、田野/访谈渠道、实验室设备、已掌握的方法、导师的课题）",
+            "type": "text",
+            "required": true
+          },
+          {
+            "field": "hard_constraints",
+            "question": "有哪些必须满足的硬约束？（如：导师已指定方向、必须用问卷法、必须结合某企业案例）",
+            "type": "text",
+            "required": false
+          },
+          {
+            "field": "excludes",
+            "question": "有哪些明确不想碰、要排除的方向？",
+            "type": "text",
+            "required": false
+          }
+        ]
+      }
+    ],
+    "skip_logic": {
+      "description": "根据前序回答跳过不适用问题、追加层级相关问题，并约束生成范围。",
+      "rules": [
+        "用户选「课程论文」→ 不问博士层级的理论贡献要求，输出中不追加「理论创新要求」字段",
+        "用户选「期刊投稿」或「基金申请」→ 跳过篇幅/周期问题，改为追问目标期刊或基金级别",
+        "用户选「硕士论文」或「博士论文」但基调选「轻松幽默」→ 提示幽默须在导师与评审接受范围内，风险提醒中注明",
+        "用户在 resources 中已写明现成数据集或田野渠道 → 不再追问数据可得性，选题优先复用该资源",
+        "用户选「还没想好，帮我判断」研究类型 → Step 3 依据学科与资源追问方法偏好，再反推可行方法"
+      ]
+    }
+  },
+  "tone_rules": {
+    "base_tone": "严肃学术",
+    "allow_humor": false,
+    "allow_informal": false,
+    "tone_examples": [
+      "正确：该选题聚焦于具体用户群体的行为层面，具有可验证的研究假设，且在现有文献中存在明确缺口。",
+      "正确：本研究以XX市三所中学为个案，结论的适用范围有限，这一局限将在研究设计中说明。",
+      "错误：这个选题超有趣，绝对能火，写出来必过！",
+      "错误：现在大家都在聊大模型，不如就写「大模型改变世界」吧。"
+    ],
+    "conditional_notes": [
+      "当问卷基调选「可带一点趣味」时，仅允许在标题与引言中适度使用比喻，论证部分仍须严谨。",
+      "当问卷基调选「轻松幽默」时，幽默只能服务于问题表达，不得削弱研究方法、证据与结论的严肃性。"
+    ]
+  },
+  "constraint_list": [
+    "必须有具体、可识别的研究对象，不接受无边界的大领域",
+    "必须以明确的问题（而非宽泛主题）为产出单位，问题须可回答、可证伪",
+    "必须给出可操作的研究方法，且方法与研究问题匹配",
+    "必须在用户层级、篇幅、周期与资源条件范围内可完成",
+    "必须具有学术增量：新对象、新视角、新方法或新证据至少占其一",
+    "须给出可检索入口（关键词 + 建议数据库或平台），不得编造文献与数据",
+    "符合学术规范，引用、伦理审查（如涉及人类受试者）与知情同意要求齐备"
+  ],
+  "exclusion_rules": [
+    "纯综述、纯转述而无增量贡献的选题",
+    "近三年研究数量过载、饱和度 > 80% 且无新角度/新方法的方向",
+    "超出当前层级能力与资源范围的选题（如本科生无技术无数据集却做大型系统）",
+    "概念堆砌型题目：多个热词拼接、无实质问题",
+    "假问题型题目：问题不成立、无法证伪",
+    "用户在 excludes 中明确列出的方向",
+    "存在伦理或合规风险且无法通过审查设计化解的研究"
+  ],
+  "output_format_adjustments": {
+    "title_format": "《{具体问题}——以{研究对象}为例》",
+    "extra_fields": ["建议篇幅", "建议研究方法", "关键词与检索数据库", "伦理审查要求"],
+    "suppress_fields": []
+  }
+}

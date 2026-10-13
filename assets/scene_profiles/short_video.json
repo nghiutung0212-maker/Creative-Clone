@@ -1,0 +1,134 @@
+{
+  "scene_id": "short_video",
+  "scene_name": "短视频选题",
+  "scene_description": "三分钟以内短视频的选题与切入角度构思，产出可在时长内讲清、前三秒有钩子、与账号人设一致的视频选题。",
+  "questionnaire_template": {
+    "rounds": [
+      {
+        "round_id": 1,
+        "round_title": "赛道、平台与观众",
+        "questions": [
+          {
+            "field": "account_domain",
+            "question": "账号定位或赛道是什么？（如：大学生知识区、职场干货、宿舍搞笑日常）",
+            "type": "text",
+            "required": true
+          },
+          {
+            "field": "platform",
+            "question": "主要发布在哪个平台？",
+            "type": "choice",
+            "options": ["抖音", "快手", "视频号", "B站", "小红书", "多平台分发"],
+            "required": true
+          },
+          {
+            "field": "audience",
+            "question": "目标观众是谁？",
+            "type": "choice",
+            "options": ["大学生", "职场新人", "宝妈", "下沉市场大众", "同好圈层", "泛兴趣大众"],
+            "required": true
+          }
+        ]
+      },
+      {
+        "round_id": 2,
+        "round_title": "时长、形式与阶段",
+        "questions": [
+          {
+            "field": "duration",
+            "question": "单条视频时长？",
+            "type": "choice",
+            "options": ["30秒以内", "30-60秒", "1-3分钟", "3分钟以上"],
+            "required": true
+          },
+          {
+            "field": "form",
+            "question": "主要表现形式？",
+            "type": "choice",
+            "options": ["真人口播", "剧情演绎", "实拍记录", "混剪解说", "图文动画"],
+            "required": true
+          },
+          {
+            "field": "account_stage",
+            "question": "账号目前处于什么阶段？",
+            "type": "choice",
+            "options": ["零粉冷启动", "千粉以下", "成长期", "成熟账号"],
+            "required": true
+          }
+        ]
+      },
+      {
+        "round_id": 3,
+        "round_title": "钩子、目标与红线",
+        "questions": [
+          {
+            "field": "hook_style",
+            "question": "偏好什么类型的钩子？",
+            "type": "choice",
+            "options": ["反常识", "制造悬念", "情绪共鸣", "实用干货", "吐槽玩梗"],
+            "required": true
+          },
+          {
+            "field": "goal",
+            "question": "现阶段最主要的目标是？",
+            "type": "choice",
+            "options": ["涨粉", "获客转化", "打造人设", "纯表达", "带货"],
+            "required": true
+          },
+          {
+            "field": "red_lines",
+            "question": "有哪些不能碰的话题或红线？",
+            "type": "text",
+            "required": false
+          }
+        ]
+      }
+    ],
+    "skip_logic": {
+      "description": "根据平台、时长、账号阶段与目标调整选题。",
+      "rules": [
+        "用户选「零粉冷启动」→ 不问粉丝画像细节，选题优先低门槛、高共鸣、可蹭平台热点的方向",
+        "用户选「30秒以内」→ 每个选题只给一个信息点，不输出多观点、多步骤内容",
+        "用户选「小红书」平台 → 形式优先实拍/图文，标题与封面改为小红书风格，输出追加标签建议",
+        "用户选「带货」目标 → 追加追问产品/商品信息，风险提醒增加广告法与平台带货合规提示",
+        "用户选「B站」且时长「3分钟以上」→ 选题可做深度论证，钩子可改为观点或故事开场"
+      ]
+    }
+  },
+  "tone_rules": {
+    "base_tone": "轻松玩梗",
+    "allow_humor": true,
+    "allow_informal": true,
+    "tone_examples": [
+      "正确：家人们谁懂啊，我花三周才搞明白的事，今天一分钟给你讲清楚。",
+      "正确：先别急着做笔记，这个方法 90% 的人第一步就做错了。",
+      "错误：兹有下述视频一则，旨在向诸位阐述若干问题。",
+      "错误：某某群体就是不行，这种人活该。（引战、歧视、人身攻击）"
+    ],
+    "conditional_notes": [
+      "账号定位为「干货分享」时，口语化保留但信息密度要高，梗不能喧宾夺主。",
+      "观点可以锐利，但不得引战、歧视、造谣或触碰平台违规清单。"
+    ]
+  },
+  "constraint_list": [
+    "选题必须能在目标时长内讲清单一观点",
+    "前 3 秒必须有明确钩子，并在选题中给出钩子文案",
+    "一条视频只表达一个核心信息，不做多主题堆砌",
+    "选题必须与账号定位和人设一致",
+    "必须能由现有设备、人力完成（冷启动期默认一人一部手机）",
+    "观点表达符合平台规则与法律法规"
+  ],
+  "exclusion_rules": [
+    "平台敏感、违规、引战话题",
+    "与账号赛道无关的硬蹭热点",
+    "需要团队、道具或预算才能完成的拍摄（用户无相关资源时）",
+    "无法在时长内完成的复杂论证",
+    "洗稿、搬运、翻拍他人内容",
+    "虚假宣传、夸大功效，尤其带货内容"
+  ],
+  "output_format_adjustments": {
+    "title_format": "「{钩子文案}」{选题标题}",
+    "extra_fields": ["前3秒钩子", "建议时长", "拍摄形式", "标签与封面建议"],
+    "suppress_fields": []
+  }
+}

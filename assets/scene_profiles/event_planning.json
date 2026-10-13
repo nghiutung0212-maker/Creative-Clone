@@ -1,0 +1,132 @@
+{
+  "scene_id": "event_planning",
+  "scene_name": "活动策划选题",
+  "scene_description": "校园社团、团建、商业活动、沙龙比赛与线上活动的策划主题构思，产出在预算、场地与筹备周期内可执行、有创意且安全合规的方案。",
+  "questionnaire_template": {
+    "rounds": [
+      {
+        "round_id": 1,
+        "round_title": "主办方、类型与对象",
+        "questions": [
+          {
+            "field": "organizer",
+            "question": "主办方或组织者是谁？（如：某高校动漫社、公司行政、班级班委）",
+            "type": "text",
+            "required": true
+          },
+          {
+            "field": "event_type",
+            "question": "活动属于哪种类型？",
+            "type": "choice",
+            "options": ["校园社团活动", "班级团建", "商业活动", "婚礼/庆典", "展览沙龙", "比赛演出", "线上活动"],
+            "required": true
+          },
+          {
+            "field": "audience",
+            "question": "参与对象和预计人数是？（如：在校大学生 30-50 人）",
+            "type": "text",
+            "required": true
+          }
+        ]
+      },
+      {
+        "round_id": 2,
+        "round_title": "预算、周期与目标",
+        "questions": [
+          {
+            "field": "budget",
+            "question": "预算情况？",
+            "type": "choice",
+            "options": ["零预算", "500 元以内", "500-3000 元", "3000-10000 元", "10000 元以上"],
+            "required": true
+          },
+          {
+            "field": "cycle",
+            "question": "筹备时间有多久？",
+            "type": "choice",
+            "options": ["三天内", "一周左右", "两周至一个月", "一个月以上"],
+            "required": true
+          },
+          {
+            "field": "goal",
+            "question": "活动最主要的目标是？",
+            "type": "choice",
+            "options": ["招新", "宣传曝光", "团队凝聚", "盈利", "公益传播", "庆祝纪念"],
+            "required": true
+          }
+        ]
+      },
+      {
+        "round_id": 3,
+        "round_title": "场地、风格与禁忌",
+        "questions": [
+          {
+            "field": "venue",
+            "question": "场地条件是？（室内/室外/线上，是否已确定，能容纳多少人）",
+            "type": "text",
+            "required": true
+          },
+          {
+            "field": "style",
+            "question": "希望活动什么基调？",
+            "type": "choice",
+            "options": ["轻松玩梗", "温馨治愈", "正式专业", "潮酷酷炫"],
+            "required": true
+          },
+          {
+            "field": "constraints_excludes",
+            "question": "有哪些硬约束或禁忌？（如：校方报备要求、不能有明火、参与人有过敏忌口）",
+            "type": "text",
+            "required": false
+          }
+        ]
+      }
+    ],
+    "skip_logic": {
+      "description": "根据预算、场地、类型与周期调整选题。",
+      "rules": [
+        "用户选「零预算」→ 排除需要采购和场地费的方向，优先线上玩法、校内免费场地与自带物品",
+        "用户选「商业活动」→ 语气切换商业正式，输出追加「招商/赞助与 ROI」字段",
+        "用户选「线上活动」或场地为线上 → 排除线下强互动游戏，追加直播/会议平台方案与互动工具",
+        "用户选「三天内」→ 只输出轻执行方案，不输出多环节、多供应商的复杂活动",
+        "目标为「招新」→ 选题必须包含低门槛参与和留存/转化设计，风险提醒补充报名漏斗"
+      ]
+    }
+  },
+  "tone_rules": {
+    "base_tone": "轻松玩梗",
+    "allow_humor": true,
+    "allow_informal": true,
+    "tone_examples": [
+      "正确：规则简单到看一眼就懂，赢了有小奖品，输了也不尴尬，社恐也能参与。",
+      "正确：整个活动分三个环节，每个环节都写了负责人和备用方案。",
+      "错误：活动嘛，到时候看情况弄弄就行，问题不大。",
+      "错误：输了的人要接受羞辱性惩罚，这样才好玩。（不尊重参与者、有安全风险）"
+    ],
+    "conditional_notes": [
+      "活动类型为「商业活动」「婚礼/庆典」时，基调切换商业正式，执行文档须严谨。",
+      "任何玩笑与游戏环节不得侮辱参与者、不得设置安全隐患。"
+    ]
+  },
+  "constraint_list": [
+    "方案必须在预算、人力与筹备周期内可执行",
+    "必须有明确的活动目标与衡量方式",
+    "参与门槛与受众匹配，照顾不同性格与身体条件的参与者",
+    "安全合规：场地、消防、人群密度、食品与用电须符合规定",
+    "每个方案给出关键流程、时间节点与负责人",
+    "必须有应急预案（天气、设备、人数、突发状况）"
+  ],
+  "exclusion_rules": [
+    "超出预算、人力或场地条件的方案",
+    "存在安全隐患的环节（危险游戏、明火、食品风险等）",
+    "涉及政治敏感、低俗、违规内容的设计",
+    "无创意的常规流程堆砌",
+    "只有单点方案、没有任何容错的设计",
+    "用户在 constraints_excludes 中明确列出的禁忌"
+  ],
+  "output_format_adjustments": {
+    "title_format": "「{活动主题名}」{活动类型}策划方案",
+    "extra_fields": ["预算分配建议", "关键流程时间线", "人员分工", "物料清单", "应急预案"],
+    "suppress_fields": []
+  }
+}

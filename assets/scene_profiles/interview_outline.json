@@ -1,0 +1,130 @@
+{
+  "scene_id": "interview_outline",
+  "scene_name": "人物采访提纲",
+  "scene_description": "人物特稿、行业访谈、事件采访与宣传采访的提纲构思，产出围绕采访目的、由浅入深、具体开放且含追问预案的问题清单。",
+  "questionnaire_template": {
+    "rounds": [
+      {
+        "round_id": 1,
+        "round_title": "受访者、目的与渠道",
+        "questions": [
+          {
+            "field": "interviewee",
+            "question": "受访者是谁？（身份、领域，如：连续创业者、退休教师、独立游戏开发者）",
+            "type": "text",
+            "required": true
+          },
+          {
+            "field": "interview_goal",
+            "question": "采访目的是什么？",
+            "type": "choice",
+            "options": ["人物特稿", "行业洞察", "事件调查", "宣传通稿", "学术访谈"],
+            "required": true
+          },
+          {
+            "field": "audience_channel",
+            "question": "发布渠道和受众是？（如：公众号读者、校报、内部刊物、视频节目）",
+            "type": "text",
+            "required": true
+          }
+        ]
+      },
+      {
+        "round_id": 2,
+        "round_title": "时长、角度与背景",
+        "questions": [
+          {
+            "field": "length",
+            "question": "采访篇幅或时长？",
+            "type": "choice",
+            "options": ["15分钟快访", "30-60分钟", "深度长访", "仅书面提纲"],
+            "required": true
+          },
+          {
+            "field": "angle",
+            "question": "想突出的报道角度或主题是什么？",
+            "type": "text",
+            "required": true
+          },
+          {
+            "field": "known_info",
+            "question": "已经了解受访者哪些背景？（已做过的功课、公开资料）",
+            "type": "text",
+            "required": true
+          }
+        ]
+      },
+      {
+        "round_id": 3,
+        "round_title": "风格、必问与禁忌",
+        "questions": [
+          {
+            "field": "style",
+            "question": "希望采访什么风格？",
+            "type": "choice",
+            "options": ["客观中立", "犀利追问", "温和聊天", "趣味活泼"],
+            "required": true
+          },
+          {
+            "field": "must_ask",
+            "question": "有哪些必须问到的问题？",
+            "type": "text",
+            "required": true
+          },
+          {
+            "field": "red_lines",
+            "question": "受访者的禁忌点、敏感问题或法律风险有哪些？",
+            "type": "text",
+            "required": false
+          }
+        ]
+      }
+    ],
+    "skip_logic": {
+      "description": "根据采访目的、时长、背景与受访者身份调整提纲。",
+      "rules": [
+        "用户选「宣传通稿」→ 不设计犀利质疑类问题，语气切换商业正式，问题聚焦亮点与事实",
+        "用户在 known_info 中已掌握充分背景 → 不重复常识性问题，问题直接进入细节与深层动机",
+        "用户选「15分钟快访」→ 只保留 5 个核心问题，不设计多轮追问",
+        "受访者为事件当事人或争议人物 → 风险提醒增加法律、伦理与多方核实要求",
+        "用户选「学术访谈」→ 问题围绕研究问题、方法与学术争鸣，语气切换严谨专业"
+      ]
+    }
+  },
+  "tone_rules": {
+    "base_tone": "商业正式",
+    "allow_humor": false,
+    "allow_informal": true,
+    "tone_examples": [
+      "正确：您当时做这个决定的背景是什么？后来哪个环节和您预想的最不一样？",
+      "正确：这个说法和公开资料里的另一种表述有出入，您怎么解释这中间的差异？",
+      "错误：我觉得你就是为了赚钱，对吧？你就承认吧。",
+      "错误：听说你家里那些事是真的吗？网上都在传。（侵犯隐私、以传闻为前提）"
+    ],
+    "conditional_notes": [
+      "风格选「趣味活泼」且受访者为娱乐/文化领域人物时，可适度轻松，但不得挖人隐私。",
+      "风格选「犀利追问」时，质疑必须基于已核实的事实，不得做诱导性提问。"
+    ]
+  },
+  "constraint_list": [
+    "提纲必须围绕采访目的与报道角度",
+    "问题必须具体、开放、可回答，避免只用「是/否」回答的封闭问题",
+    "问题排序符合对话逻辑：由浅入深、由事实到观点",
+    "每个核心问题必须配有追问预案",
+    "必须包含开场说明与结束语，尊重受访者知情权",
+    "涉及争议事项须有多方核实与事实核查安排"
+  ],
+  "exclusion_rules": [
+    "诱导性、预设立场的问题",
+    "侵犯隐私、违反法律与新闻伦理的提问",
+    "与主题无关的猎奇、八卦问题",
+    "以未经核实的传闻作为提问前提",
+    "受访者已明确拒绝或超出授权范围的话题",
+    "可能给受访者带来安全风险且无保护措施的提问"
+  ],
+  "output_format_adjustments": {
+    "title_format": "《{受访者}：{报道角度}》采访提纲",
+    "extra_fields": ["核心问题清单", "追问预案", "开场与结束语", "事实核查清单", "采访注意事项"],
+    "suppress_fields": []
+  }
+}

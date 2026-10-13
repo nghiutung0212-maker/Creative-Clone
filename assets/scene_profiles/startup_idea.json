@@ -1,0 +1,131 @@
+{
+  "scene_id": "startup_idea",
+  "scene_name": "创业方向选题",
+  "scene_description": "创业点子、产品方向与商业机会的构思，产出有明确目标用户、真实痛点、可低成本验证且与团队资源匹配的方向。",
+  "questionnaire_template": {
+    "rounds": [
+      {
+        "round_id": 1,
+        "round_title": "背景、阶段与团队",
+        "questions": [
+          {
+            "field": "background_domain",
+            "question": "你的专业或行业背景是什么？（团队成员的背景也可一并写上）",
+            "type": "text",
+            "required": true
+          },
+          {
+            "field": "startup_stage",
+            "question": "目前处于什么阶段？",
+            "type": "choice",
+            "options": ["仅有想法", "在校探索", "已有 MVP", "已注册公司", "已在运营"],
+            "required": true
+          },
+          {
+            "field": "team",
+            "question": "团队情况如何？",
+            "type": "choice",
+            "options": ["一个人", "2-3 人合伙人", "有完整团队", "暂无团队"],
+            "required": true
+          }
+        ]
+      },
+      {
+        "round_id": 2,
+        "round_title": "客户、痛点与赛道",
+        "questions": [
+          {
+            "field": "target_customer",
+            "question": "想服务的目标客户或用户是谁？",
+            "type": "text",
+            "required": true
+          },
+          {
+            "field": "pain_point",
+            "question": "你观察到他们有什么具体痛点？（什么场景下、现在怎么凑合解决）",
+            "type": "text",
+            "required": true
+          },
+          {
+            "field": "industry",
+            "question": "感兴趣的行业或赛道？",
+            "type": "choice",
+            "options": ["AI/大模型应用", "消费/零售", "教育", "企业服务", "硬科技", "内容/传媒", "本地生活", "其他"],
+            "required": true
+          }
+        ]
+      },
+      {
+        "round_id": 3,
+        "round_title": "资源、目标与红线",
+        "questions": [
+          {
+            "field": "resources",
+            "question": "可调用的资源有哪些？（资金量级、技术能力、渠道、供应链）",
+            "type": "text",
+            "required": true
+          },
+          {
+            "field": "goal",
+            "question": "这次构思的目标是？",
+            "type": "choice",
+            "options": ["创业比赛", "课程作业", "准备融资", "真实创业", "做副业"],
+            "required": true
+          },
+          {
+            "field": "red_lines",
+            "question": "有哪些不可接受的风险或合规红线？",
+            "type": "text",
+            "required": false
+          }
+        ]
+      }
+    ],
+    "skip_logic": {
+      "description": "根据创业阶段、团队与目标调整选题。",
+      "rules": [
+        "用户选「仅有想法」→ 不问运营数据，每个方向必须给出低成本验证（MVP）路径与第一个验证实验",
+        "用户选「一个人」或「暂无团队」→ 排除需要完整团队才能启动的方向，优先个人可独立验证的机会",
+        "用户选「准备融资」或「真实创业」→ 输出追加「市场规模与商业模式」字段，风险提醒增加政策与现金流分析",
+        "用户选「创业比赛」或「课程作业」→ 侧重创新性与逻辑完整度，风险提醒补充评审偏好与评委高频提问",
+        "用户在 resources 中已有明确渠道或供应链 → 选题优先复用该资源，避免重资产方向"
+      ]
+    }
+  },
+  "tone_rules": {
+    "base_tone": "商业正式",
+    "allow_humor": false,
+    "allow_informal": true,
+    "tone_examples": [
+      "正确：我们面向的是刚开始租房的应届生，核心痛点是搬家成本高且信息不透明，先用两周做一个信息撮合群验证需求。",
+      "正确：该方向的获客成本目前高于客单价，这是最大的不确定性，需要在 MVP 阶段验证。",
+      "错误：我们要做下一个千亿级平台，颠覆整个行业！",
+      "错误：这个点子绝对没人做过，肯定能成，闭眼投。"
+    ],
+    "conditional_notes": [
+      "比赛路演场景可适度使用有感染力的表达，但市场与财务数据必须真实、可核查。",
+      "任何阶段都不得编造市场规模、增长率或用户访谈数据。"
+    ]
+  },
+  "constraint_list": [
+    "必须有明确的目标用户与真实、具体的痛点",
+    "方向必须可被低成本验证，给出 MVP 路径与关键假设",
+    "必须与团队资源、能力、时间匹配",
+    "必须有清晰的价值主张与差异化，而非抄袭现有模式",
+    "必须回答如何获取第一批用户/客户",
+    "符合法律法规与行业监管要求"
+  ],
+  "exclusion_rules": [
+    "伪需求：用户不存在该痛点或已有足够好的解决方案",
+    "超出团队资源的重资产、高门槛方向",
+    "政策禁止或强监管下无法合规的方向",
+    "纯概念包装、没有商业模式与变现路径",
+    "无差异化的模式照搬",
+    "用户在 red_lines 中明确列出的风险方向"
+  ],
+  "output_format_adjustments": {
+    "title_format": "面向{目标用户}的{产品或服务}：解决{具体痛点}",
+    "extra_fields": ["MVP 验证路径", "目标用户画像", "商业模式画布要点", "关键指标", "首批用户获取方式"],
+    "suppress_fields": []
+  }
+}

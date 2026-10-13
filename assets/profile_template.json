@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "profile_meta": {
+    "user_id": "local-anon",
+    "created_at": null,
+    "updated_at": null,
+    "mode": "light"
+  },
+  "base": {
+    "language": "zh-CN",
+    "backgrounds": [],
+    "interests": [],
+    "resources": [],
+    "writing_style": null,
+    "thinking_depth": null
+  },
+  "preferences": [],
+  "history": [],
+  "signals": {
+    "liked_topics": [],
+    "disliked_topics": [],
+    "redirected_topics": [],
+    "selected_topics": []
+  },
+  "stats": {
+    "total_sessions": 0,
+    "like_count": 0,
+    "dislike_count": 0,
+    "redirect_count": 0,
+    "select_count": 0
+  },
+  "privacy": {
+    "local_reading_enabled": false,
+    "authorized_dirs": [],
+    "consented_at": null,
+    "consent_version": null,
+    "last_reviewed_at": null
+  }
+}
